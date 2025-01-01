@@ -1,5 +1,7 @@
-﻿services:
+﻿name: healthcaresystem
+services:
   healthcaresystem.api:
+    container_name: healthcaresystem.api
     image: healthcaresystem.api
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
@@ -15,4 +17,17 @@
       dockerfile: HealthcareSystem.Api/Dockerfile
     volumes:
       - ~/.aspnet/https:/https:ro
+  healthcaresystem.database:
+    container_name: healthcaresystem.databasew
+    image: postgres
+    environment:
+      POSTGRES_DB: "postgres"
+      POSTGRES_USER: "postgres"
+      POSTGRES_PASSWORD: "_MySecretKey12345_"
+    ports:
+      - "5432:5432"
+    volumes:
+      - database:/var/lib/postgresql/data
 
+volumes:
+  database:

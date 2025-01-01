@@ -1,6 +1,12 @@
+using HealthcareSystem.Api.DependencyInjection;
+using HealthcareSystem.Api.Endpoints;
+using HealthcareSystem.Infrastructure.DataAccess;
+
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
+builder.Services.AddDbContext<AppDbContext>();
+builder.Services.AddDoctorServices();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
@@ -14,6 +20,6 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseAuthorization();
-app.MapControllers();
+app.MapDoctorEndpoints();
 
 app.Run();
