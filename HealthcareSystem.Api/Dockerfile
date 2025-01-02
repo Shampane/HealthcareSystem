@@ -8,6 +8,9 @@ FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 COPY ["HealthcareSystem.Api/HealthcareSystem.Api.csproj", "HealthcareSystem.Api/"]
+COPY ["HealthcareSystem.Application/HealthcareSystem.Application.csproj", "HealthcareSystem.Application/"]
+COPY ["HealthcareSystem.Core/HealthcareSystem.Core.csproj", "HealthcareSystem.Core/"]
+COPY ["HealthcareSystem.Infrastructure/HealthcareSystem.Infrastructure.csproj", "HealthcareSystem.Infrastructure/"]
 RUN dotnet restore "HealthcareSystem.Api/HealthcareSystem.Api.csproj"
 COPY . .
 WORKDIR "/src/HealthcareSystem.Api"
