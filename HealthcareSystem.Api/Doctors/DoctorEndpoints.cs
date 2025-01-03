@@ -9,7 +9,7 @@ public static class DoctorEndpoints
         this WebApplication app)
     {
         app.MapPost("/api/doctor", async (
-                [FromBody] DoctorCreateRequest request,
+                [FromBody] DoctorRequest request,
                 DoctorService service
             ) =>
             await service.CreateAsync(request));
@@ -18,6 +18,11 @@ public static class DoctorEndpoints
         app.MapGet("/api/doctors/{id:guid}",
             async (Guid id, DoctorService service)
                 => await service.GetByIdAsync(id));
+        app.MapPut("/api/doctors/{id:guid}", async (
+                Guid id, DoctorService service,
+                [FromBody] DoctorRequest request
+            ) =>
+            await service.UpdateAsync(id, request));
         app.MapDelete("/api/doctors/{id:guid}",
             async (Guid id, DoctorService service)
                 => await service.RemoveAsync(id));

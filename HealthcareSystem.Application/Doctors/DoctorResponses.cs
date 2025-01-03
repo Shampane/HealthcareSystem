@@ -22,6 +22,12 @@ public record DoctorCreateResponse(
     string Message
 );
 
+public record DoctorUpdateResponse(
+    int StatusCode,
+    bool IsSuccess,
+    string Message
+);
+
 public record DoctorRemoveResponse(
     int StatusCode,
     bool IsSuccess,

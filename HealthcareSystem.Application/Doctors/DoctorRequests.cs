@@ -1,6 +1,6 @@
 namespace HealthcareSystem.Application.Doctors;
 
-public record DoctorCreateRequest(
+public record DoctorRequest(
     string Name,
     string Description,
     int ExperienceAge,

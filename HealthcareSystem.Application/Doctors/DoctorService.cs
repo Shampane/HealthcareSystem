@@ -54,7 +54,7 @@ public class DoctorService(IDoctorRepository repository)
         }
     }
 
-    private string BuildCreateAsyncError(DoctorCreateRequest request)
+    private string BuildDoctorErrors(DoctorRequest request)
     {
         var errorMessage = new StringBuilder("Errors: ");
         if (request.Name == string.Empty)
@@ -76,6 +76,8 @@ public class DoctorService(IDoctorRepository repository)
         var commaIndex = errorMessage
             .ToString()
             .LastIndexOf(",", StringComparison.Ordinal);
+        if (commaIndex == -1)
+            return string.Empty;
         errorMessage[commaIndex] = '.';
         return errorMessage.ToString() == "Errors: "
             ? string.Empty
@@ -83,12 +85,12 @@ public class DoctorService(IDoctorRepository repository)
     }
 
     public async Task<DoctorCreateResponse> CreateAsync(
-        DoctorCreateRequest request
+        DoctorRequest request
     )
     {
         try
         {
-            var errorMessage = BuildCreateAsyncError(request);
+            var errorMessage = BuildDoctorErrors(request);
             if (errorMessage != string.Empty)
                 return new DoctorCreateResponse(
                     404, false, errorMessage
@@ -106,7 +108,8 @@ public class DoctorService(IDoctorRepository repository)
                 await repository.IsDoctorExistsAsync(doctor);
             if (isDoctorExists)
                 return new DoctorCreateResponse(
-                    409, false, "Error: The Doctor already exists"
+                    409, false,
+                    "Error: The Doctor already exists"
                 );
 
             await repository.CreateAsync(doctor);
@@ -123,19 +126,57 @@ public class DoctorService(IDoctorRepository repository)
         }
     }
 
-    public async Task<DoctorRemoveResponse> RemoveAsync(
-        Guid id
+    public async Task<DoctorUpdateResponse> UpdateAsync(
+        Guid id, DoctorRequest request
     )
     {
-        var doctor = await repository.FindDoctorByIdAsync(id);
+        try
+        {
+            var errorMessage = BuildDoctorErrors(request);
+            if (errorMessage != string.Empty)
+                return new DoctorUpdateResponse(
+                    404, false, errorMessage
+                );
+            var doctor = await repository.GetByIdAsync(id);
+            if (doctor == null)
+                return new DoctorUpdateResponse(
+                    404, false,
+                    "Error: The Doctor doesn't exist"
+                );
+            doctor.Name = request.Name;
+            doctor.Description = request.Description;
+            doctor.ExperienceAge = request.ExperienceAge;
+            doctor.FeeInDollars = request.FeeInDollars;
+            doctor.Specialization = request.Specialization;
+            doctor.PhoneNumber = request.PhoneNumber;
+
+            await repository.SaveAsync();
+            return new DoctorUpdateResponse(
+                204, true,
+                "The Doctor was updated"
+            );
+        }
+        catch (Exception ex)
+        {
+            return new DoctorUpdateResponse(
+                404, false,
+                $"Error: {ex.Message}"
+            );
+        }
+    }
+
+    public async Task<DoctorRemoveResponse> RemoveAsync(Guid id)
+    {
+        var doctor = await repository.GetByIdAsync(id);
         if (doctor == null)
             return new DoctorRemoveResponse(
-                404, false, "Error: The Doctor doesn't exist"
+                404, false,
+                "Error: The Doctor doesn't exist"
             );
 
         await repository.RemoveAsync(id);
         return new DoctorRemoveResponse(
-            201, true, "The Doctor was removed"
+            204, true, "The Doctor was removed"
         );
     }
 }

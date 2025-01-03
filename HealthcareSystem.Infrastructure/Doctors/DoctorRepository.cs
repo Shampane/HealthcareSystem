@@ -6,10 +6,8 @@ namespace HealthcareSystem.Infrastructure.Doctors;
 
 public class DoctorRepository(AppDbContext dbContext) : IDoctorRepository
 {
-    public async Task RemoveAsync(Guid id)
+    public async Task SaveAsync()
     {
-        var doctor = await FindDoctorByIdAsync(id);
-        dbContext.Doctors.Remove(doctor!);
         await dbContext.SaveChangesAsync();
     }
 
@@ -29,7 +27,14 @@ public class DoctorRepository(AppDbContext dbContext) : IDoctorRepository
     public async Task CreateAsync(Doctor doctor)
     {
         await dbContext.Doctors.AddAsync(doctor);
-        await dbContext.SaveChangesAsync();
+        await SaveAsync();
+    }
+
+    public async Task RemoveAsync(Guid id)
+    {
+        var doctor = await GetByIdAsync(id);
+        dbContext.Doctors.Remove(doctor!);
+        await SaveAsync();
     }
 
     public async Task<bool> IsDoctorExistsAsync(Doctor doctor)
@@ -40,14 +45,5 @@ public class DoctorRepository(AppDbContext dbContext) : IDoctorRepository
                 d.PhoneNumber == doctor.PhoneNumber
             );
         return findDoctor != null;
-    }
-
-    public async Task<Doctor> FindDoctorByIdAsync(Guid id)
-    {
-        var findDoctor =
-            await dbContext.Doctors.FirstOrDefaultAsync(
-                d => d.DoctorId == id
-            );
-        return findDoctor!;
     }
 }
