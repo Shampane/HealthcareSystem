@@ -1,4 +1,4 @@
-using HealthcareSystem.Core.Models;
+using HealthcareSystem.Core.Doctors;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 

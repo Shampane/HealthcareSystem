@@ -1,12 +1,18 @@
-using HealthcareSystem.Core.Interfaces;
-using HealthcareSystem.Core.Models;
+using HealthcareSystem.Core.Doctors;
 using HealthcareSystem.Infrastructure.DataAccess;
 using Microsoft.EntityFrameworkCore;
 
-namespace HealthcareSystem.Infrastructure.Repositories;
+namespace HealthcareSystem.Infrastructure.Doctors;
 
 public class DoctorRepository(AppDbContext dbContext) : IDoctorRepository
 {
+    public async Task RemoveAsync(Guid id)
+    {
+        var doctor = await FindDoctorByIdAsync(id);
+        dbContext.Doctors.Remove(doctor!);
+        await dbContext.SaveChangesAsync();
+    }
+
     public async Task<Doctor> GetByIdAsync(Guid id)
     {
         var doctor = await dbContext.Doctors.FirstOrDefaultAsync(
@@ -23,13 +29,6 @@ public class DoctorRepository(AppDbContext dbContext) : IDoctorRepository
     public async Task CreateAsync(Doctor doctor)
     {
         await dbContext.Doctors.AddAsync(doctor);
-        await dbContext.SaveChangesAsync();
-    }
-
-    public async Task RemoveAsync(Guid id)
-    {
-        var doctor = await FindDoctorByIdAsync(id);
-        dbContext.Doctors.Remove(doctor!);
         await dbContext.SaveChangesAsync();
     }
 

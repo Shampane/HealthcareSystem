@@ -1,5 +1,4 @@
-using HealthcareSystem.Api.DependencyInjection;
-using HealthcareSystem.Api.Endpoints;
+using HealthcareSystem.Api.Doctors;
 using HealthcareSystem.Infrastructure.DataAccess;
 
 var builder = WebApplication.CreateBuilder(args);

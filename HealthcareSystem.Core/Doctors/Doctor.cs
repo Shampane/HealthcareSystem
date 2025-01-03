@@ -1,6 +1,7 @@
 using System.ComponentModel.DataAnnotations;
+using HealthcareSystem.Core.Schedules;
 
-namespace HealthcareSystem.Core.Models;
+namespace HealthcareSystem.Core.Doctors;
 
 public class Doctor
 {
@@ -12,8 +13,7 @@ public class Doctor
 
     public int ExperienceAge { get; set; }
 
-    [DataType(DataType.Currency)]
-    public decimal FeeInDollars { get; set; }
+    [DataType(DataType.Currency)] public decimal FeeInDollars { get; set; }
 
     public string Specialization { get; set; } = string.Empty;
 

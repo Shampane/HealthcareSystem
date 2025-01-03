@@ -8,6 +8,7 @@
 
     <ItemGroup>
         <ProjectReference Include="..\HealthcareSystem.Core\HealthcareSystem.Core.csproj"/>
+        <ProjectReference Include="..\HealthcareSystem.Infrastructure\HealthcareSystem.Infrastructure.csproj"/>
     </ItemGroup>
 
 </Project>

@@ -1,10 +1,9 @@
-using HealthcareSystem.Application.Services;
-using HealthcareSystem.Core.Interfaces;
-using HealthcareSystem.Infrastructure.Repositories;
+using HealthcareSystem.Application.Doctors;
+using HealthcareSystem.Infrastructure.Doctors;
 
-namespace HealthcareSystem.Api.DependencyInjection;
+namespace HealthcareSystem.Api.Doctors;
 
-public static class DoctorDependencyInjection
+public static class DoctorDependencyExtensions
 {
     public static IServiceCollection AddDoctorServices(
         this IServiceCollection services)

@@ -1,8 +1,7 @@
-using HealthcareSystem.Application.Requests;
-using HealthcareSystem.Application.Services;
+using HealthcareSystem.Application.Doctors;
 using Microsoft.AspNetCore.Mvc;
 
-namespace HealthcareSystem.Api.Endpoints;
+namespace HealthcareSystem.Api.Doctors;
 
 public static class DoctorEndpoints
 {
@@ -16,11 +15,11 @@ public static class DoctorEndpoints
             await service.CreateAsync(request));
         app.MapGet("/api/doctors",
             async (DoctorService service) => await service.GetAsync());
-        app.MapGet("/api/doctors/{id}",
-            async ([FromQuery] Guid id, DoctorService service)
+        app.MapGet("/api/doctors/{id:guid}",
+            async (Guid id, DoctorService service)
                 => await service.GetByIdAsync(id));
-        app.MapDelete("/api/doctors/{id}",
-            async ([FromQuery] Guid id, DoctorService service)
+        app.MapDelete("/api/doctors/{id:guid}",
+            async (Guid id, DoctorService service)
                 => await service.RemoveAsync(id));
         return app;
     }

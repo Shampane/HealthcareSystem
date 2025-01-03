@@ -1,6 +1,7 @@
 using System.ComponentModel.DataAnnotations;
+using HealthcareSystem.Core.Doctors;
 
-namespace HealthcareSystem.Core.Models;
+namespace HealthcareSystem.Core.Schedules;
 
 public class Schedule
 {
@@ -10,11 +11,9 @@ public class Schedule
 
     public Doctor Doctor { get; set; }
 
-    [DataType(DataType.Date)]
-    public DateTime StartTime { get; set; }
+    [DataType(DataType.Date)] public DateTime StartTime { get; set; }
 
-    [DataType(DataType.Date)]
-    public DateTime EndTime { get; set; }
+    [DataType(DataType.Date)] public DateTime EndTime { get; set; }
 
     public bool IsAvailable { get; set; }
 }

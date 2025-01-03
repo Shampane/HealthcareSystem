@@ -1,6 +1,7 @@
 using System.ComponentModel.DataAnnotations;
+using HealthcareSystem.Core.Doctors;
 
-namespace HealthcareSystem.Core.Models;
+namespace HealthcareSystem.Core.Appointments;
 
 public class Appointment
 {
@@ -12,6 +13,5 @@ public class Appointment
 
     public Guid UserId { get; set; }
 
-    [DataType(DataType.Date)]
-    public DateTime AppointmentDate { get; set; }
+    [DataType(DataType.Date)] public DateTime AppointmentDate { get; set; }
 }

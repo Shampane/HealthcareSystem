@@ -1,6 +1,4 @@
-namespace HealthcareSystem.Application.Requests;
-
-public record DoctorGetRequest;
+namespace HealthcareSystem.Application.Doctors;
 
 public record DoctorCreateRequest(
     string Name,

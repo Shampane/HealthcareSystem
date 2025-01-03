@@ -1,6 +1,6 @@
-using HealthcareSystem.Core.Models;
+using HealthcareSystem.Core.Doctors;
 
-namespace HealthcareSystem.Application.Responses;
+namespace HealthcareSystem.Application.Doctors;
 
 public record DoctorGetByIdResponse(
     int StatusCode,
