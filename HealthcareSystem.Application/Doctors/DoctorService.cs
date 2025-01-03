@@ -30,11 +30,17 @@ public class DoctorService(IDoctorRepository repository)
         }
     }
 
-    public async Task<DoctorGetResponse> GetAsync()
+    public async Task<DoctorGetResponse> GetAsync(
+        int? pageIndex, int? pageSize, string? sortField,
+        string? sortOrder, string? searchField, string? searchValue
+    )
     {
         try
         {
-            var doctors = await repository.GetAsync();
+            var doctors = await repository.GetAsync(
+                pageIndex, pageSize, sortField,
+                sortOrder, searchField, searchValue
+            );
             if (doctors == null)
                 return new DoctorGetResponse(
                     404, false,

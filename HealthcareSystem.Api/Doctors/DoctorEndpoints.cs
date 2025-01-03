@@ -13,8 +13,19 @@ public static class DoctorEndpoints
                 DoctorService service
             ) =>
             await service.CreateAsync(request));
-        app.MapGet("/api/doctors",
-            async (DoctorService service) => await service.GetAsync());
+        app.MapGet("/api/doctors", async (
+                [FromQuery] int? pageIndex,
+                [FromQuery] int? pageSize,
+                [FromQuery] string? sortField,
+                [FromQuery] string? sortOrder,
+                [FromQuery] string? searchField,
+                [FromQuery] string? searchValue,
+                DoctorService service
+            ) =>
+            await service.GetAsync(
+                pageIndex, pageSize, sortField,
+                sortOrder, searchField, searchValue
+            ));
         app.MapGet("/api/doctors/{id:guid}",
             async (Guid id, DoctorService service)
                 => await service.GetByIdAsync(id));

@@ -7,7 +7,11 @@ public interface IDoctorRepository
     public Task SaveAsync();
     public Task<Doctor> GetByIdAsync(Guid id);
 
-    public Task<ICollection<Doctor>> GetAsync();
+    public Task<ICollection<Doctor>> GetAsync(
+        int? pageIndex, int? pageSize,
+        string? sortField, string? sortOrder,
+        string? searchField, string? searchValue
+    );
 
     public Task CreateAsync(Doctor doctor);
 

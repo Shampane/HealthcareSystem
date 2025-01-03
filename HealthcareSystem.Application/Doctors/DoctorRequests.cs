@@ -8,3 +8,11 @@ public record DoctorRequest(
     string Specialization,
     string PhoneNumber
 );
+
+public record DoctorGetRequest(
+    int? PageIndex,
+    int? PageSize,
+    string? SortField,
+    string? SortOrder,
+    string? Search
+);
