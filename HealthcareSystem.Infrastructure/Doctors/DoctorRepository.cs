@@ -1,5 +1,6 @@
 using System.Linq.Expressions;
 using HealthcareSystem.Core.Doctors;
+using HealthcareSystem.Core.Schedules;
 using HealthcareSystem.Infrastructure.DataAccess;
 using Microsoft.EntityFrameworkCore;
 
@@ -25,6 +26,7 @@ public class DoctorRepository(AppDbContext dbContext) : IDoctorRepository
         await dbContext.Doctors.AddAsync(doctor);
         await SaveAsync();
     }
+
 
     public async Task RemoveAsync(Guid id)
     {
@@ -88,5 +90,16 @@ public class DoctorRepository(AppDbContext dbContext) : IDoctorRepository
         query = pageSize.HasValue ? query.Take(pageSize.Value) : query;
 
         return await query.ToListAsync();
+    }
+
+
+    public async Task<ICollection<Schedule>> GetSchedulesByDoctorIdAsync(
+        Doctor doctor
+    )
+    {
+        var schedules = await dbContext.Schedules
+            .Where(s => s.DoctorId == doctor.DoctorId)
+            .ToListAsync();
+        return schedules;
     }
 }

@@ -18,7 +18,7 @@ services:
     volumes:
       - ~/.aspnet/https:/https:ro
   healthcaresystem.database:
-    container_name: healthcaresystem.databasew
+    container_name: healthcaresystem.database
     image: postgres
     environment:
       POSTGRES_DB: "postgres"

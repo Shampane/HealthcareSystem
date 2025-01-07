@@ -6,13 +6,15 @@ namespace HealthcareSystem.Api.Doctors;
 public static class DoctorEndpoints
 {
     public static WebApplication MapDoctorEndpoints(
-        this WebApplication app)
+        this WebApplication app
+    )
     {
         app.MapPost("/api/doctor", async (
                 [FromBody] DoctorRequest request,
                 DoctorService service
             ) =>
             await service.CreateAsync(request));
+
         app.MapGet("/api/doctors", async (
                 [FromQuery] int? pageIndex,
                 [FromQuery] int? pageSize,
@@ -34,6 +36,11 @@ public static class DoctorEndpoints
                 [FromBody] DoctorRequest request
             ) =>
             await service.UpdateAsync(id, request));
+        app.MapPut("/api/doctor/{id:guid}", async (
+                Guid id,
+                DoctorService service
+            ) =>
+            await service.AddSchedulesAsync(id));
         app.MapDelete("/api/doctors/{id:guid}",
             async (Guid id, DoctorService service)
                 => await service.RemoveAsync(id));

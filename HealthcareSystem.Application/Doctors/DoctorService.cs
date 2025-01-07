@@ -132,6 +132,37 @@ public class DoctorService(IDoctorRepository repository)
         }
     }
 
+    public async Task<DoctorUpdateResponse> AddSchedulesAsync(
+        Guid id
+    )
+    {
+        try
+        {
+            var doctor = await repository.GetByIdAsync(id);
+            if (doctor == null)
+                return new DoctorUpdateResponse(
+                    404, false,
+                    "Error: The Doctor doesn't exist"
+                );
+            var schedules =
+                await repository.GetSchedulesByDoctorIdAsync(doctor);
+            doctor.Schedules = schedules;
+            await repository.SaveAsync();
+
+            return new DoctorUpdateResponse(
+                204, true,
+                "The Schedules were added to Doctor"
+            );
+        }
+        catch (Exception ex)
+        {
+            return new DoctorUpdateResponse(
+                404, false,
+                $"Error: {ex.Message}"
+            );
+        }
+    }
+
     public async Task<DoctorUpdateResponse> UpdateAsync(
         Guid id, DoctorRequest request
     )

@@ -13,7 +13,7 @@ public class Schedule
 
     [DataType(DataType.Date)] public DateTime StartTime { get; set; }
 
-    [DataType(DataType.Date)] public DateTime EndTime { get; set; }
+    public uint DurationInMinutes { get; set; }
 
-    public bool IsAvailable { get; set; }
+    public bool IsAvailable { get; set; } = true;
 }

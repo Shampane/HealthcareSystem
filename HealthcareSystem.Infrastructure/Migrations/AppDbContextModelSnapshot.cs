@@ -22,7 +22,7 @@ namespace HealthcareSystem.Infrastructure.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("HealthcareSystem.Core.Models.Doctor", b =>
+            modelBuilder.Entity("HealthcareSystem.Core.Doctors.Doctor", b =>
                 {
                     b.Property<Guid>("DoctorId")
                         .ValueGeneratedOnAdd()
@@ -55,7 +55,7 @@ namespace HealthcareSystem.Infrastructure.Migrations
                     b.ToTable("Doctors");
                 });
 
-            modelBuilder.Entity("HealthcareSystem.Core.Models.Schedule", b =>
+            modelBuilder.Entity("HealthcareSystem.Core.Schedules.Schedule", b =>
                 {
                     b.Property<Guid>("ScheduleId")
                         .ValueGeneratedOnAdd()
@@ -64,8 +64,8 @@ namespace HealthcareSystem.Infrastructure.Migrations
                     b.Property<Guid>("DoctorId")
                         .HasColumnType("uuid");
 
-                    b.Property<DateTime>("EndTime")
-                        .HasColumnType("timestamp with time zone");
+                    b.Property<long>("DurationInMinutes")
+                        .HasColumnType("bigint");
 
                     b.Property<bool>("IsAvailable")
                         .HasColumnType("boolean");
@@ -77,12 +77,12 @@ namespace HealthcareSystem.Infrastructure.Migrations
 
                     b.HasIndex("DoctorId");
 
-                    b.ToTable("Schedule");
+                    b.ToTable("Schedules");
                 });
 
-            modelBuilder.Entity("HealthcareSystem.Core.Models.Schedule", b =>
+            modelBuilder.Entity("HealthcareSystem.Core.Schedules.Schedule", b =>
                 {
-                    b.HasOne("HealthcareSystem.Core.Models.Doctor", "Doctor")
+                    b.HasOne("HealthcareSystem.Core.Doctors.Doctor", "Doctor")
                         .WithMany("Schedules")
                         .HasForeignKey("DoctorId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -91,7 +91,7 @@ namespace HealthcareSystem.Infrastructure.Migrations
                     b.Navigation("Doctor");
                 });
 
-            modelBuilder.Entity("HealthcareSystem.Core.Models.Doctor", b =>
+            modelBuilder.Entity("HealthcareSystem.Core.Doctors.Doctor", b =>
                 {
                     b.Navigation("Schedules");
                 });
