@@ -8,7 +8,7 @@ public static class DoctorDependencyExtensions
     public static IServiceCollection AddDoctorServices(
         this IServiceCollection services)
     {
-        services.AddTransient<IDoctorRepository, DoctorRepository>();
+        services.AddScoped<IDoctorRepository, DoctorRepository>();
         services.AddScoped<DoctorService>();
         return services;
     }

@@ -20,5 +20,7 @@ public class Doctor
     [DataType(DataType.PhoneNumber)]
     public string PhoneNumber { get; set; } = string.Empty;
 
-    public ICollection<Schedule> Schedules { get; set; } = [];
+    [Required]
+    public ICollection<Schedule> Schedules { get; set; } =
+        new List<Schedule>();
 }

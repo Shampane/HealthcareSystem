@@ -9,7 +9,7 @@ public static class ScheduleDependencyExtensions
         this IServiceCollection services
     )
     {
-        services.AddTransient<IScheduleRepository, ScheduleRepository>();
+        services.AddScoped<IScheduleRepository, ScheduleRepository>();
         services.AddScoped<ScheduleService>();
         return services;
     }
