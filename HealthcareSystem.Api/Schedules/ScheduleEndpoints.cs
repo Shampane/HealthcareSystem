@@ -14,6 +14,9 @@ public static class ScheduleEndpoints
                 ScheduleService service
             ) =>
             await service.CreateAsync(request));
+
+        app.MapGet("/api/schedules", async (ScheduleService service)
+            => await service.GetSchedulesAsync());
         return app;
     }
 }

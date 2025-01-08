@@ -6,7 +6,7 @@ namespace HealthcareSystem.Application.Schedules;
 
 public class ScheduleService(IScheduleRepository repository)
 {
-    private string BuildScheduleErrors(ScheduleRequest request)
+    private async Task<string> BuildScheduleErrors(ScheduleRequest request)
     {
         var errorMessage = new StringBuilder("Errors: ");
         if (request.StartTime <= DateTime.UtcNow)
@@ -16,6 +16,11 @@ public class ScheduleService(IScheduleRepository repository)
         if (request.DurationInMinutes <= 0)
             errorMessage.Append(
                 "Duration in minutes must be greater than 0, "
+            );
+        if (!await repository.IsSchedulesTimeAvailable(
+                request.StartTime, request.DurationInMinutes))
+            errorMessage.Append(
+                "The schedule time intersect the already exists, "
             );
 
         var commaIndex = errorMessage
@@ -35,7 +40,7 @@ public class ScheduleService(IScheduleRepository repository)
     {
         try
         {
-            var errorMessage = BuildScheduleErrors(request);
+            var errorMessage = await BuildScheduleErrors(request);
             if (errorMessage != string.Empty)
                 return new ScheduleCreateResponse(
                     404, false, errorMessage
@@ -66,6 +71,34 @@ public class ScheduleService(IScheduleRepository repository)
             return new ScheduleCreateResponse(
                 404, false,
                 $"Error: {ex.Message}"
+            );
+        }
+    }
+
+    public async Task<ScheduleGetResponse> GetSchedulesAsync()
+    {
+        try
+        {
+            Dictionary<Guid, ICollection<Schedule>> responseSchedules = [];
+            var schedules = await repository.GetSchedulesAsync();
+            foreach (var schedule in schedules)
+                if (responseSchedules.ContainsKey(schedule.DoctorId))
+                    responseSchedules[schedule.DoctorId].Add(schedule);
+                else
+                    responseSchedules.Add(
+                        schedule.DoctorId, new List<Schedule> { schedule }
+                    );
+
+            return new ScheduleGetResponse(
+                201, true,
+                "Schedules were found", responseSchedules
+            );
+        }
+        catch (Exception ex)
+        {
+            return new ScheduleGetResponse(
+                404, false,
+                $"Error: {ex.Message}", null
             );
         }
     }
