@@ -12,7 +12,7 @@ public static class DoctorEndpoints
         app.MapPost("/api/doctor", async (
             [FromBody] DoctorRequest request,
             DoctorService service
-        ) => await service.CreateAsync(request));
+        ) => await service.CreateAsync(request)).WithTags("Doctors");
 
         app.MapGet("/api/doctors", async (
             [FromQuery] int? pageIndex,
@@ -25,20 +25,20 @@ public static class DoctorEndpoints
         ) => await service.GetAsync(
             pageIndex, pageSize, sortField,
             sortOrder, searchField, searchValue
-        ));
+        )).WithTags("Doctors");
 
         app.MapGet("/api/doctors/{id:guid}",
             async (Guid id, DoctorService service)
-                => await service.GetByIdAsync(id));
+                => await service.GetByIdAsync(id)).WithTags("Doctors");
 
         app.MapPut("/api/doctors/{id:guid}", async (
             Guid id, DoctorService service,
             [FromBody] DoctorRequest request
-        ) => await service.UpdateAsync(id, request));
+        ) => await service.UpdateAsync(id, request)).WithTags("Doctors");
 
         app.MapDelete("/api/doctors/{id:guid}", async (
             Guid id, DoctorService service
-        ) => await service.RemoveAsync(id));
+        ) => await service.RemoveAsync(id)).WithTags("Doctors");
 
         return app;
     }

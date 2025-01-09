@@ -102,4 +102,29 @@ public class ScheduleService(IScheduleRepository repository)
             );
         }
     }
+
+    public async Task<ScheduleGetResponse> GetSchedulesByDoctorIdAsync(
+        Guid doctorId
+    )
+    {
+        try
+        {
+            Dictionary<Guid, ICollection<Schedule>> responseSchedules = [];
+            var schedules =
+                await repository.GetSchedulesByDoctorIdAsync(doctorId);
+            responseSchedules.Add(doctorId, schedules);
+
+            return new ScheduleGetResponse(
+                201, true,
+                "Schedules were found", responseSchedules
+            );
+        }
+        catch (Exception ex)
+        {
+            return new ScheduleGetResponse(
+                404, false,
+                $"Error: {ex.Message}", null
+            );
+        }
+    }
 }

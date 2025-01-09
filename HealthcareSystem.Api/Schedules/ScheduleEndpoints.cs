@@ -10,13 +10,18 @@ public static class ScheduleEndpoints
     )
     {
         app.MapPost("/api/schedule", async (
-                [FromBody] ScheduleRequest request,
-                ScheduleService service
-            ) =>
-            await service.CreateAsync(request));
+            [FromBody] ScheduleRequest request,
+            ScheduleService service
+        ) => await service.CreateAsync(request)).WithTags("Schedules");
 
         app.MapGet("/api/schedules", async (ScheduleService service)
-            => await service.GetSchedulesAsync());
+            => await service.GetSchedulesAsync()).WithTags("Schedules");
+
+        app.MapGet("/api/schedules/{id:guid}", async (
+                Guid id,
+                ScheduleService service
+            ) => await service.GetSchedulesByDoctorIdAsync(id))
+            .WithTags("Schedules");
         return app;
     }
 }

@@ -8,25 +8,10 @@ namespace HealthcareSystem.Infrastructure.Schedules;
 public class ScheduleRepository(AppDbContext dbContext)
     : IScheduleRepository
 {
-    public async Task SaveAsync()
-    {
-        await dbContext.SaveChangesAsync();
-    }
-
     public async Task CreateAsync(Schedule schedule)
     {
         await dbContext.Schedules.AddAsync(schedule);
         await SaveAsync();
-    }
-
-    public async Task<ICollection<Schedule>> GetSchedulesByDoctorIdAsync(
-        Guid doctorId
-    )
-    {
-        var doctors = await dbContext.Schedules
-            .Where(s => s.DoctorId == doctorId)
-            .ToListAsync();
-        return doctors;
     }
 
     public async Task<Doctor> GetDoctorByIdAsync(Guid id)
@@ -65,6 +50,35 @@ public class ScheduleRepository(AppDbContext dbContext)
         return await dbContext.Schedules
             .OrderBy(s => s.StartTime)
             .ToListAsync();
+    }
+
+    public async Task<ICollection<Schedule>> GetSchedulesByDoctorIdAsync(
+        Guid doctorId
+    )
+    {
+        return await dbContext.Schedules
+            .Where(s => s.DoctorId == doctorId)
+            .OrderBy(s => s.StartTime)
+            .ToListAsync();
+    }
+
+    public async Task ClearOldSchedulesAsync()
+    {
+        var oldSchedules = await dbContext.Schedules
+            .Where(s => s.StartTime < DateTime.UtcNow)
+            .ToListAsync();
+        dbContext.Schedules.RemoveRange(oldSchedules);
+        await SaveAsync();
+    }
+
+    public async Task<int> GetSchedulesCount()
+    {
+        return await dbContext.Schedules.CountAsync();
+    }
+
+    private async Task SaveAsync()
+    {
+        await dbContext.SaveChangesAsync();
     }
 
     private bool IsSchedulesIntersect(
