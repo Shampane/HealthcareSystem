@@ -8,6 +8,12 @@ public record ScheduleCreateResponse(
     string Message
 );
 
+public record ScheduleUpdateResponse(
+    int StatusCode,
+    bool IsSuccess,
+    string Message
+);
+
 public record ScheduleGetResponse(
     int StatusCode,
     bool IsSuccess,

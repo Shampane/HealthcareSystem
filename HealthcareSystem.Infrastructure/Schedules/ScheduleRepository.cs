@@ -21,28 +21,11 @@ public class ScheduleRepository(AppDbContext dbContext)
         return doctor!;
     }
 
-    public async Task<bool> IsSchedulesTimeAvailable(
-        DateTime startTime, uint duration
-    )
+    public async Task<Schedule> GetScheduleByIdAsync(Guid id)
     {
-        var sortedSchedules = await GetSchedulesAsync();
-        foreach (var schedule in sortedSchedules)
-        {
-            var scheduleStartTime = schedule.StartTime;
-            var scheduleEndTime =
-                scheduleStartTime.AddMinutes(schedule.DurationInMinutes);
-            if (startTime.AddMinutes(duration) <= scheduleStartTime ||
-                startTime >= scheduleEndTime)
-                return true;
-
-            var isSchedulesIntersect = IsSchedulesIntersect(
-                schedule.StartTime, startTime,
-                schedule.DurationInMinutes, duration);
-            if (isSchedulesIntersect)
-                return false;
-        }
-
-        return true;
+        var schedule = await dbContext.Schedules
+            .FirstOrDefaultAsync(s => s.ScheduleId == id);
+        return schedule!;
     }
 
     public async Task<ICollection<Schedule>> GetSchedulesAsync()
@@ -76,7 +59,31 @@ public class ScheduleRepository(AppDbContext dbContext)
         return await dbContext.Schedules.CountAsync();
     }
 
-    private async Task SaveAsync()
+    public async Task<bool> IsSchedulesTimeAvailable(
+        DateTime startTime, uint duration
+    )
+    {
+        var sortedSchedules = await GetSchedulesAsync();
+        foreach (var schedule in sortedSchedules)
+        {
+            var scheduleStartTime = schedule.StartTime;
+            var scheduleEndTime =
+                scheduleStartTime.AddMinutes(schedule.DurationInMinutes);
+            if (startTime.AddMinutes(duration) <= scheduleStartTime ||
+                startTime >= scheduleEndTime)
+                return true;
+
+            var isSchedulesIntersect = IsSchedulesIntersect(
+                schedule.StartTime, startTime,
+                schedule.DurationInMinutes, duration);
+            if (isSchedulesIntersect)
+                return false;
+        }
+
+        return true;
+    }
+
+    public async Task SaveAsync()
     {
         await dbContext.SaveChangesAsync();
     }

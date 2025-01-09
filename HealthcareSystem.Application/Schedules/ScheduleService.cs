@@ -75,6 +75,37 @@ public class ScheduleService(IScheduleRepository repository)
         }
     }
 
+    public async Task<ScheduleUpdateResponse> ChangeAvailableStatusAsync(
+        Guid id
+    )
+    {
+        try
+        {
+            var schedule =
+                await repository.GetScheduleByIdAsync(id);
+            if (schedule == null)
+                return new ScheduleUpdateResponse(
+                    409, false,
+                    "Error: The Schedule doesn't exist"
+                );
+            var currentStatus = schedule.IsAvailable;
+            schedule.IsAvailable = !currentStatus;
+            await repository.SaveAsync();
+
+            return new ScheduleUpdateResponse(
+                201, true,
+                "The Schedule available status was changed"
+            );
+        }
+        catch (Exception ex)
+        {
+            return new ScheduleUpdateResponse(
+                404, false,
+                $"Error: {ex.Message}"
+            );
+        }
+    }
+
     public async Task<ScheduleGetResponse> GetSchedulesAsync()
     {
         try

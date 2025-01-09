@@ -5,9 +5,13 @@ namespace HealthcareSystem.Infrastructure.Schedules;
 
 public interface IScheduleRepository
 {
+    public Task SaveAsync();
+
     public Task<bool> IsSchedulesTimeAvailable(
         DateTime startTime, uint duration
     );
+
+    public Task<Schedule> GetScheduleByIdAsync(Guid id);
 
     public Task CreateAsync(Schedule schedule);
 

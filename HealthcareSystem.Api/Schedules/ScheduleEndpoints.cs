@@ -22,6 +22,12 @@ public static class ScheduleEndpoints
                 ScheduleService service
             ) => await service.GetSchedulesByDoctorIdAsync(id))
             .WithTags("Schedules");
+
+        app.MapPatch("/api/schedules/{id:guid}", async (
+                Guid id,
+                ScheduleService service
+            ) => await service.ChangeAvailableStatusAsync(id))
+            .WithTags("Schedules");
         return app;
     }
 }
