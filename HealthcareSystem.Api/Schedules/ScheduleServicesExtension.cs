@@ -3,7 +3,7 @@ using HealthcareSystem.Infrastructure.Schedules;
 
 namespace HealthcareSystem.Api.Schedules;
 
-public static class ScheduleDependencyExtensions
+public static class ScheduleServicesExtension
 {
     public static IServiceCollection AddSchedulesServices(
         this IServiceCollection services

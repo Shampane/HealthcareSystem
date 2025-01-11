@@ -9,6 +9,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<AppDbContext>();
 builder.Services.ConfigureAuth();
 
+builder.Services.AddAuthServices();
 builder.Services.AddDoctorServices();
 builder.Services.AddSchedulesServices();
 builder.Services.AddHostedService<ScheduleCleanupService>();
@@ -30,5 +31,6 @@ app.UseAuthorization();
 
 app.MapDoctorEndpoints();
 app.MapScheduleEndpoints();
+app.MapAuthEndpoints();
 
 await app.RunAsync();

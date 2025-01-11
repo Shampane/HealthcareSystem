@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Identity;
 
 namespace HealthcareSystem.Api.Auth;
 
-public static class AuthDependencyExtensions
+public static class AuthConfiguration
 {
     public static IServiceCollection ConfigureAuth(
         this IServiceCollection services
@@ -22,6 +22,7 @@ public static class AuthDependencyExtensions
             })
             .AddEntityFrameworkStores<AppDbContext>()
             .AddDefaultTokenProviders();
+        services.AddAuthorization();
 
         return services;
     }

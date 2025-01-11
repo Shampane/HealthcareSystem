@@ -3,7 +3,7 @@ using HealthcareSystem.Infrastructure.Doctors;
 
 namespace HealthcareSystem.Api.Doctors;
 
-public static class DoctorDependencyExtensions
+public static class DoctorServicesExtension
 {
     public static IServiceCollection AddDoctorServices(
         this IServiceCollection services)
