@@ -34,6 +34,11 @@ public class AppointmentService(IAppointmentRepository repository)
                     400, false,
                     "Error: the Schedule doesn't exist"
                 );
+            if (!schedule.IsAvailable)
+                return new AppointmentResponse(
+                    400, false,
+                    "Error: the Schedule isn't available"
+                );
 
             var appointment = new Appointment
             {
@@ -44,7 +49,7 @@ public class AppointmentService(IAppointmentRepository repository)
                 UserId = request.UserId,
                 User = user
             };
-            await _repository.CreateAsync(appointment);
+            await _repository.CreateAppointmentAsync(appointment);
             return new AppointmentResponse(
                 201, false,
                 "The Appointment was created successfully"
@@ -54,6 +59,30 @@ public class AppointmentService(IAppointmentRepository repository)
         {
             return new AppointmentResponse(
                 404, false, $"Error: {ex.Message}"
+            );
+        }
+    }
+
+    public async Task<AppointmentGetResponse> GetAsync()
+    {
+        try
+        {
+            var appointments = await _repository.GetAppointmentsAsync();
+            if (appointments == null)
+                return new AppointmentGetResponse(
+                    400, false,
+                    "Error: Appointments doesn't exist", null
+                );
+            return new AppointmentGetResponse(
+                200, true,
+                "Appointments are found", appointments
+            );
+        }
+        catch (Exception ex)
+        {
+            return new AppointmentGetResponse(
+                400, false,
+                $"Error: {ex.Message}", null
             );
         }
     }

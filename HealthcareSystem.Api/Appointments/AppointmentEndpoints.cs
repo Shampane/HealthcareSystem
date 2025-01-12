@@ -13,6 +13,9 @@ public static class AppointmentEndpoints
             [FromBody] AppointmentRequest request,
             AppointmentService service
         ) => await service.CreateAsync(request)).WithTags("Appointment");
+        app.MapGet("/api/appointments", async (
+            AppointmentService service
+        ) => await service.GetAsync()).WithTags("Appointment");
 
         return app;
     }

@@ -1,26 +1,19 @@
 using HealthcareSystem.Core.Doctors;
-using HealthcareSystem.Core.Schedules;
 
 namespace HealthcareSystem.Infrastructure.Doctors;
 
 public interface IDoctorRepository
 {
-    public Task SaveAsync();
-    public Task<Doctor> GetByIdAsync(Guid id);
+    public Task<Doctor> FindDoctorByIdAsync(Guid doctorId);
 
-    public Task<ICollection<Doctor>> GetAsync(
+    public Task<ICollection<DoctorDto>> GetDoctorsAsync(
         int? pageIndex, int? pageSize,
         string? sortField, string? sortOrder,
         string? searchField, string? searchValue
     );
 
-    public Task CreateAsync(Doctor doctor);
-
-    public Task RemoveAsync(Guid id);
-
-    public Task<bool> IsDoctorExistsAsync(Doctor doctor);
-
-    public Task<ICollection<Schedule>> GetSchedulesByDoctorIdAsync(
-        Doctor doctor
-    );
+    public Task<DoctorDto> GetDoctorByIdAsync(Guid id);
+    public Task CreateDoctorAsync(Doctor doctor);
+    public Task RemoveDoctorAsync(Doctor doctor);
+    public Task SaveAsync();
 }

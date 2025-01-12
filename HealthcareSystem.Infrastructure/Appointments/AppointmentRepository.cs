@@ -3,18 +3,22 @@ using HealthcareSystem.Core.Auth;
 using HealthcareSystem.Core.Doctors;
 using HealthcareSystem.Core.Schedules;
 using HealthcareSystem.Infrastructure.DataAccess;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 
 namespace HealthcareSystem.Infrastructure.Appointments;
 
 public class AppointmentRepository(
-    AppDbContext dbContext
+    AppDbContext dbContext,
+    UserManager<User> userManager
 ) : IAppointmentRepository
 {
     private readonly AppDbContext _dbContext = dbContext;
+    private readonly UserManager<User> _userManager = userManager;
 
     public async Task<User> FindUserByIdAsync(string userId)
     {
-        var user = await _dbContext.Users.FindAsync(userId);
+        var user = await _userManager.FindByIdAsync(userId);
         return user!;
     }
 
@@ -30,9 +34,14 @@ public class AppointmentRepository(
         return schedule!;
     }
 
-    public async Task CreateAsync(Appointment appointment)
+    public async Task CreateAppointmentAsync(Appointment appointment)
     {
         await _dbContext.Appointments.AddAsync(appointment);
         await _dbContext.SaveChangesAsync();
+    }
+
+    public async Task<ICollection<Appointment>> GetAppointmentsAsync()
+    {
+        return await _dbContext.Appointments.AsNoTracking().ToListAsync();
     }
 }

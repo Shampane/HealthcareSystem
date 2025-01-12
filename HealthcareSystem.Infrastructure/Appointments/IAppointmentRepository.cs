@@ -12,5 +12,6 @@ public interface IAppointmentRepository
     public Task<Doctor> FindDoctorByIdAsync(Guid doctorId);
 
     public Task<Schedule> FindScheduleByIdAsync(Guid scheduleId);
-    public Task CreateAsync(Appointment appointment);
+    public Task CreateAppointmentAsync(Appointment appointment);
+    public Task<ICollection<Appointment>> GetAppointmentsAsync();
 }
