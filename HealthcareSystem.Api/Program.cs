@@ -1,3 +1,4 @@
+using HealthcareSystem.Api.Appointments;
 using HealthcareSystem.Api.Auth;
 using HealthcareSystem.Api.Doctors;
 using HealthcareSystem.Api.Schedules;
@@ -12,6 +13,7 @@ builder.Services.ConfigureAuth();
 builder.Services.AddAuthServices();
 builder.Services.AddDoctorServices();
 builder.Services.AddSchedulesServices();
+builder.Services.AddAppointmentServices();
 builder.Services.AddHostedService<ScheduleCleanupService>();
 
 builder.Services.AddEndpointsApiExplorer();
@@ -32,5 +34,6 @@ app.UseAuthorization();
 app.MapDoctorEndpoints();
 app.MapScheduleEndpoints();
 app.MapAuthEndpoints();
+app.MapAppointmentEndpoints();
 
 await app.RunAsync();

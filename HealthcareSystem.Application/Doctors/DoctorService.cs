@@ -155,6 +155,8 @@ public class DoctorService(IDoctorRepository repository)
             doctor.FeeInDollars = request.FeeInDollars;
             doctor.Specialization = request.Specialization;
             doctor.PhoneNumber = request.PhoneNumber;
+            doctor.ImageUrl = request.ImageUrl;
+            doctor.ImageUrl = request.ImageUrl;
 
             await repository.SaveAsync();
             return new DoctorUpdateResponse(

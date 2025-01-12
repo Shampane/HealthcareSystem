@@ -1,3 +1,4 @@
+using HealthcareSystem.Core.Appointments;
 using HealthcareSystem.Core.Auth;
 using HealthcareSystem.Core.Doctors;
 using HealthcareSystem.Core.Schedules;
@@ -35,6 +36,7 @@ public class AppDbContext(
 
     public DbSet<Doctor> Doctors { get; set; }
     public DbSet<Schedule> Schedules { get; set; }
+    public DbSet<Appointment> Appointments { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
