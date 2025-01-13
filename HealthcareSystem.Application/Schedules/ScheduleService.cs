@@ -1,4 +1,5 @@
 using System.Text;
+using HealthcareSystem.Application.Responses;
 using HealthcareSystem.Core.Schedules;
 using HealthcareSystem.Infrastructure.Schedules;
 
@@ -6,9 +7,199 @@ namespace HealthcareSystem.Application.Schedules;
 
 public class ScheduleService(IScheduleRepository repository)
 {
+    private const string ErrorStatus = nameof(ResponseStatus.Error);
+
+    private const string SuccessStatus = nameof(ResponseStatus.Success);
+
+    private readonly IScheduleRepository _repository = repository;
+
+    public async Task<GetResponse<ScheduleDto>> GetByDoctorAsync(
+        Guid doctorId, int? pageIndex, int? pageSize,
+        DateTime? searchStartTime, DateTime? searchEndTime
+    )
+    {
+        try
+        {
+            var schedules = await _repository
+                .GetSchedulesByDoctorAsync(
+                    doctorId, pageIndex, pageSize,
+                    searchStartTime, searchEndTime
+                );
+            if (schedules == null)
+                return new GetResponse<ScheduleDto>(
+                    ErrorStatus,
+                    "Schedules weren't found", null
+                );
+            return new GetResponse<ScheduleDto>(
+                SuccessStatus,
+                "Schedules for this Doctor were found", schedules
+            );
+        }
+        catch (Exception ex)
+        {
+            return new GetResponse<ScheduleDto>(
+                ErrorStatus,
+                $"{ex.Message}", null
+            );
+        }
+    }
+
+    public async Task<GetEntityResponse<ScheduleDto>> GetByIdAsync(Guid id)
+    {
+        try
+        {
+            var schedule = await _repository.GetScheduleByIdAsync(id);
+            if (schedule == null)
+                return new GetEntityResponse<ScheduleDto>(
+                    ErrorStatus, "The Schedule wasn't found", null
+                );
+
+            return new GetEntityResponse<ScheduleDto>(
+                SuccessStatus, "The Schedule was found", schedule
+            );
+        }
+        catch (Exception ex)
+        {
+            return new GetEntityResponse<ScheduleDto>(
+                ErrorStatus, $"{ex.Message}", null
+            );
+        }
+    }
+
+    public async Task<CreateResponse<ScheduleDto>> CreateAsync(
+        ScheduleRequest request
+    )
+    {
+        try
+        {
+            var errorMessage = await BuildScheduleErrors(request);
+            if (errorMessage != string.Empty)
+                return new CreateResponse<ScheduleDto>(
+                    ErrorStatus, errorMessage, null
+                );
+            var schedule = new Schedule
+            {
+                DoctorId = request.DoctorId,
+                StartTime = request.StartTime,
+                DurationInMinutes = request.DurationInMinutes
+            };
+            await _repository.CreateScheduleAsync(schedule);
+
+            var scheduleDto = new ScheduleDto
+            {
+                ScheduleId = schedule.ScheduleId,
+                DoctorId = schedule.DoctorId,
+                StartTime = schedule.StartTime,
+                EndTime = schedule.StartTime
+                    .AddMinutes(schedule.DurationInMinutes),
+                IsAvailable = schedule.IsAvailable
+            };
+            return new CreateResponse<ScheduleDto>(
+                SuccessStatus, "The Schedule was created", scheduleDto
+            );
+        }
+        catch (Exception ex)
+        {
+            return new CreateResponse<ScheduleDto>(
+                ErrorStatus, $"{ex.Message}", null
+            );
+        }
+    }
+
+    public async Task<UpdateResponse<ScheduleDto>> ChangeAvailableAsync(
+        Guid id
+    )
+    {
+        try
+        {
+            var schedule = await _repository.FindScheduleByIdAsync(id);
+            if (schedule == null)
+                return new UpdateResponse<ScheduleDto>(
+                    ErrorStatus,
+                    "The Schedule doesn't exist", null
+                );
+
+            var isAvailable = schedule.IsAvailable;
+            schedule.IsAvailable = !isAvailable;
+            await _repository.SaveAsync();
+
+            var scheduleDto = new ScheduleDto
+            {
+                ScheduleId = schedule.ScheduleId,
+                DoctorId = schedule.DoctorId,
+                StartTime = schedule.StartTime,
+                EndTime = schedule.StartTime
+                    .AddMinutes(schedule.DurationInMinutes),
+                IsAvailable = schedule.IsAvailable
+            };
+            return new UpdateResponse<ScheduleDto>(
+                SuccessStatus,
+                "The Schedule's available was changed", scheduleDto
+            );
+        }
+        catch (Exception ex)
+        {
+            return new UpdateResponse<ScheduleDto>(
+                ErrorStatus, $"{ex.Message}", null
+            );
+        }
+    }
+
+    public async Task<RemoveResponse<ScheduleDto>> RemoveAsync(Guid id)
+    {
+        try
+        {
+            var schedule = await _repository.FindScheduleByIdAsync(id);
+            if (schedule == null)
+                return new RemoveResponse<ScheduleDto>(
+                    ErrorStatus,
+                    "The Schedule doesn't exist", null
+                );
+
+            await _repository.RemoveScheduleAsync(schedule);
+
+            var scheduleDto = new ScheduleDto
+            {
+                ScheduleId = schedule.ScheduleId,
+                DoctorId = schedule.DoctorId,
+                StartTime = schedule.StartTime,
+                EndTime = schedule.StartTime
+                    .AddMinutes(schedule.DurationInMinutes),
+                IsAvailable = schedule.IsAvailable
+            };
+            return new RemoveResponse<ScheduleDto>(
+                SuccessStatus,
+                "The Schedule was removed", scheduleDto
+            );
+        }
+        catch (Exception ex)
+        {
+            return new RemoveResponse<ScheduleDto>(
+                ErrorStatus, $"{ex.Message}", null
+            );
+        }
+    }
+
+    public async Task<MessageResponse> ClearOldAsync()
+    {
+        try
+        {
+            await _repository.ClearOldSchedulesAsync();
+            return new MessageResponse(
+                SuccessStatus, "The old Schedules were removed"
+            );
+        }
+        catch (Exception ex)
+        {
+            return new MessageResponse(
+                ErrorStatus, $"{ex.Message}"
+            );
+        }
+    }
+
     private async Task<string> BuildScheduleErrors(ScheduleRequest request)
     {
-        var errorMessage = new StringBuilder("Errors: ");
+        var errorMessage = new StringBuilder();
         if (request.StartTime <= DateTime.UtcNow)
             errorMessage.Append(
                 "Start time cannot be earlier than the current time, "
@@ -17,8 +208,10 @@ public class ScheduleService(IScheduleRepository repository)
             errorMessage.Append(
                 "Duration in minutes must be greater than 0, "
             );
-        if (!await repository.IsSchedulesTimeAvailable(
-                request.StartTime, request.DurationInMinutes))
+        if (!await _repository.IsSchedulesTimeAvailable(
+                request.DoctorId, request.StartTime,
+                request.DurationInMinutes)
+           )
             errorMessage.Append(
                 "The schedule time intersect the already exists, "
             );
@@ -29,133 +222,6 @@ public class ScheduleService(IScheduleRepository repository)
         if (commaIndex == -1)
             return string.Empty;
         errorMessage[commaIndex] = '.';
-        return errorMessage.ToString() == "Errors: "
-            ? string.Empty
-            : errorMessage.ToString().TrimEnd();
-    }
-
-    public async Task<ScheduleCreateResponse> CreateAsync(
-        ScheduleRequest request
-    )
-    {
-        try
-        {
-            var errorMessage = await BuildScheduleErrors(request);
-            if (errorMessage != string.Empty)
-                return new ScheduleCreateResponse(
-                    404, false, errorMessage
-                );
-            var doctor =
-                await repository.GetDoctorByIdAsync(request.DoctorId);
-            if (doctor == null)
-                return new ScheduleCreateResponse(
-                    409, false,
-                    "Error: The Doctor doesn't exist"
-                );
-            var schedule = new Schedule
-            {
-                DoctorId = doctor.DoctorId,
-                Doctor = doctor,
-                StartTime = request.StartTime,
-                DurationInMinutes = request.DurationInMinutes
-            };
-
-            await repository.CreateAsync(schedule);
-            return new ScheduleCreateResponse(
-                201, true,
-                "The Schedule was created"
-            );
-        }
-        catch (Exception ex)
-        {
-            return new ScheduleCreateResponse(
-                404, false,
-                $"Error: {ex.Message}"
-            );
-        }
-    }
-
-    public async Task<ScheduleUpdateResponse> ChangeAvailableStatusAsync(
-        Guid id
-    )
-    {
-        try
-        {
-            var schedule =
-                await repository.GetScheduleByIdAsync(id);
-            if (schedule == null)
-                return new ScheduleUpdateResponse(
-                    409, false,
-                    "Error: The Schedule doesn't exist"
-                );
-            var currentStatus = schedule.IsAvailable;
-            schedule.IsAvailable = !currentStatus;
-            await repository.SaveAsync();
-
-            return new ScheduleUpdateResponse(
-                201, true,
-                "The Schedule available status was changed"
-            );
-        }
-        catch (Exception ex)
-        {
-            return new ScheduleUpdateResponse(
-                404, false,
-                $"Error: {ex.Message}"
-            );
-        }
-    }
-
-    public async Task<ScheduleGetResponse> GetSchedulesAsync()
-    {
-        try
-        {
-            Dictionary<Guid, ICollection<Schedule>> responseSchedules = [];
-            var schedules = await repository.GetSchedulesAsync();
-            foreach (var schedule in schedules)
-                if (responseSchedules.ContainsKey(schedule.DoctorId))
-                    responseSchedules[schedule.DoctorId].Add(schedule);
-                else
-                    responseSchedules.Add(
-                        schedule.DoctorId, new List<Schedule> { schedule }
-                    );
-
-            return new ScheduleGetResponse(
-                201, true,
-                "Schedules were found", responseSchedules
-            );
-        }
-        catch (Exception ex)
-        {
-            return new ScheduleGetResponse(
-                404, false,
-                $"Error: {ex.Message}", null
-            );
-        }
-    }
-
-    public async Task<ScheduleGetResponse> GetSchedulesByDoctorIdAsync(
-        Guid doctorId
-    )
-    {
-        try
-        {
-            Dictionary<Guid, ICollection<Schedule>> responseSchedules = [];
-            var schedules =
-                await repository.GetSchedulesByDoctorIdAsync(doctorId);
-            responseSchedules.Add(doctorId, schedules);
-
-            return new ScheduleGetResponse(
-                201, true,
-                "Schedules were found", responseSchedules
-            );
-        }
-        catch (Exception ex)
-        {
-            return new ScheduleGetResponse(
-                404, false,
-                $"Error: {ex.Message}", null
-            );
-        }
+        return errorMessage.ToString().TrimEnd();
     }
 }

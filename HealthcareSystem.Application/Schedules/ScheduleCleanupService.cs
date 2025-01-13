@@ -10,14 +10,17 @@ public class ScheduleCleanupService(
     IServiceProvider serviceProvider
 ) : BackgroundService
 {
+    private readonly ILogger<ScheduleCleanupService> _logger = logger;
+    private readonly IServiceProvider _serviceProvider = serviceProvider;
+
     protected override async Task ExecuteAsync(CancellationToken ct)
     {
-        logger.LogInformation("Schedule cleanup service is starting.");
+        _logger.LogInformation("Schedule cleanup service is starting.");
         while (!ct.IsCancellationRequested)
             try
             {
                 await using (
-                    var scope = serviceProvider.CreateAsyncScope()
+                    var scope = _serviceProvider.CreateAsyncScope()
                 )
                 {
                     var repository = scope.ServiceProvider
@@ -28,7 +31,7 @@ public class ScheduleCleanupService(
                     var newCount = await repository.GetSchedulesCount();
                     var cleanedCount = oldCount - newCount;
 
-                    logger.LogInformation(
+                    _logger.LogInformation(
                         $"Cleaned {cleanedCount} old schedules.");
                 }
 
@@ -41,15 +44,15 @@ public class ScheduleCleanupService(
             }
             catch (TaskCanceledException)
             {
-                logger.LogInformation(
+                _logger.LogInformation(
                     "Schedule cleanup service is canceled."
                 );
             }
             catch (Exception ex)
             {
-                logger.LogInformation($"Error: {ex.Message}");
+                _logger.LogInformation($"Error: {ex.Message}");
             }
 
-        logger.LogInformation("Schedule cleanup service is stopping.");
+        _logger.LogInformation("Schedule cleanup service is stopping.");
     }
 }

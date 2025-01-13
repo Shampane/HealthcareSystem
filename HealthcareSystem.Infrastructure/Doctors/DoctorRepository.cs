@@ -39,7 +39,7 @@ public class DoctorRepository(AppDbContext dbContext) : IDoctorRepository
         string? sortOrder, string? searchField, string? searchValue
     )
     {
-        IQueryable<Doctor> query = _dbContext.Doctors;
+        var query = _dbContext.Doctors.AsNoTracking();
 
         query = AddGetSearch(query, searchField, searchValue);
         query = AddGetSort(query, sortField, sortOrder);
@@ -51,7 +51,7 @@ public class DoctorRepository(AppDbContext dbContext) : IDoctorRepository
             ExperienceAge = d.ExperienceAge, FeeInDollars = d.FeeInDollars,
             ImageUrl = d.ImageUrl, Name = d.Name,
             PhoneNumber = d.PhoneNumber, Specialization = d.Specialization
-        }).AsNoTracking().ToListAsync();
+        }).ToListAsync();
     }
 
     public async Task CreateDoctorAsync(Doctor doctor)

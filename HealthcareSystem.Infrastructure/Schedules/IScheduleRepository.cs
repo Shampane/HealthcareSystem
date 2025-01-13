@@ -1,27 +1,26 @@
-using HealthcareSystem.Core.Doctors;
 using HealthcareSystem.Core.Schedules;
 
 namespace HealthcareSystem.Infrastructure.Schedules;
 
 public interface IScheduleRepository
 {
-    public Task SaveAsync();
+    public Task<ICollection<ScheduleDto>> GetSchedulesByDoctorAsync(
+        Guid doctorId, int? pageIndex, int? pageSize,
+        DateTime? searchStartTime, DateTime? searchEndTime
+    );
+
+    public Task<ScheduleDto> GetScheduleByIdAsync(Guid scheduleId);
+    public Task CreateScheduleAsync(Schedule schedule);
+    public Task RemoveScheduleAsync(Schedule schedule);
+    public Task ClearOldSchedulesAsync();
 
     public Task<bool> IsSchedulesTimeAvailable(
-        DateTime startTime, uint duration
+        Guid doctorId, DateTime startTime, int durationInMinutes
     );
 
-    public Task<Schedule> GetScheduleByIdAsync(Guid id);
+    public Task<Schedule> FindScheduleByIdAsync(Guid scheduleId);
 
-    public Task CreateAsync(Schedule schedule);
+    public Task SaveAsync();
 
-    public Task<ICollection<Schedule>> GetSchedulesAsync();
-
-    public Task<ICollection<Schedule>> GetSchedulesByDoctorIdAsync(
-        Guid doctorId
-    );
-
-    public Task<Doctor> GetDoctorByIdAsync(Guid id);
-    public Task ClearOldSchedulesAsync();
     public Task<int> GetSchedulesCount();
 }

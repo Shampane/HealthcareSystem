@@ -14,20 +14,30 @@ public static class ScheduleEndpoints
             ScheduleService service
         ) => await service.CreateAsync(request)).WithTags("Schedules");
 
-        app.MapGet("/api/schedules", async (ScheduleService service)
-            => await service.GetSchedulesAsync()).WithTags("Schedules");
+        app.MapGet("/api/schedules", async (
+            [FromQuery] Guid doctorId,
+            [FromQuery] int? pageIndex,
+            [FromQuery] int? pageSize,
+            [FromQuery] DateTime? searchStartTime,
+            [FromQuery] DateTime? searchEndTime,
+            ScheduleService service
+        ) => await service.GetByDoctorAsync(
+            doctorId, pageIndex, pageSize,
+            searchStartTime, searchEndTime
+        )).WithTags("Schedules");
 
         app.MapGet("/api/schedules/{id:guid}", async (
-                Guid id,
-                ScheduleService service
-            ) => await service.GetSchedulesByDoctorIdAsync(id))
-            .WithTags("Schedules");
+            Guid id, ScheduleService service
+        ) => await service.GetByIdAsync(id)).WithTags("Schedules");
 
         app.MapPatch("/api/schedules/{id:guid}", async (
-                Guid id,
-                ScheduleService service
-            ) => await service.ChangeAvailableStatusAsync(id))
-            .WithTags("Schedules");
+            Guid id, ScheduleService service
+        ) => await service.ChangeAvailableAsync(id)).WithTags("Schedules");
+
+        app.MapDelete("/api/schedules/{id:guid}", async (
+            Guid id, ScheduleService service
+        ) => await service.RemoveAsync(id)).WithTags("Schedules");
+
         return app;
     }
 }

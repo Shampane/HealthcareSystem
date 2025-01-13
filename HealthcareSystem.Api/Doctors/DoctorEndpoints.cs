@@ -27,9 +27,9 @@ public static class DoctorEndpoints
             sortOrder, searchField, searchValue
         )).WithTags("Doctors");
 
-        app.MapGet("/api/doctors/{id:guid}",
-            async (Guid id, DoctorService service)
-                => await service.GetByIdAsync(id)).WithTags("Doctors");
+        app.MapGet("/api/doctors/{id:guid}", async (
+            Guid id, DoctorService service
+        ) => await service.GetByIdAsync(id)).WithTags("Doctors");
 
         app.MapPut("/api/doctors/{id:guid}", async (
             Guid id, DoctorService service,

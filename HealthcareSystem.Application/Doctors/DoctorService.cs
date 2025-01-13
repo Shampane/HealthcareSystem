@@ -7,30 +7,31 @@ namespace HealthcareSystem.Application.Doctors;
 
 public class DoctorService(IDoctorRepository repository)
 {
-    private readonly string _errorStatus = nameof(ResponseStatus.Error);
+    private const string ErrorStatus = nameof(ResponseStatus.Error);
 
-    private readonly string
-        _successStatus = nameof(ResponseStatus.Success);
+    private const string SuccessStatus = nameof(ResponseStatus.Success);
+
+    private readonly IDoctorRepository _repository = repository;
 
     public async Task<GetEntityResponse<DoctorDto>> GetByIdAsync(Guid id)
     {
         try
         {
-            var doctor = await repository.GetDoctorByIdAsync(id);
+            var doctor = await _repository.GetDoctorByIdAsync(id);
             if (doctor == null)
                 return new GetEntityResponse<DoctorDto>(
-                    _errorStatus, "The Doctor wasn't found", null
+                    ErrorStatus, "The Doctor wasn't found", null
                 );
 
             return new GetEntityResponse<DoctorDto>(
-                _successStatus,
+                SuccessStatus,
                 "The Doctor was found", doctor
             );
         }
         catch (Exception ex)
         {
             return new GetEntityResponse<DoctorDto>(
-                _errorStatus,
+                ErrorStatus,
                 $"{ex.Message}", null
             );
         }
@@ -43,24 +44,24 @@ public class DoctorService(IDoctorRepository repository)
     {
         try
         {
-            var doctors = await repository.GetDoctorsAsync(
+            var doctors = await _repository.GetDoctorsAsync(
                 pageIndex, pageSize, sortField,
                 sortOrder, searchField, searchValue
             );
             if (doctors == null)
                 return new GetResponse<DoctorDto>(
-                    _errorStatus,
+                    ErrorStatus,
                     "Doctors weren't found", null
                 );
             return new GetResponse<DoctorDto>(
-                _successStatus,
+                SuccessStatus,
                 "Doctors were found", doctors
             );
         }
         catch (Exception ex)
         {
             return new GetResponse<DoctorDto>(
-                _errorStatus,
+                ErrorStatus,
                 $"{ex.Message}", null
             );
         }
@@ -75,7 +76,7 @@ public class DoctorService(IDoctorRepository repository)
             var errorMessage = BuildDoctorErrors(request);
             if (errorMessage != string.Empty)
                 return new CreateResponse<DoctorDto>(
-                    _errorStatus, errorMessage, null
+                    ErrorStatus, errorMessage, null
                 );
             var doctor = new Doctor
             {
@@ -87,12 +88,13 @@ public class DoctorService(IDoctorRepository repository)
                 PhoneNumber = request.PhoneNumber,
                 ImageUrl = request.ImageUrl
             };
-            await repository.CreateDoctorAsync(doctor);
+            await _repository.CreateDoctorAsync(doctor);
 
             var doctorDto = new DoctorDto
             {
                 DoctorId = doctor.DoctorId,
                 Name = doctor.Name,
+                Description = doctor.Description,
                 ExperienceAge = doctor.ExperienceAge,
                 FeeInDollars = doctor.FeeInDollars,
                 Specialization = doctor.Specialization,
@@ -100,13 +102,13 @@ public class DoctorService(IDoctorRepository repository)
                 ImageUrl = doctor.ImageUrl
             };
             return new CreateResponse<DoctorDto>(
-                _successStatus, "The doctor was created", doctorDto
+                SuccessStatus, "The doctor was created", doctorDto
             );
         }
         catch (Exception ex)
         {
             return new CreateResponse<DoctorDto>(
-                _errorStatus, $"{ex.Message}", null
+                ErrorStatus, $"{ex.Message}", null
             );
         }
     }
@@ -120,12 +122,12 @@ public class DoctorService(IDoctorRepository repository)
             var errorMessage = BuildDoctorErrors(request);
             if (errorMessage != string.Empty)
                 return new UpdateResponse<DoctorDto>(
-                    _errorStatus, errorMessage, null
+                    ErrorStatus, errorMessage, null
                 );
-            var doctor = await repository.FindDoctorByIdAsync(id);
+            var doctor = await _repository.FindDoctorByIdAsync(id);
             if (doctor == null)
                 return new UpdateResponse<DoctorDto>(
-                    _errorStatus, "The Doctor doesn't exist", null
+                    ErrorStatus, "The Doctor doesn't exist", null
                 );
 
             doctor.Name = request.Name;
@@ -135,7 +137,7 @@ public class DoctorService(IDoctorRepository repository)
             doctor.Specialization = request.Specialization;
             doctor.PhoneNumber = request.PhoneNumber;
             doctor.ImageUrl = request.ImageUrl;
-            await repository.SaveAsync();
+            await _repository.SaveAsync();
 
             var doctorDto = new DoctorDto
             {
@@ -149,14 +151,14 @@ public class DoctorService(IDoctorRepository repository)
                 ImageUrl = doctor.ImageUrl
             };
             return new UpdateResponse<DoctorDto>(
-                _successStatus,
+                SuccessStatus,
                 "The Doctor was updated", doctorDto
             );
         }
         catch (Exception ex)
         {
             return new UpdateResponse<DoctorDto>(
-                _errorStatus, $"{ex.Message}", null
+                ErrorStatus, $"{ex.Message}", null
             );
         }
     }
@@ -165,14 +167,14 @@ public class DoctorService(IDoctorRepository repository)
     {
         try
         {
-            var doctor = await repository.FindDoctorByIdAsync(id);
+            var doctor = await _repository.FindDoctorByIdAsync(id);
             if (doctor == null)
                 return new RemoveResponse<DoctorDto>(
-                    _errorStatus,
+                    ErrorStatus,
                     "The Doctor doesn't exist", null
                 );
 
-            await repository.RemoveDoctorAsync(doctor);
+            await _repository.RemoveDoctorAsync(doctor);
 
             var doctorDto = new DoctorDto
             {
@@ -186,14 +188,14 @@ public class DoctorService(IDoctorRepository repository)
                 ImageUrl = doctor.ImageUrl
             };
             return new RemoveResponse<DoctorDto>(
-                _successStatus,
+                SuccessStatus,
                 "The Doctor was removed", doctorDto
             );
         }
         catch (Exception ex)
         {
             return new RemoveResponse<DoctorDto>(
-                _errorStatus, $"{ex.Message}", null
+                ErrorStatus, $"{ex.Message}", null
             );
         }
     }
