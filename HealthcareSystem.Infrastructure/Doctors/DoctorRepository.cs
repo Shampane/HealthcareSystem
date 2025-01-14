@@ -5,36 +5,28 @@ using Microsoft.EntityFrameworkCore;
 
 namespace HealthcareSystem.Infrastructure.Doctors;
 
-public class DoctorRepository(AppDbContext dbContext) : IDoctorRepository
+public class DoctorRepository : IDoctorRepository
 {
-    private readonly AppDbContext _dbContext = dbContext;
+    private readonly AppDbContext _dbContext;
 
-    public async Task<Doctor> FindDoctorByIdAsync(Guid doctorId)
+    public DoctorRepository(AppDbContext dbContext)
     {
-        var doctor = await _dbContext.Doctors
-            .FirstOrDefaultAsync(d => d.DoctorId == doctorId);
-        return doctor!;
+        _dbContext = dbContext;
     }
 
-    public async Task<DoctorDto> GetDoctorByIdAsync(Guid doctorId)
+    public async Task<DoctorDto?> GetDoctorByIdAsync(Guid doctorId)
     {
-        var doctor = await _dbContext.Doctors
+        return await _dbContext.Doctors
             .AsNoTracking()
+            .Select(d => new DoctorDto(
+                d.DoctorId, d.Name, d.Description,
+                d.ImageUrl, d.ExperienceAge, d.FeeInDollars,
+                d.Specialization, d.PhoneNumber
+            ))
             .FirstOrDefaultAsync(d => d.DoctorId == doctorId);
-        var doctorDto = new DoctorDto
-        {
-            DoctorId = doctor!.DoctorId,
-            Description = doctor.Description,
-            Name = doctor.Name,
-            PhoneNumber = doctor.PhoneNumber,
-            ExperienceAge = doctor.ExperienceAge,
-            FeeInDollars = doctor.FeeInDollars,
-            ImageUrl = doctor.ImageUrl
-        };
-        return doctorDto!;
     }
 
-    public async Task<ICollection<DoctorDto>> GetDoctorsAsync(
+    public async Task<ICollection<DoctorDto>?> GetDoctorsAsync(
         int? pageIndex, int? pageSize, string? sortField,
         string? sortOrder, string? searchField, string? searchValue
     )
@@ -45,13 +37,11 @@ public class DoctorRepository(AppDbContext dbContext) : IDoctorRepository
         query = AddGetSort(query, sortField, sortOrder);
         query = AddGetPagination(query, pageSize, pageIndex);
 
-        return await query.Select(d => new DoctorDto
-        {
-            Description = d.Description, DoctorId = d.DoctorId,
-            ExperienceAge = d.ExperienceAge, FeeInDollars = d.FeeInDollars,
-            ImageUrl = d.ImageUrl, Name = d.Name,
-            PhoneNumber = d.PhoneNumber, Specialization = d.Specialization
-        }).ToListAsync();
+        return await query.Select(d => new DoctorDto(
+            d.DoctorId, d.Name, d.Description,
+            d.ImageUrl, d.ExperienceAge, d.FeeInDollars,
+            d.Specialization, d.PhoneNumber
+        )).ToListAsync();
     }
 
     public async Task CreateDoctorAsync(Doctor doctor)
@@ -70,6 +60,12 @@ public class DoctorRepository(AppDbContext dbContext) : IDoctorRepository
     public async Task SaveAsync()
     {
         await _dbContext.SaveChangesAsync();
+    }
+
+    public async Task<Doctor?> FindDoctorByIdAsync(Guid doctorId)
+    {
+        return await _dbContext.Doctors
+            .FirstOrDefaultAsync(d => d.DoctorId == doctorId);
     }
 
     private static IQueryable<Doctor> AddGetSearch(

@@ -5,15 +5,25 @@ namespace HealthcareSystem.Core.Schedules;
 
 public class Schedule
 {
-    [Key] public Guid ScheduleId { get; set; }
+    public Schedule(
+        Guid doctorId, DateTime startTime,
+        int durationInMinutes
+    )
+    {
+        DoctorId = doctorId;
+        StartTime = startTime;
+        DurationInMinutes = durationInMinutes;
+    }
 
-    public Guid DoctorId { get; set; }
+    [Key] public Guid ScheduleId { get; init; }
 
-    public Doctor Doctor { get; set; }
+    public Guid DoctorId { get; init; }
 
-    [DataType(DataType.Date)] public DateTime StartTime { get; set; }
+    public Doctor? Doctor { get; init; }
 
-    public int DurationInMinutes { get; set; }
+    [DataType(DataType.Date)] public DateTime StartTime { get; init; }
+
+    public int DurationInMinutes { get; init; }
 
     public bool IsAvailable { get; set; } = true;
 }

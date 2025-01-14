@@ -12,10 +12,39 @@ public static class AppointmentEndpoints
         app.MapPost("/api/appointment", async (
             [FromBody] AppointmentRequest request,
             AppointmentService service
-        ) => await service.CreateAsync(request)).WithTags("Appointment");
-        app.MapGet("/api/appointments", async (
+        ) => await service.CreateAsync(request)).WithTags("Appointments");
+
+        app.MapGet("/api/appointments/{doctorId:guid}", async (
+            Guid doctorId,
+            [FromQuery] int? pageIndex,
+            [FromQuery] int? pageSize,
+            [FromQuery] DateTime? searchStartTime,
+            [FromQuery] DateTime? searchEndTime,
             AppointmentService service
-        ) => await service.GetAsync()).WithTags("Appointment");
+        ) => await service.GetByDoctorAsync(
+            doctorId, pageIndex, pageSize,
+            searchStartTime, searchEndTime
+        )).WithTags("Appointments");
+
+        app.MapGet("/api/appointments/{userId}", async (
+            string userId,
+            [FromQuery] int? pageIndex,
+            [FromQuery] int? pageSize,
+            [FromQuery] DateTime? searchStartTime,
+            [FromQuery] DateTime? searchEndTime,
+            AppointmentService service
+        ) => await service.GetByUserAsync(
+            userId, pageIndex, pageSize,
+            searchStartTime, searchEndTime
+        )).WithTags("Appointments");
+
+        app.MapGet("/api/appointment/{id:guid}", async (
+            Guid id, AppointmentService service
+        ) => await service.GetByIdAsync(id)).WithTags("Appointments");
+
+        app.MapDelete("/api/appointment/{id:guid}", async (
+            Guid id, AppointmentService service
+        ) => await service.RemoveAsync(id)).WithTags("Appointments");
 
         return app;
     }

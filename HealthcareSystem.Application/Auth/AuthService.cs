@@ -1,64 +1,63 @@
+using HealthcareSystem.Application.Responses;
 using HealthcareSystem.Core.Auth;
 using HealthcareSystem.Infrastructure.Auth;
 
 namespace HealthcareSystem.Application.Auth;
 
-public class AuthService(IAuthRepository repository)
+public class AuthService
 {
-    private readonly IAuthRepository _repository = repository;
+    private const string ErrorStatus = nameof(ResponseStatus.Error);
+    private const string SuccessStatus = nameof(ResponseStatus.Success);
+    private readonly IAuthRepository _repository;
 
-    public async Task<UserRegisterResponse> UserRegister(
+    public AuthService(IAuthRepository repository)
+    {
+        _repository = repository;
+    }
+
+    public async Task<CreateResponse<UserDto>> UserRegister(
         UserRegisterRequest request
     )
     {
         try
         {
             if (request.Password != request.ConfirmPassword)
-                return new UserRegisterResponse(
-                    400,
-                    false,
-                    "Error: Passwords are not equal"
+                return new CreateResponse<UserDto>(
+                    ErrorStatus, "Passwords do not match", null
                 );
-            var firstName = request.FirstName[0].ToString().ToUpper() +
-                            request.FirstName[1..].ToLower();
-            var lastName = request.LastName[0].ToString().ToUpper() +
-                           request.LastName[1..].ToLower();
 
             var user = new User
             {
-                FirstName = firstName,
-                LastName = lastName,
                 UserName = request.Username,
-                Email = request.Email
+                Email = request.Email,
+                FirstName = request.FirstName,
+                LastName = request.LastName
             };
-            var result = await _repository.CreateUserWithPasswordAsync(
-                user, request.Password!
-            );
+            var result = await _repository
+                .CreateUserWithPasswordAsync(user, request.Password);
             if (result.Succeeded)
             {
                 await _repository.AddUserRoleAsync(user);
-                return new UserRegisterResponse(
-                    201,
-                    true,
-                    "User was successfully registered"
+                var userDto = new UserDto(
+                    user.FirstName, user.LastName,
+                    user.UserName, user.Email
+                );
+                return new CreateResponse<UserDto>(
+                    SuccessStatus, "The User was created", userDto
                 );
             }
 
             var errors = string.Join(", ",
                 result.Errors.Select(e => e.Description)
             ).Replace(".,", ",");
-            return new UserRegisterResponse(
-                400,
-                false,
-                $"Error: {errors}"
+            return new CreateResponse<UserDto>(
+                ErrorStatus, errors, null
             );
         }
         catch (Exception ex)
         {
-            return new UserRegisterResponse(
-                404,
-                false,
-                $"Error: {ex.Message}"
+            return new CreateResponse<UserDto>(
+                ErrorStatus, $"{ex.Message}", null
             );
         }
     }

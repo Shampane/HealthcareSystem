@@ -3,15 +3,13 @@ using Microsoft.AspNetCore.Identity;
 
 namespace HealthcareSystem.Infrastructure.Auth;
 
-public class AuthRepository(
-    UserManager<User> userManager
-) : IAuthRepository
+public class AuthRepository : IAuthRepository
 {
-    private readonly UserManager<User> _userManager = userManager;
+    private readonly UserManager<User> _userManager;
 
-    public bool EqualPasswords(string password, string confirmPassword)
+    public AuthRepository(UserManager<User> userManager)
     {
-        return password == confirmPassword;
+        _userManager = userManager;
     }
 
     public async Task<IdentityResult> CreateUserWithPasswordAsync(

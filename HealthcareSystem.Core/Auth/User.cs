@@ -1,13 +1,10 @@
-using HealthcareSystem.Core.Appointments;
+using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Identity;
 
 namespace HealthcareSystem.Core.Auth;
 
-public class User : IdentityUser
+public sealed class User : IdentityUser
 {
-    public string? FirstName { get; init; }
-    public string? LastName { get; init; }
-
-    public ICollection<Appointment>? Appointments { get; set; } =
-        new List<Appointment>();
+    [MaxLength(128)] public string? FirstName { get; init; }
+    [MaxLength(128)] public string? LastName { get; init; }
 }

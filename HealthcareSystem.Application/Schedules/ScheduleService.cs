@@ -5,13 +5,16 @@ using HealthcareSystem.Infrastructure.Schedules;
 
 namespace HealthcareSystem.Application.Schedules;
 
-public class ScheduleService(IScheduleRepository repository)
+public class ScheduleService
 {
     private const string ErrorStatus = nameof(ResponseStatus.Error);
-
     private const string SuccessStatus = nameof(ResponseStatus.Success);
+    private readonly IScheduleRepository _repository;
 
-    private readonly IScheduleRepository _repository = repository;
+    public ScheduleService(IScheduleRepository repository)
+    {
+        _repository = repository;
+    }
 
     public async Task<GetResponse<ScheduleDto>> GetByDoctorAsync(
         Guid doctorId, int? pageIndex, int? pageSize,
@@ -77,23 +80,20 @@ public class ScheduleService(IScheduleRepository repository)
                 return new CreateResponse<ScheduleDto>(
                     ErrorStatus, errorMessage, null
                 );
-            var schedule = new Schedule
-            {
-                DoctorId = request.DoctorId,
-                StartTime = request.StartTime,
-                DurationInMinutes = request.DurationInMinutes
-            };
+            var schedule = new Schedule(
+                request.DoctorId, request.StartTime,
+                request.DurationInMinutes
+            );
+
             await _repository.CreateScheduleAsync(schedule);
 
-            var scheduleDto = new ScheduleDto
-            {
-                ScheduleId = schedule.ScheduleId,
-                DoctorId = schedule.DoctorId,
-                StartTime = schedule.StartTime,
-                EndTime = schedule.StartTime
-                    .AddMinutes(schedule.DurationInMinutes),
-                IsAvailable = schedule.IsAvailable
-            };
+            var scheduleEndTime = schedule.StartTime
+                .AddMinutes(schedule.DurationInMinutes);
+            var scheduleDto = new ScheduleDto(
+                schedule.ScheduleId, schedule.DoctorId, schedule.StartTime,
+                scheduleEndTime, schedule.IsAvailable
+            );
+
             return new CreateResponse<ScheduleDto>(
                 SuccessStatus, "The Schedule was created", scheduleDto
             );
@@ -123,15 +123,13 @@ public class ScheduleService(IScheduleRepository repository)
             schedule.IsAvailable = !isAvailable;
             await _repository.SaveAsync();
 
-            var scheduleDto = new ScheduleDto
-            {
-                ScheduleId = schedule.ScheduleId,
-                DoctorId = schedule.DoctorId,
-                StartTime = schedule.StartTime,
-                EndTime = schedule.StartTime
-                    .AddMinutes(schedule.DurationInMinutes),
-                IsAvailable = schedule.IsAvailable
-            };
+            var scheduleEndTime = schedule.StartTime
+                .AddMinutes(schedule.DurationInMinutes);
+            var scheduleDto = new ScheduleDto(
+                schedule.ScheduleId, schedule.DoctorId, schedule.StartTime,
+                scheduleEndTime, schedule.IsAvailable
+            );
+
             return new UpdateResponse<ScheduleDto>(
                 SuccessStatus,
                 "The Schedule's available was changed", scheduleDto
@@ -158,15 +156,13 @@ public class ScheduleService(IScheduleRepository repository)
 
             await _repository.RemoveScheduleAsync(schedule);
 
-            var scheduleDto = new ScheduleDto
-            {
-                ScheduleId = schedule.ScheduleId,
-                DoctorId = schedule.DoctorId,
-                StartTime = schedule.StartTime,
-                EndTime = schedule.StartTime
-                    .AddMinutes(schedule.DurationInMinutes),
-                IsAvailable = schedule.IsAvailable
-            };
+            var scheduleEndTime = schedule.StartTime
+                .AddMinutes(schedule.DurationInMinutes);
+            var scheduleDto = new ScheduleDto(
+                schedule.ScheduleId, schedule.DoctorId, schedule.StartTime,
+                scheduleEndTime, schedule.IsAvailable
+            );
+
             return new RemoveResponse<ScheduleDto>(
                 SuccessStatus,
                 "The Schedule was removed", scheduleDto

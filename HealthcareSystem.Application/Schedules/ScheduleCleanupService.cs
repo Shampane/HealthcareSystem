@@ -5,13 +5,17 @@ using Microsoft.Extensions.Logging;
 
 namespace HealthcareSystem.Application.Schedules;
 
-public class ScheduleCleanupService(
-    ILogger<ScheduleCleanupService> logger,
-    IServiceProvider serviceProvider
-) : BackgroundService
+public class ScheduleCleanupService : BackgroundService
 {
-    private readonly ILogger<ScheduleCleanupService> _logger = logger;
-    private readonly IServiceProvider _serviceProvider = serviceProvider;
+    private readonly ILogger<ScheduleCleanupService> _logger;
+    private readonly IServiceProvider _serviceProvider;
+
+    public ScheduleCleanupService(ILogger<ScheduleCleanupService> logger,
+        IServiceProvider serviceProvider)
+    {
+        _logger = logger;
+        _serviceProvider = serviceProvider;
+    }
 
     protected override async Task ExecuteAsync(CancellationToken ct)
     {

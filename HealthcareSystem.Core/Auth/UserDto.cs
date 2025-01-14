@@ -1,14 +1,20 @@
-using HealthcareSystem.Core.Appointments;
-
 namespace HealthcareSystem.Core.Auth;
 
 public class UserDto
 {
-    public string FirstName { get; init; } = string.Empty;
-    public string LastName { get; init; } = string.Empty;
-    public string Username { get; init; } = string.Empty;
-    public string Email { get; init; } = string.Empty;
+    public UserDto(
+        string firstName, string lastName,
+        string username, string email
+    )
+    {
+        FirstName = firstName;
+        LastName = lastName;
+        Username = username;
+        Email = email;
+    }
 
-    public ICollection<Appointment> Appointments { get; init; } =
-        new List<Appointment>();
+    public string FirstName { get; init; }
+    public string LastName { get; init; }
+    public string Username { get; init; }
+    public string Email { get; init; }
 }

@@ -8,18 +8,38 @@ namespace HealthcareSystem.Core.Appointments;
 
 public class Appointment
 {
-    [Key] public Guid AppointmentId { get; set; }
+    public Appointment(
+        Guid doctorId, string doctorName, Guid scheduleId,
+        DateTime scheduleStartTime, DateTime scheduleEndTime,
+        string userId, string userName
+    )
+    {
+        DoctorId = doctorId;
+        DoctorName = doctorName;
+        ScheduleId = scheduleId;
+        ScheduleStartTime = scheduleStartTime;
+        ScheduleEndTime = scheduleEndTime;
+        UserId = userId;
+        UserName = userName;
+    }
 
-    [ForeignKey(nameof(Doctor))] public Guid DoctorId { get; set; }
+    [Key] public Guid AppointmentId { get; init; }
 
-    [Required] public Doctor? Doctor { get; set; }
+    [ForeignKey(nameof(Doctor))] public Guid DoctorId { get; init; }
 
-    [ForeignKey(nameof(Schedule))] public Guid ScheduleId { get; set; }
+    public Doctor? Doctor { get; init; }
+    [MaxLength(128)] public string DoctorName { get; init; }
 
-    [Required] public Schedule? Schedule { get; set; }
+    [ForeignKey(nameof(Schedule))] public Guid ScheduleId { get; init; }
+    public DateTime ScheduleStartTime { get; init; }
+    public DateTime ScheduleEndTime { get; init; }
 
+    public Schedule? Schedule { get; init; }
+
+    [MaxLength(256)]
     [ForeignKey(nameof(User))]
-    public string UserId { get; set; } = string.Empty;
+    public string UserId { get; init; }
 
-    [Required] public User? User { get; set; }
+    public User? User { get; init; }
+    [MaxLength(128)] public string UserName { get; init; }
 }

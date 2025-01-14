@@ -5,23 +5,36 @@ namespace HealthcareSystem.Core.Doctors;
 
 public class Doctor
 {
-    [Key] public Guid DoctorId { get; set; }
+    public Doctor(string name, string description, string? imageUrl,
+        int experienceAge, decimal feeInDollars, string specialization,
+        string phoneNumber)
+    {
+        Name = name;
+        Description = description;
+        ImageUrl = imageUrl;
+        ExperienceAge = experienceAge;
+        FeeInDollars = feeInDollars;
+        Specialization = specialization;
+        PhoneNumber = phoneNumber;
+    }
 
-    public string Name { get; set; } = string.Empty;
+    [Key] public Guid DoctorId { get; init; }
 
-    public string Description { get; set; } = string.Empty;
-    public string? ImageUrl { get; set; } = string.Empty;
+    [MaxLength(128)] public string Name { get; set; }
+
+    [MaxLength(512)] public string Description { get; set; }
+
+    [MaxLength(512)] public string? ImageUrl { get; set; }
 
     public int ExperienceAge { get; set; }
 
     [DataType(DataType.Currency)] public decimal FeeInDollars { get; set; }
 
-    public string Specialization { get; set; } = string.Empty;
+    [MaxLength(128)] public string Specialization { get; set; }
 
     [DataType(DataType.PhoneNumber)]
-    public string PhoneNumber { get; set; } = string.Empty;
+    [MaxLength(12)]
+    public string PhoneNumber { get; set; }
 
-    [Required]
-    public ICollection<Schedule> Schedules { get; set; } =
-        new List<Schedule>();
+    public ICollection<Schedule>? Schedules { get; init; }
 }

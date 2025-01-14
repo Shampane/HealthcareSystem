@@ -5,13 +5,18 @@ using HealthcareSystem.Infrastructure.Doctors;
 
 namespace HealthcareSystem.Application.Doctors;
 
-public class DoctorService(IDoctorRepository repository)
+public class DoctorService
 {
     private const string ErrorStatus = nameof(ResponseStatus.Error);
 
     private const string SuccessStatus = nameof(ResponseStatus.Success);
 
-    private readonly IDoctorRepository _repository = repository;
+    private readonly IDoctorRepository _repository;
+
+    public DoctorService(IDoctorRepository repository)
+    {
+        _repository = repository;
+    }
 
     public async Task<GetEntityResponse<DoctorDto>> GetByIdAsync(Guid id)
     {
@@ -78,29 +83,18 @@ public class DoctorService(IDoctorRepository repository)
                 return new CreateResponse<DoctorDto>(
                     ErrorStatus, errorMessage, null
                 );
-            var doctor = new Doctor
-            {
-                Name = request.Name,
-                Description = request.Description,
-                ExperienceAge = request.ExperienceAge,
-                FeeInDollars = request.FeeInDollars,
-                Specialization = request.Specialization,
-                PhoneNumber = request.PhoneNumber,
-                ImageUrl = request.ImageUrl
-            };
+            var doctor = new Doctor(
+                request.Name, request.Description, request.ImageUrl,
+                request.ExperienceAge, request.FeeInDollars,
+                request.Specialization, request.PhoneNumber
+            );
             await _repository.CreateDoctorAsync(doctor);
 
-            var doctorDto = new DoctorDto
-            {
-                DoctorId = doctor.DoctorId,
-                Name = doctor.Name,
-                Description = doctor.Description,
-                ExperienceAge = doctor.ExperienceAge,
-                FeeInDollars = doctor.FeeInDollars,
-                Specialization = doctor.Specialization,
-                PhoneNumber = doctor.PhoneNumber,
-                ImageUrl = doctor.ImageUrl
-            };
+            var doctorDto = new DoctorDto(
+                doctor.DoctorId, doctor.Name, doctor.Description,
+                doctor.ImageUrl, doctor.ExperienceAge, doctor.FeeInDollars,
+                doctor.Specialization, doctor.PhoneNumber
+            );
             return new CreateResponse<DoctorDto>(
                 SuccessStatus, "The doctor was created", doctorDto
             );
@@ -139,17 +133,11 @@ public class DoctorService(IDoctorRepository repository)
             doctor.ImageUrl = request.ImageUrl;
             await _repository.SaveAsync();
 
-            var doctorDto = new DoctorDto
-            {
-                DoctorId = doctor.DoctorId,
-                Name = doctor.Name,
-                Description = doctor.Description,
-                ExperienceAge = doctor.ExperienceAge,
-                FeeInDollars = doctor.FeeInDollars,
-                Specialization = doctor.Specialization,
-                PhoneNumber = doctor.PhoneNumber,
-                ImageUrl = doctor.ImageUrl
-            };
+            var doctorDto = new DoctorDto(
+                doctor.DoctorId, doctor.Name, doctor.Description,
+                doctor.ImageUrl, doctor.ExperienceAge, doctor.FeeInDollars,
+                doctor.Specialization, doctor.PhoneNumber
+            );
             return new UpdateResponse<DoctorDto>(
                 SuccessStatus,
                 "The Doctor was updated", doctorDto
@@ -176,17 +164,11 @@ public class DoctorService(IDoctorRepository repository)
 
             await _repository.RemoveDoctorAsync(doctor);
 
-            var doctorDto = new DoctorDto
-            {
-                DoctorId = doctor.DoctorId,
-                Name = doctor.Name,
-                Description = doctor.Description,
-                ExperienceAge = doctor.ExperienceAge,
-                FeeInDollars = doctor.FeeInDollars,
-                Specialization = doctor.Specialization,
-                PhoneNumber = doctor.PhoneNumber,
-                ImageUrl = doctor.ImageUrl
-            };
+            var doctorDto = new DoctorDto(
+                doctor.DoctorId, doctor.Name, doctor.Description,
+                doctor.ImageUrl, doctor.ExperienceAge, doctor.FeeInDollars,
+                doctor.Specialization, doctor.PhoneNumber
+            );
             return new RemoveResponse<DoctorDto>(
                 SuccessStatus,
                 "The Doctor was removed", doctorDto

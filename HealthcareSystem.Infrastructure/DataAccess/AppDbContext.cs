@@ -10,11 +10,10 @@ using Microsoft.Extensions.Configuration;
 
 namespace HealthcareSystem.Infrastructure.DataAccess;
 
-public class AppDbContext(
-    DbContextOptions options,
-    IConfiguration configuration
-) : IdentityDbContext<User, IdentityRole, string>(options)
+public class AppDbContext : IdentityDbContext<User>
 {
+    private readonly IConfiguration _configuration;
+
     private readonly IdentityRole[] _roles =
     [
         new()
@@ -33,6 +32,11 @@ public class AppDbContext(
             NormalizedName = "DOCTOR"
         }
     ];
+
+    public AppDbContext(IConfiguration configuration)
+    {
+        _configuration = configuration;
+    }
 
     public DbSet<Doctor> Doctors { get; set; }
     public DbSet<Schedule> Schedules { get; set; }
@@ -53,7 +57,7 @@ public class AppDbContext(
         DbContextOptionsBuilder builder)
     {
         builder.UseNpgsql(
-            configuration.GetConnectionString("Database")
+            _configuration.GetConnectionString("Database")
         );
         builder.ConfigureWarnings(w => w.Ignore(
             RelationalEventId.PendingModelChangesWarning

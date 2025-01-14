@@ -4,12 +4,16 @@ using Microsoft.EntityFrameworkCore;
 
 namespace HealthcareSystem.Infrastructure.Schedules;
 
-public class ScheduleRepository(AppDbContext dbContext)
-    : IScheduleRepository
+public class ScheduleRepository : IScheduleRepository
 {
-    private readonly AppDbContext _dbContext = dbContext;
+    private readonly AppDbContext _dbContext;
 
-    public async Task<ICollection<ScheduleDto>> GetSchedulesByDoctorAsync(
+    public ScheduleRepository(AppDbContext dbContext)
+    {
+        _dbContext = dbContext;
+    }
+
+    public async Task<ICollection<ScheduleDto>?> GetSchedulesByDoctorAsync(
         Guid doctorId, int? pageIndex, int? pageSize,
         DateTime? searchStartTime, DateTime? searchEndTime
     )
@@ -23,33 +27,23 @@ public class ScheduleRepository(AppDbContext dbContext)
         query = AddGetPagination(query, pageSize, pageIndex);
 
         return await query
-            .Select(s => new ScheduleDto
-            {
-                ScheduleId = s.ScheduleId,
-                DoctorId = s.DoctorId,
-                StartTime = s.StartTime,
-                EndTime = s.StartTime.AddMinutes(s.DurationInMinutes),
-                IsAvailable = s.IsAvailable
-            }).ToListAsync();
+            .Select(s => new ScheduleDto(
+                s.ScheduleId, s.DoctorId, s.StartTime,
+                s.StartTime.AddMinutes(s.DurationInMinutes), s.IsAvailable
+            )).ToListAsync();
     }
 
-    public async Task<ScheduleDto> GetScheduleByIdAsync(
+    public async Task<ScheduleDto?> GetScheduleByIdAsync(
         Guid scheduleId
     )
     {
-        var schedule = await _dbContext.Schedules
+        return await _dbContext.Schedules
             .AsNoTracking()
+            .Select(s => new ScheduleDto(
+                s.ScheduleId, s.DoctorId, s.StartTime,
+                s.StartTime.AddMinutes(s.DurationInMinutes), s.IsAvailable
+            ))
             .FirstOrDefaultAsync(s => s.ScheduleId == scheduleId);
-        var scheduleDto = new ScheduleDto
-        {
-            ScheduleId = schedule.ScheduleId,
-            DoctorId = schedule.DoctorId,
-            StartTime = schedule.StartTime,
-            EndTime = schedule.StartTime
-                .AddMinutes(schedule.DurationInMinutes),
-            IsAvailable = schedule.IsAvailable
-        };
-        return scheduleDto!;
     }
 
     public async Task CreateScheduleAsync(Schedule schedule)
@@ -58,10 +52,6 @@ public class ScheduleRepository(AppDbContext dbContext)
         await SaveAsync();
     }
 
-    public async Task SaveAsync()
-    {
-        await dbContext.SaveChangesAsync();
-    }
 
     public async Task RemoveScheduleAsync(Schedule schedule)
     {
@@ -71,18 +61,17 @@ public class ScheduleRepository(AppDbContext dbContext)
 
     public async Task ClearOldSchedulesAsync()
     {
-        var oldSchedules = await dbContext.Schedules
+        var oldSchedules = await _dbContext.Schedules
             .Where(s => s.StartTime < DateTime.UtcNow)
             .ToListAsync();
         _dbContext.Schedules.RemoveRange(oldSchedules);
         await SaveAsync();
     }
 
-    public async Task<Schedule> FindScheduleByIdAsync(Guid scheduleId)
+    public async Task<Schedule?> FindScheduleByIdAsync(Guid scheduleId)
     {
-        var schedule = await _dbContext.Schedules
+        return await _dbContext.Schedules
             .FirstOrDefaultAsync(s => s.ScheduleId == scheduleId);
-        return schedule!;
     }
 
     public async Task<int> GetSchedulesCount()
@@ -127,6 +116,11 @@ public class ScheduleRepository(AppDbContext dbContext)
         }
 
         return true;
+    }
+
+    public async Task SaveAsync()
+    {
+        await _dbContext.SaveChangesAsync();
     }
 
     private static IQueryable<Schedule> AddGetSearch(

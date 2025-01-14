@@ -1,7 +1,11 @@
 namespace HealthcareSystem.Application.Appointments;
 
 public record AppointmentRequest(
-    string UserId,
     Guid DoctorId,
-    Guid ScheduleId
+    string DoctorName,
+    Guid ScheduleId,
+    DateTime ScheduleStartTime,
+    DateTime ScheduleEndTime,
+    string UserId,
+    string UserName
 );
