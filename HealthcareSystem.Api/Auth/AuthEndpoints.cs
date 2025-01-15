@@ -10,7 +10,12 @@ public static class AuthEndpoints
         app.MapPost("/api/register", async (
             [FromBody] UserRegisterRequest request,
             AuthService service
-        ) => await service.UserRegister(request)).WithTags("Auth");
+        ) => await service.Register(request)).WithTags("Auth");
+
+        app.MapPost("/api/login", async (
+            [FromBody] UserAuthenticateRequest request,
+            AuthService service
+        ) => await service.Authenticate(request)).WithTags("Auth");
 
         return app;
     }

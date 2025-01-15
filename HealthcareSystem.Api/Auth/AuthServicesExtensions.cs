@@ -6,7 +6,8 @@ namespace HealthcareSystem.Api.Auth;
 public static class AuthServicesExtensions
 {
     public static IServiceCollection AddAuthServices(
-        this IServiceCollection services
+        this IServiceCollection services,
+        IConfiguration configuration
     )
     {
         services.AddScoped<IAuthRepository, AuthRepository>();

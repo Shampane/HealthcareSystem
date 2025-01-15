@@ -15,7 +15,7 @@ public class AuthService
         _repository = repository;
     }
 
-    public async Task<CreateResponse<UserDto>> UserRegister(
+    public async Task<CreateResponse<UserDto>> Register(
         UserRegisterRequest request
     )
     {
@@ -28,7 +28,7 @@ public class AuthService
 
             var user = new User
             {
-                UserName = request.Username,
+                UserName = request.UserName,
                 Email = request.Email,
                 FirstName = request.FirstName,
                 LastName = request.LastName
@@ -57,6 +57,39 @@ public class AuthService
         catch (Exception ex)
         {
             return new CreateResponse<UserDto>(
+                ErrorStatus, $"{ex.Message}", null
+            );
+        }
+    }
+
+    public async Task<CreateResponse<string>> Authenticate(
+        UserAuthenticateRequest request
+    )
+    {
+        try
+        {
+            var user =
+                await _repository.FindUserByNameAsync(request.UserName);
+            if (user == null)
+                return new CreateResponse<string>(
+                    ErrorStatus, "Invalid UserName", null
+                );
+
+            var isValid = await _repository
+                .IsUserValidAsync(user, request.Password);
+            if (!isValid)
+                return new CreateResponse<string>(
+                    ErrorStatus, "Invalid Password", null
+                );
+            var token = await _repository.CreateTokenAsync(user);
+            return new CreateResponse<string>(
+                SuccessStatus, "The JWT Token was created successfully",
+                token
+            );
+        }
+        catch (Exception ex)
+        {
+            return new CreateResponse<string>(
                 ErrorStatus, $"{ex.Message}", null
             );
         }

@@ -10,9 +10,11 @@ public static class DoctorEndpoints
     )
     {
         app.MapPost("/api/doctor", async (
-            [FromBody] DoctorRequest request,
-            DoctorService service
-        ) => await service.CreateAsync(request)).WithTags("Doctors");
+                [FromBody] DoctorRequest request,
+                DoctorService service
+            ) => await service.CreateAsync(request))
+            .WithTags("Doctors")
+            .RequireAuthorization("AdminPolicy");
 
         app.MapGet("/api/doctors", async (
             [FromQuery] int? pageIndex,

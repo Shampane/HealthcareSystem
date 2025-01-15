@@ -8,9 +8,9 @@ using HealthcareSystem.Infrastructure.DataAccess;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddDbContext<AppDbContext>();
-builder.Services.ConfigureAuth();
+builder.Services.ConfigureAuth(builder.Configuration);
 
-builder.Services.AddAuthServices();
+builder.Services.AddAuthServices(builder.Configuration);
 builder.Services.AddDoctorServices();
 builder.Services.AddSchedulesServices();
 builder.Services.AddAppointmentServices();
