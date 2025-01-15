@@ -22,7 +22,7 @@ public class AppointmentRepository : IAppointmentRepository
         _userManager = userManager;
     }
 
-    public async Task<ICollection<AppointmentDto>?>
+    public async Task<ICollection<Appointment>?>
         GetAppointmentsByDoctorAsync(
             Guid doctorId, int? pageIndex, int? pageSize,
             DateTime? searchStartTime, DateTime? searchEndTime
@@ -36,16 +36,10 @@ public class AppointmentRepository : IAppointmentRepository
         query = AddGetSearch(query, searchStartTime, searchEndTime);
         query = AddGetPagination(query, pageSize, pageIndex);
 
-        return await query
-            .Select(a => new AppointmentDto(
-                a.AppointmentId, a.DoctorId,
-                a.DoctorName, a.ScheduleId,
-                a.ScheduleStartTime, a.ScheduleEndTime,
-                a.UserId, a.UserName
-            )).ToListAsync();
+        return await query.ToListAsync();
     }
 
-    public async Task<ICollection<AppointmentDto>?>
+    public async Task<ICollection<Appointment>?>
         GetAppointmentsByUserAsync(
             string userId, int? pageIndex, int? pageSize,
             DateTime? searchStartTime, DateTime? searchEndTime
@@ -59,27 +53,16 @@ public class AppointmentRepository : IAppointmentRepository
         query = AddGetSearch(query, searchStartTime, searchEndTime);
         query = AddGetPagination(query, pageSize, pageIndex);
 
-        return await query
-            .Select(a => new AppointmentDto(
-                a.AppointmentId, a.DoctorId,
-                a.DoctorName, a.ScheduleId,
-                a.ScheduleStartTime, a.ScheduleEndTime,
-                a.UserId, a.UserName
-            )).ToListAsync();
+        return await query.ToListAsync();
     }
 
-    public async Task<AppointmentDto?> GetAppointmentByIdAsync(
+    public async Task<Appointment?> GetAppointmentByIdAsync(
         Guid id
     )
     {
         var appointment = await _dbContext.Appointments
             .AsNoTracking()
-            .Select(a => new AppointmentDto(
-                a.AppointmentId, a.DoctorId,
-                a.DoctorName, a.ScheduleId,
-                a.ScheduleStartTime, a.ScheduleEndTime,
-                a.UserId, a.UserName
-            )).FirstOrDefaultAsync(a => a.AppointmentId == id);
+            .FirstOrDefaultAsync(a => a.AppointmentId == id);
 
         return appointment;
     }

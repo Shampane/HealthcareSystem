@@ -7,17 +7,17 @@ namespace HealthcareSystem.Infrastructure.Appointments;
 
 public interface IAppointmentRepository
 {
-    public Task<ICollection<AppointmentDto>?> GetAppointmentsByDoctorAsync(
+    public Task<ICollection<Appointment>?> GetAppointmentsByDoctorAsync(
         Guid doctorId, int? pageIndex, int? pageSize,
         DateTime? searchStartTime, DateTime? searchEndTime
     );
 
-    public Task<ICollection<AppointmentDto>?> GetAppointmentsByUserAsync(
+    public Task<ICollection<Appointment>?> GetAppointmentsByUserAsync(
         string userId, int? pageIndex, int? pageSize,
         DateTime? searchStartTime, DateTime? searchEndTime
     );
 
-    public Task<AppointmentDto?> GetAppointmentByIdAsync(Guid id);
+    public Task<Appointment?> GetAppointmentByIdAsync(Guid id);
     public Task CreateAppointmentAsync(Appointment appointment);
     public Task RemoveAppointmentAsync(Appointment appointment);
     public Task<Appointment?> FindAppointmentByIdAsync(Guid appointmentId);

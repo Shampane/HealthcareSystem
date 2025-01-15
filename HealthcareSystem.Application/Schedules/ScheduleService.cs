@@ -28,14 +28,16 @@ public class ScheduleService
                     doctorId, pageIndex, pageSize,
                     searchStartTime, searchEndTime
                 );
-            if (schedules == null)
+            if (schedules == null || schedules.Count == 0)
                 return new GetResponse<ScheduleDto>(
                     ErrorStatus,
                     "Schedules weren't found", null
                 );
+
+            var listDto = schedules.Select(s => s.ToDto()).ToList();
             return new GetResponse<ScheduleDto>(
                 SuccessStatus,
-                "Schedules for this Doctor were found", schedules
+                "Schedules for this Doctor were found", listDto
             );
         }
         catch (Exception ex)
@@ -57,8 +59,9 @@ public class ScheduleService
                     ErrorStatus, "The Schedule wasn't found", null
                 );
 
+            var dto = schedule.ToDto();
             return new GetEntityResponse<ScheduleDto>(
-                SuccessStatus, "The Schedule was found", schedule
+                SuccessStatus, "The Schedule was found", dto
             );
         }
         catch (Exception ex)

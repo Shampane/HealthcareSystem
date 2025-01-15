@@ -13,6 +13,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HealthcareSystem.Applicatio
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HealthcareSystem.Infrastructure", "HealthcareSystem.Infrastructure\HealthcareSystem.Infrastructure.csproj", "{D2426577-8F82-45EF-BE42-78A9F0B600AB}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HealthcareSystem.Tests", "HealthcareSystem.Tests\HealthcareSystem.Tests.csproj", "{5625926C-4B37-46CF-80C2-E1A41050FEBC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -35,6 +37,10 @@ Global
 		{D2426577-8F82-45EF-BE42-78A9F0B600AB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D2426577-8F82-45EF-BE42-78A9F0B600AB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D2426577-8F82-45EF-BE42-78A9F0B600AB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5625926C-4B37-46CF-80C2-E1A41050FEBC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5625926C-4B37-46CF-80C2-E1A41050FEBC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5625926C-4B37-46CF-80C2-E1A41050FEBC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5625926C-4B37-46CF-80C2-E1A41050FEBC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 	EndGlobalSection

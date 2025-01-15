@@ -13,7 +13,7 @@ public class ScheduleRepository : IScheduleRepository
         _dbContext = dbContext;
     }
 
-    public async Task<ICollection<ScheduleDto>?> GetSchedulesByDoctorAsync(
+    public async Task<ICollection<Schedule>?> GetSchedulesByDoctorAsync(
         Guid doctorId, int? pageIndex, int? pageSize,
         DateTime? searchStartTime, DateTime? searchEndTime
     )
@@ -26,23 +26,15 @@ public class ScheduleRepository : IScheduleRepository
         query = AddGetSearch(query, searchStartTime, searchEndTime);
         query = AddGetPagination(query, pageSize, pageIndex);
 
-        return await query
-            .Select(s => new ScheduleDto(
-                s.ScheduleId, s.DoctorId, s.StartTime,
-                s.StartTime.AddMinutes(s.DurationInMinutes), s.IsAvailable
-            )).ToListAsync();
+        return await query.ToListAsync();
     }
 
-    public async Task<ScheduleDto?> GetScheduleByIdAsync(
+    public async Task<Schedule?> GetScheduleByIdAsync(
         Guid scheduleId
     )
     {
         return await _dbContext.Schedules
             .AsNoTracking()
-            .Select(s => new ScheduleDto(
-                s.ScheduleId, s.DoctorId, s.StartTime,
-                s.StartTime.AddMinutes(s.DurationInMinutes), s.IsAvailable
-            ))
             .FirstOrDefaultAsync(s => s.ScheduleId == scheduleId);
     }
 

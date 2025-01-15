@@ -28,9 +28,10 @@ public class DoctorService
                     ErrorStatus, "The Doctor wasn't found", null
                 );
 
+            var dto = doctor.ToDto();
             return new GetEntityResponse<DoctorDto>(
                 SuccessStatus,
-                "The Doctor was found", doctor
+                "The Doctor was found", dto
             );
         }
         catch (Exception ex)
@@ -58,9 +59,11 @@ public class DoctorService
                     ErrorStatus,
                     "Doctors weren't found", null
                 );
+
+            var listDto = doctors.Select(d => d.ToDto()).ToList();
             return new GetResponse<DoctorDto>(
                 SuccessStatus,
-                "Doctors were found", doctors
+                "Doctors were found", listDto
             );
         }
         catch (Exception ex)

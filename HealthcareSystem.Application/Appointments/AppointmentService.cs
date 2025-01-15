@@ -27,14 +27,17 @@ public class AppointmentService
                     doctorId, pageIndex, pageSize,
                     searchStartTime, searchEndTime
                 );
+
             if (appointments == null || appointments.Count == 0)
                 return new GetResponse<AppointmentDto>(
                     ErrorStatus,
                     "Appointments weren't found", null
                 );
+
+            var listDto = appointments.Select(a => a.ToDto()).ToList();
             return new GetResponse<AppointmentDto>(
                 SuccessStatus,
-                "Appointments for this Doctor were found", appointments
+                "Appointments for this Doctor were found", listDto
             );
         }
         catch (Exception ex)
@@ -63,9 +66,11 @@ public class AppointmentService
                     ErrorStatus,
                     "Appointments weren't found", null
                 );
+
+            var listDto = appointments.Select(a => a.ToDto()).ToList();
             return new GetResponse<AppointmentDto>(
                 SuccessStatus,
-                "Appointments for this User were found", appointments
+                "Appointments for this User were found", listDto
             );
         }
         catch (Exception ex)
@@ -89,8 +94,9 @@ public class AppointmentService
                     ErrorStatus, "The Appointment wasn't found", null
                 );
 
+            var dto = appointment.ToDto();
             return new GetEntityResponse<AppointmentDto>(
-                SuccessStatus, "The Appointment was found", appointment
+                SuccessStatus, "The Appointment was found", dto
             );
         }
         catch (Exception ex)
@@ -134,12 +140,7 @@ public class AppointmentService
 
             await _repository.CreateAppointmentAsync(appointment);
 
-            var appointmentDto = new AppointmentDto(
-                appointment.AppointmentId, appointment.DoctorId,
-                appointment.DoctorName, appointment.ScheduleId,
-                appointment.ScheduleStartTime, appointment.ScheduleEndTime,
-                appointment.UserId, appointment.UserName
-            );
+            var appointmentDto = appointment.ToDto();
 
             return new CreateResponse<AppointmentDto>(
                 SuccessStatus, "The Appointment was created",
@@ -168,12 +169,7 @@ public class AppointmentService
 
             await _repository.RemoveAppointmentAsync(appointment);
 
-            var appointmentDto = new AppointmentDto(
-                appointment.AppointmentId, appointment.DoctorId,
-                appointment.DoctorName, appointment.ScheduleId,
-                appointment.ScheduleStartTime, appointment.ScheduleEndTime,
-                appointment.UserId, appointment.UserName
-            );
+            var appointmentDto = appointment.ToDto();
 
             return new RemoveResponse<AppointmentDto>(
                 SuccessStatus,

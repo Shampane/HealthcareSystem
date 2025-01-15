@@ -14,19 +14,7 @@ public class DoctorRepository : IDoctorRepository
         _dbContext = dbContext;
     }
 
-    public async Task<DoctorDto?> GetDoctorByIdAsync(Guid doctorId)
-    {
-        return await _dbContext.Doctors
-            .AsNoTracking()
-            .Select(d => new DoctorDto(
-                d.DoctorId, d.Name, d.Description,
-                d.ImageUrl, d.ExperienceAge, d.FeeInDollars,
-                d.Specialization, d.PhoneNumber
-            ))
-            .FirstOrDefaultAsync(d => d.DoctorId == doctorId);
-    }
-
-    public async Task<ICollection<DoctorDto>?> GetDoctorsAsync(
+    public async Task<ICollection<Doctor>?> GetDoctorsAsync(
         int? pageIndex, int? pageSize, string? sortField,
         string? sortOrder, string? searchField, string? searchValue
     )
@@ -37,11 +25,7 @@ public class DoctorRepository : IDoctorRepository
         query = AddGetSort(query, sortField, sortOrder);
         query = AddGetPagination(query, pageSize, pageIndex);
 
-        return await query.Select(d => new DoctorDto(
-            d.DoctorId, d.Name, d.Description,
-            d.ImageUrl, d.ExperienceAge, d.FeeInDollars,
-            d.Specialization, d.PhoneNumber
-        )).ToListAsync();
+        return await query.ToListAsync();
     }
 
     public async Task CreateDoctorAsync(Doctor doctor)
@@ -65,6 +49,13 @@ public class DoctorRepository : IDoctorRepository
     public async Task<Doctor?> FindDoctorByIdAsync(Guid doctorId)
     {
         return await _dbContext.Doctors
+            .FirstOrDefaultAsync(d => d.DoctorId == doctorId);
+    }
+
+    public async Task<Doctor?> GetDoctorByIdAsync(Guid doctorId)
+    {
+        return await _dbContext.Doctors
+            .AsNoTracking()
             .FirstOrDefaultAsync(d => d.DoctorId == doctorId);
     }
 

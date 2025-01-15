@@ -4,12 +4,12 @@ namespace HealthcareSystem.Infrastructure.Schedules;
 
 public interface IScheduleRepository
 {
-    public Task<ICollection<ScheduleDto>?> GetSchedulesByDoctorAsync(
+    public Task<ICollection<Schedule>?> GetSchedulesByDoctorAsync(
         Guid doctorId, int? pageIndex, int? pageSize,
         DateTime? searchStartTime, DateTime? searchEndTime
     );
 
-    public Task<ScheduleDto?> GetScheduleByIdAsync(Guid scheduleId);
+    public Task<Schedule?> GetScheduleByIdAsync(Guid scheduleId);
     public Task CreateScheduleAsync(Schedule schedule);
     public Task RemoveScheduleAsync(Schedule schedule);
     public Task ClearOldSchedulesAsync();
