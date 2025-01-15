@@ -2,6 +2,7 @@ using HealthcareSystem.Api.Appointments;
 using HealthcareSystem.Api.Auth;
 using HealthcareSystem.Api.Doctors;
 using HealthcareSystem.Api.Schedules;
+using HealthcareSystem.Api.Swagger;
 using HealthcareSystem.Application.Schedules;
 using HealthcareSystem.Infrastructure.DataAccess;
 
@@ -17,7 +18,7 @@ builder.Services.AddAppointmentServices();
 builder.Services.AddHostedService<ScheduleCleanupService>();
 
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.ConfigureSwagger();
 
 var app = builder.Build();
 

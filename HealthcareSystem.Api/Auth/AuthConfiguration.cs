@@ -53,12 +53,24 @@ public static class AuthConfiguration
             .AddDefaultTokenProviders();
         services.AddAuthorization(opt =>
         {
-            opt.AddPolicy("UserPolicy",
-                policy => policy.RequireRole("User", "Doctor", "Admin"));
-            opt.AddPolicy("DoctorPolicy",
-                policy => policy.RequireRole("Doctor", "Admin"));
-            opt.AddPolicy("AdminPolicy",
-                policy => policy.RequireRole("Admin"));
+            opt.AddPolicy("UserPolicy", policy =>
+            {
+                policy.RequireAuthenticatedUser();
+                policy.AddAuthenticationSchemes("Bearer");
+                policy.RequireRole("User", "Admin");
+            });
+            opt.AddPolicy("DoctorPolicy", policy =>
+            {
+                policy.RequireAuthenticatedUser();
+                policy.AddAuthenticationSchemes("Bearer");
+                policy.RequireRole("Doctor", "Admin");
+            });
+            opt.AddPolicy("AdminPolicy", policy =>
+            {
+                policy.RequireAuthenticatedUser();
+                policy.AddAuthenticationSchemes("Bearer");
+                policy.RequireRole("Admin");
+            });
         });
 
         return services;

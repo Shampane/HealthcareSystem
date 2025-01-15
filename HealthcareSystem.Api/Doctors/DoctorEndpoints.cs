@@ -13,8 +13,8 @@ public static class DoctorEndpoints
                 [FromBody] DoctorRequest request,
                 DoctorService service
             ) => await service.CreateAsync(request))
-            .WithTags("Doctors")
-            .RequireAuthorization("AdminPolicy");
+            .RequireAuthorization("AdminPolicy")
+            .WithTags("Doctors");
 
         app.MapGet("/api/doctors", async (
             [FromQuery] int? pageIndex,
