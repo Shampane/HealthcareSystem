@@ -1,5 +1,6 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Text;
 using HealthcareSystem.Core.Auth;
 using Microsoft.AspNetCore.Identity;
@@ -39,20 +40,66 @@ public class AuthRepository : IAuthRepository
         return await _userManager.CheckPasswordAsync(user, password);
     }
 
-    public async Task<string?> CreateTokenAsync(User user)
-    {
-        var signingCredentials = GetSigningCredentials();
-        var claims = await GetClaimsAsync(user);
-        var tokenOptions = CreateTokenOptions(signingCredentials, claims);
-        var token = new JwtSecurityTokenHandler().WriteToken(tokenOptions);
-
-        return token;
-    }
-
     public async Task<User?> FindUserByNameAsync(string userName)
     {
         var user = await _userManager.FindByNameAsync(userName);
         return user;
+    }
+
+    public async Task<TokenDto?> CreateTokenAsync(User user,
+        bool populateExp)
+    {
+        var signingCredentials = GetSigningCredentials();
+        var claims = await GetClaimsAsync(user);
+        var tokenOptions = CreateTokenOptions(signingCredentials, claims);
+        var refreshToken = GenerateRefreshToken();
+        user.RefreshToken = refreshToken;
+        if (populateExp)
+            user.RefreshTokenExpiry = DateTime.UtcNow.AddDays(3);
+        await _userManager.UpdateAsync(user);
+        var accessToken = new JwtSecurityTokenHandler()
+            .WriteToken(tokenOptions);
+
+        return new TokenDto(accessToken, refreshToken);
+    }
+
+    private string GenerateRefreshToken()
+    {
+        var randomNumber = new byte[32];
+        using var rng = RandomNumberGenerator.Create();
+        rng.GetBytes(randomNumber);
+        return Convert.ToBase64String(randomNumber);
+    }
+
+    private ClaimsPrincipal? GetPrincipalFromExpiredToken(string token)
+    {
+        var jwtSettings = _configuration.GetSection("Jwt");
+        var tokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+
+            ValidIssuer = jwtSettings["Issuer"],
+            ValidAudience = jwtSettings["Audience"],
+            IssuerSigningKey = new SymmetricSecurityKey(
+                Encoding.UTF8.GetBytes(jwtSettings["Key"]!)
+            )
+        };
+        var tokenHandler = new JwtSecurityTokenHandler();
+        SecurityToken securityToken;
+        var principal = tokenHandler.ValidateToken(
+            token, tokenValidationParameters, out securityToken
+        );
+        var jwtSecurityToken = securityToken as JwtSecurityToken;
+        if (jwtSecurityToken == null ||
+            !jwtSecurityToken.Header.Alg.Equals(
+                SecurityAlgorithms.HmacSha256,
+                StringComparison.InvariantCultureIgnoreCase)
+           )
+            return null;
+        return principal;
     }
 
     private SigningCredentials GetSigningCredentials()

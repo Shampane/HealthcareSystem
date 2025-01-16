@@ -3,6 +3,7 @@ using System;
 using HealthcareSystem.Infrastructure.DataAccess;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace HealthcareSystem.Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250116115128_RefreshTokenForUser")]
+    partial class RefreshTokenForUser
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -238,19 +241,19 @@ namespace HealthcareSystem.Infrastructure.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "6ec36667-ce29-43bd-82bf-2ed53bea6f66",
+                            Id = "61cf2aa9-4320-4feb-b05e-43a1b759f041",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
-                            Id = "ad15823e-f8ca-4fb6-a9dd-eb235ddb0bc3",
+                            Id = "f4847554-1846-4b7c-8041-500a44eca4e6",
                             Name = "User",
                             NormalizedName = "USER"
                         },
                         new
                         {
-                            Id = "ee14d503-9e12-4a28-b533-dd041df259a9",
+                            Id = "8ea73a29-5479-4a13-818c-8515321e676b",
                             Name = "Doctor",
                             NormalizedName = "DOCTOR"
                         });

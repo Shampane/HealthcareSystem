@@ -12,5 +12,5 @@ public interface IAuthRepository
     public Task AddUserRoleAsync(User user);
     public Task<User?> FindUserByNameAsync(string userName);
     public Task<bool> IsUserValidAsync(User user, string password);
-    public Task<string?> CreateTokenAsync(User user);
+    public Task<TokenDto?> CreateTokenAsync(User user, bool populateExp);
 }
