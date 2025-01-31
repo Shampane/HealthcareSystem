@@ -1,29 +1,27 @@
-using HealthcareSystem.Api.Appointments;
-using HealthcareSystem.Api.Auth;
-using HealthcareSystem.Api.Doctors;
-using HealthcareSystem.Api.Schedules;
-using HealthcareSystem.Api.Swagger;
-using HealthcareSystem.Application.Schedules;
+using HealthcareSystem.Api.Email;
+using HealthcareSystem.Api.Endpoints;
+using HealthcareSystem.Api.Extensions;
+using HealthcareSystem.Application.Services;
 using HealthcareSystem.Infrastructure.DataAccess;
 
-var builder = WebApplication.CreateBuilder(args);
+WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddDbContext<AppDbContext>();
 builder.Services.ConfigureAuth(builder.Configuration);
 
 builder.Services.AddAuthServices(builder.Configuration);
+builder.Services.AddEmailServices(builder.Configuration);
 builder.Services.AddDoctorServices();
-builder.Services.AddSchedulesServices();
+builder.Services.AddScheduleServices();
 builder.Services.AddAppointmentServices();
 builder.Services.AddHostedService<ScheduleCleanupService>();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.ConfigureSwagger();
 
-var app = builder.Build();
+WebApplication app = builder.Build();
 
-if (app.Environment.IsDevelopment())
-{
+if (app.Environment.IsDevelopment()) {
     app.UseSwagger();
     app.UseSwaggerUI();
 }

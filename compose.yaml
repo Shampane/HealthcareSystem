@@ -28,6 +28,16 @@ services:
       - "5432:5432"
     volumes:
       - database:/var/lib/postgresql/data
+  healthcaresystem.smtp:
+    container_name: healthcaresystem.smtp
+    image: rnwood/smtp4dev
+    ports:
+      - "5000:80"
+      - "25:25"
+      - "143:143"
+    volumes:
+      - smtp4dev-data:/smtp4dev
 
 volumes:
   database:
+  smtp4dev-data:

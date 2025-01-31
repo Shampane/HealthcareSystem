@@ -1,7 +1,4 @@
-using HealthcareSystem.Core.Appointments;
-using HealthcareSystem.Core.Auth;
-using HealthcareSystem.Core.Doctors;
-using HealthcareSystem.Core.Schedules;
+using HealthcareSystem.Core.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -10,19 +7,16 @@ using Microsoft.Extensions.Configuration;
 
 namespace HealthcareSystem.Infrastructure.DataAccess;
 
-public class AppDbContext : IdentityDbContext<User>
-{
+public class AppDbContext : IdentityDbContext<User> {
     private readonly IConfiguration _configuration;
 
-    private readonly IdentityRole[] _roles =
-    [
+    private readonly IdentityRole[] _roles = [
         new() { Name = "Admin", NormalizedName = "ADMIN" },
         new() { Name = "User", NormalizedName = "USER" },
         new() { Name = "Doctor", NormalizedName = "DOCTOR" }
     ];
 
-    public AppDbContext(IConfiguration configuration)
-    {
+    public AppDbContext(IConfiguration configuration) {
         _configuration = configuration;
     }
 
@@ -30,8 +24,7 @@ public class AppDbContext : IdentityDbContext<User>
     public DbSet<Schedule> Schedules { get; set; }
     public DbSet<Appointment> Appointments { get; set; }
 
-    protected override void OnModelCreating(ModelBuilder modelBuilder)
-    {
+    protected override void OnModelCreating(ModelBuilder modelBuilder) {
         base.OnModelCreating(modelBuilder);
         modelBuilder.Entity<Doctor>()
             .HasMany(e => e.Schedules)
@@ -42,8 +35,7 @@ public class AppDbContext : IdentityDbContext<User>
     }
 
     protected override void OnConfiguring(
-        DbContextOptionsBuilder builder)
-    {
+        DbContextOptionsBuilder builder) {
         builder.UseNpgsql(
             _configuration.GetConnectionString("Database")
         );
