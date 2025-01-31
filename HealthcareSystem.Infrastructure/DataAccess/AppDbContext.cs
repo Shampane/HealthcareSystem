@@ -16,21 +16,9 @@ public class AppDbContext : IdentityDbContext<User>
 
     private readonly IdentityRole[] _roles =
     [
-        new()
-        {
-            Name = "Admin",
-            NormalizedName = "ADMIN"
-        },
-        new()
-        {
-            Name = "User",
-            NormalizedName = "USER"
-        },
-        new()
-        {
-            Name = "Doctor",
-            NormalizedName = "DOCTOR"
-        }
+        new() { Name = "Admin", NormalizedName = "ADMIN" },
+        new() { Name = "User", NormalizedName = "USER" },
+        new() { Name = "Doctor", NormalizedName = "DOCTOR" }
     ];
 
     public AppDbContext(IConfiguration configuration)
