@@ -13,3 +13,8 @@ public record UserAuthenticateRequest(
     string UserName,
     string Password
 );
+
+public record ForgetPasswordRequest(
+    string Email,
+    string ClientUri
+);

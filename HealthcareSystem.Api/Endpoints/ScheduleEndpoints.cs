@@ -9,9 +9,11 @@ public static class ScheduleEndpoints {
         this WebApplication app
     ) {
         app.MapPost("/api/schedule", async (
-            [FromBody] ScheduleRequest request,
-            ScheduleService service
-        ) => await service.CreateAsync(request)).WithTags("Schedules");
+                [FromBody] ScheduleRequest request,
+                ScheduleService service
+            ) => await service.CreateAsync(request))
+            .RequireAuthorization("DoctorPolicy")
+            .WithTags("Schedules");
 
         app.MapGet("/api/schedules", async (
             [FromQuery] Guid doctorId,
@@ -30,12 +32,16 @@ public static class ScheduleEndpoints {
         ) => await service.GetByIdAsync(id)).WithTags("Schedules");
 
         app.MapPatch("/api/schedules/{id:guid}", async (
-            Guid id, ScheduleService service
-        ) => await service.ChangeAvailableAsync(id)).WithTags("Schedules");
+                Guid id, ScheduleService service
+            ) => await service.ChangeAvailableAsync(id))
+            .RequireAuthorization("UserPolicy")
+            .WithTags("Schedules");
 
         app.MapDelete("/api/schedules/{id:guid}", async (
-            Guid id, ScheduleService service
-        ) => await service.RemoveAsync(id)).WithTags("Schedules");
+                Guid id, ScheduleService service
+            ) => await service.RemoveAsync(id))
+            .RequireAuthorization("DoctorPolicy")
+            .WithTags("Schedules");
 
         return app;
     }

@@ -1,4 +1,3 @@
-using HealthcareSystem.Api.Email;
 using HealthcareSystem.Api.Endpoints;
 using HealthcareSystem.Api.Extensions;
 using HealthcareSystem.Application.Services;
@@ -8,9 +7,10 @@ WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddDbContext<AppDbContext>();
 builder.Services.ConfigureAuth(builder.Configuration);
+builder.Services.AddAuthServices();
 
-builder.Services.AddAuthServices(builder.Configuration);
-builder.Services.AddEmailServices(builder.Configuration);
+builder.Services.ConfigureEmail(builder.Configuration);
+builder.Services.AddEmailServices();
 builder.Services.AddDoctorServices();
 builder.Services.AddScheduleServices();
 builder.Services.AddAppointmentServices();

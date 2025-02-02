@@ -1,4 +1,4 @@
-namespace HealthcareSystem.Core.Auth;
+namespace HealthcareSystem.Application.Dtos;
 
 public class UserDto(
     string? firstName,

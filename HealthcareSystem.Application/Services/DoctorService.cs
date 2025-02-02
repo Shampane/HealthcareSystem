@@ -36,8 +36,7 @@ public class DoctorService {
         }
         catch (Exception ex) {
             return new GetEntityResponse<DoctorDto>(
-                ErrorStatus,
-                $"{ex.Message}", null
+                ErrorStatus, ex.Message, null
             );
         }
     }
@@ -66,8 +65,7 @@ public class DoctorService {
         }
         catch (Exception ex) {
             return new GetResponse<DoctorDto>(
-                ErrorStatus,
-                $"{ex.Message}", null
+                ErrorStatus, ex.Message, null
             );
         }
     }
@@ -100,7 +98,7 @@ public class DoctorService {
         }
         catch (Exception ex) {
             return new CreateResponse<DoctorDto>(
-                ErrorStatus, $"{ex.Message}", null
+                ErrorStatus, ex.Message, null
             );
         }
     }
@@ -143,7 +141,7 @@ public class DoctorService {
         }
         catch (Exception ex) {
             return new UpdateResponse<DoctorDto>(
-                ErrorStatus, $"{ex.Message}", null
+                ErrorStatus, ex.Message, null
             );
         }
     }
@@ -172,7 +170,7 @@ public class DoctorService {
         }
         catch (Exception ex) {
             return new RemoveResponse<DoctorDto>(
-                ErrorStatus, $"{ex.Message}", null
+                ErrorStatus, ex.Message, null
             );
         }
     }

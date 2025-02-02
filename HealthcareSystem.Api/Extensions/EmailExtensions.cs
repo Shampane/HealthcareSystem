@@ -1,7 +1,10 @@
-namespace HealthcareSystem.Api.Email;
+using HealthcareSystem.Core.Interfaces;
+using HealthcareSystem.Infrastructure.Repositories;
+
+namespace HealthcareSystem.Api.Extensions;
 
 public static class EmailServicesExtension {
-    public static IServiceCollection AddEmailServices(
+    public static IServiceCollection ConfigureEmail(
         this IServiceCollection services, IConfiguration configuration
     ) {
         IConfigurationSection emailConfiguration =
@@ -11,8 +14,16 @@ public static class EmailServicesExtension {
         int port = int.Parse(emailConfiguration["Port"]!);
 
         services.AddFluentEmail(defaultFrom)
-            .AddSmtpSender(host, port);
+            .AddSmtpSender(host, port)
+            .AddRazorRenderer();
 
+        return services;
+    }
+
+    public static IServiceCollection AddEmailServices(
+        this IServiceCollection services
+    ) {
+        services.AddScoped<IEmailRepository, EmailRepository>();
         return services;
     }
 }

@@ -1,20 +1,30 @@
+using System.Net;
 using System.Security.Claims;
+using HealthcareSystem.Application.Dtos;
 using HealthcareSystem.Application.Requests;
 using HealthcareSystem.Application.Responses;
-using HealthcareSystem.Core.Auth;
 using HealthcareSystem.Core.Entities;
 using HealthcareSystem.Core.Interfaces;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.WebUtilities;
 
 namespace HealthcareSystem.Application.Services;
 
 public class AuthService {
     private const string ErrorStatus = nameof(ResponseStatus.Error);
     private const string SuccessStatus = nameof(ResponseStatus.Success);
+    private readonly IEmailRepository _emailRepository;
+
+    private readonly string _forgetPasswordTemplate =
+        $"{Directory.GetCurrentDirectory()}/Templates/ForgetPasswordTemplate.cshtml";
+
     private readonly IAuthRepository _repository;
 
-    public AuthService(IAuthRepository repository) {
+    public AuthService(
+        IAuthRepository repository, IEmailRepository emailRepository
+    ) {
         _repository = repository;
+        _emailRepository = emailRepository;
     }
 
     public async Task<CreateResponse<UserDto>> Register(
@@ -121,6 +131,73 @@ public class AuthService {
             return new CreateResponse<Token>(
                 ErrorStatus, $"{ex.Message}", null
             );
+        }
+    }
+
+    public async Task<MessageResponse> ForgetPassword(
+        ForgetPasswordRequest request
+    ) {
+        try {
+            User? user = await _repository.FindUserByEmail(request.Email);
+            if (user is null) {
+                return new MessageResponse(ErrorStatus, "Invalid UserEmail");
+            }
+            string token = await _repository.GenerateResetToken(user);
+            var parameters = new Dictionary<string, string> {
+                { "token", token },
+                { "email", request.Email }
+            };
+            string callbackUrl =
+                QueryHelpers.AddQueryString(request.ClientUri, parameters!);
+            Console.WriteLine(callbackUrl);
+            Console.WriteLine(WebUtility.UrlDecode(callbackUrl));
+            EmailMetadata emailMetadata = new(
+                request.Email,
+                "HealthcareSystem: Reset Password"
+            );
+            ForgetPassword model = new(request.Email, callbackUrl);
+            await _emailRepository.SendForgetPassword(
+                emailMetadata, _forgetPasswordTemplate, model
+            );
+            return new MessageResponse(SuccessStatus,
+                "Email with password was send successful");
+        }
+        catch (Exception ex) {
+            return new MessageResponse(ErrorStatus, ex.Message);
+        }
+    }
+
+    public async Task<MessageResponse> ResetPassword(
+        ResetPassword request
+    ) {
+        try {
+            if (request.Password != request.ConfirmPassword) {
+                return new MessageResponse(
+                    ErrorStatus, "Passwords aren't match"
+                );
+            }
+            User? user = await _repository.FindUserByEmail(request.Email);
+            if (user is null) {
+                return new MessageResponse(ErrorStatus, "Invalid UserEmail");
+            }
+            IdentityResult result = await _repository.ResetPassword(
+                user, request.Token, request.Password
+            );
+            if (result.Succeeded) {
+                return new MessageResponse(
+                    SuccessStatus, "Reset password successful"
+                );
+            }
+
+            string errors = string.Join(", ",
+                result.Errors.Select(e => e.Description)
+            ).Replace(".,", ",");
+            return new MessageResponse(
+                ErrorStatus, errors
+            );
+        }
+        catch (Exception ex) {
+            return new MessageResponse(ErrorStatus, ex.Message);
         }
     }
 }

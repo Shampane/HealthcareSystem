@@ -48,6 +48,9 @@ public static class AuthExtensions {
             })
             .AddEntityFrameworkStores<AppDbContext>()
             .AddDefaultTokenProviders();
+        services.Configure<DataProtectionTokenProviderOptions>(opt => {
+            opt.TokenLifespan = TimeSpan.FromHours(1);
+        });
         services.AddAuthorizationBuilder()
             .AddPolicy("UserPolicy", policy => {
                 policy.RequireAuthenticatedUser();
@@ -69,8 +72,7 @@ public static class AuthExtensions {
     }
 
     public static IServiceCollection AddAuthServices(
-        this IServiceCollection services,
-        IConfiguration configuration
+        this IServiceCollection services
     ) {
         services.AddScoped<IAuthRepository, AuthRepository>();
         services.AddScoped<AuthService>();

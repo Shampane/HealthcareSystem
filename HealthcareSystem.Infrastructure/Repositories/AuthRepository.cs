@@ -32,12 +32,27 @@ public class AuthRepository : IAuthRepository {
         await _userManager.AddToRolesAsync(user, roles);
     }
 
+    public async Task<string> GenerateResetToken(User user) {
+        string token = await _userManager.GeneratePasswordResetTokenAsync(user);
+        return token;
+    }
+
+    public async Task<IdentityResult> ResetPassword(User user, string token,
+        string password) {
+        return await _userManager.ResetPasswordAsync(user, token, password);
+    }
+
     public async Task<bool> IsUserValidAsync(User user, string password) {
         return await _userManager.CheckPasswordAsync(user, password);
     }
 
     public async Task<User?> FindUserByNameAsync(string userName) {
         User? user = await _userManager.FindByNameAsync(userName);
+        return user;
+    }
+
+    public async Task<User?> FindUserByEmail(string userEmail) {
+        User? user = await _userManager.FindByEmailAsync(userEmail);
         return user;
     }
 
@@ -92,7 +107,7 @@ public class AuthRepository : IAuthRepository {
     }
 
     private string GenerateRefreshToken() {
-        var randomNumber = new byte[32];
+        byte[] randomNumber = new byte[32];
         using var rng = RandomNumberGenerator.Create();
         rng.GetBytes(randomNumber);
         return Convert.ToBase64String(randomNumber);
