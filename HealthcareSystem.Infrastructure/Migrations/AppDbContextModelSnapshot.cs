@@ -22,9 +22,9 @@ namespace HealthcareSystem.Infrastructure.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("HealthcareSystem.Core.Appointments.Appointment", b =>
+            modelBuilder.Entity("HealthcareSystem.Core.Entities.Appointment", b =>
                 {
-                    b.Property<Guid>("AppointmentId")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
@@ -33,29 +33,27 @@ namespace HealthcareSystem.Infrastructure.Migrations
 
                     b.Property<string>("DoctorName")
                         .IsRequired()
-                        .HasMaxLength(128)
-                        .HasColumnType("character varying(128)");
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)");
 
-                    b.Property<DateTime>("ScheduleEndTime")
+                    b.Property<DateTimeOffset>("EndTime")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<Guid>("ScheduleId")
                         .HasColumnType("uuid");
 
-                    b.Property<DateTime>("ScheduleStartTime")
+                    b.Property<DateTimeOffset>("StartTime")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("UserId")
                         .IsRequired()
-                        .HasMaxLength(256)
-                        .HasColumnType("character varying(256)");
+                        .HasColumnType("text");
 
                     b.Property<string>("UserName")
                         .IsRequired()
-                        .HasMaxLength(128)
-                        .HasColumnType("character varying(128)");
+                        .HasColumnType("text");
 
-                    b.HasKey("AppointmentId");
+                    b.HasKey("Id");
 
                     b.HasIndex("DoctorId");
 
@@ -66,7 +64,75 @@ namespace HealthcareSystem.Infrastructure.Migrations
                     b.ToTable("Appointments");
                 });
 
-            modelBuilder.Entity("HealthcareSystem.Core.Auth.User", b =>
+            modelBuilder.Entity("HealthcareSystem.Core.Entities.Doctor", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("ExperienceAge")
+                        .HasColumnType("integer");
+
+                    b.Property<decimal>("FeeInDollars")
+                        .HasColumnType("numeric");
+
+                    b.Property<string>("ImageUrl")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)");
+
+                    b.Property<string>("PhoneNumber")
+                        .IsRequired()
+                        .HasMaxLength(12)
+                        .HasColumnType("character varying(12)");
+
+                    b.Property<string>("Specialization")
+                        .IsRequired()
+                        .HasMaxLength(128)
+                        .HasColumnType("character varying(128)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Doctors");
+                });
+
+            modelBuilder.Entity("HealthcareSystem.Core.Entities.Schedule", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("DoctorId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("DoctorName")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTimeOffset>("EndTime")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("IsAvailable")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTimeOffset>("StartTime")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DoctorId");
+
+                    b.ToTable("Schedules");
+                });
+
+            modelBuilder.Entity("HealthcareSystem.Core.Entities.User", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("text");
@@ -84,14 +150,6 @@ namespace HealthcareSystem.Infrastructure.Migrations
 
                     b.Property<bool>("EmailConfirmed")
                         .HasColumnType("boolean");
-
-                    b.Property<string>("FirstName")
-                        .HasMaxLength(128)
-                        .HasColumnType("character varying(128)");
-
-                    b.Property<string>("LastName")
-                        .HasMaxLength(128)
-                        .HasColumnType("character varying(128)");
 
                     b.Property<bool>("LockoutEnabled")
                         .HasColumnType("boolean");
@@ -119,7 +177,7 @@ namespace HealthcareSystem.Infrastructure.Migrations
                     b.Property<string>("RefreshToken")
                         .HasColumnType("text");
 
-                    b.Property<DateTime?>("RefreshTokenExpiry")
+                    b.Property<DateTimeOffset?>("RefreshTokenExpiry")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("SecurityStamp")
@@ -142,72 +200,6 @@ namespace HealthcareSystem.Infrastructure.Migrations
                         .HasDatabaseName("UserNameIndex");
 
                     b.ToTable("AspNetUsers", (string)null);
-                });
-
-            modelBuilder.Entity("HealthcareSystem.Core.Doctors.Doctor", b =>
-                {
-                    b.Property<Guid>("DoctorId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasMaxLength(512)
-                        .HasColumnType("character varying(512)");
-
-                    b.Property<int>("ExperienceAge")
-                        .HasColumnType("integer");
-
-                    b.Property<decimal>("FeeInDollars")
-                        .HasColumnType("numeric");
-
-                    b.Property<string>("ImageUrl")
-                        .HasMaxLength(512)
-                        .HasColumnType("character varying(512)");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(128)
-                        .HasColumnType("character varying(128)");
-
-                    b.Property<string>("PhoneNumber")
-                        .IsRequired()
-                        .HasMaxLength(12)
-                        .HasColumnType("character varying(12)");
-
-                    b.Property<string>("Specialization")
-                        .IsRequired()
-                        .HasMaxLength(128)
-                        .HasColumnType("character varying(128)");
-
-                    b.HasKey("DoctorId");
-
-                    b.ToTable("Doctors");
-                });
-
-            modelBuilder.Entity("HealthcareSystem.Core.Schedules.Schedule", b =>
-                {
-                    b.Property<Guid>("ScheduleId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("DoctorId")
-                        .HasColumnType("uuid");
-
-                    b.Property<int>("DurationInMinutes")
-                        .HasColumnType("integer");
-
-                    b.Property<bool>("IsAvailable")
-                        .HasColumnType("boolean");
-
-                    b.Property<DateTime>("StartTime")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.HasKey("ScheduleId");
-
-                    b.HasIndex("DoctorId");
-
-                    b.ToTable("Schedules");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -238,19 +230,19 @@ namespace HealthcareSystem.Infrastructure.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "6ec36667-ce29-43bd-82bf-2ed53bea6f66",
+                            Id = "df0392fc-ccb2-411b-83d3-13bd78a0fc23",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
-                            Id = "ad15823e-f8ca-4fb6-a9dd-eb235ddb0bc3",
+                            Id = "76f9340a-47bf-4dad-909a-f31517a0ff10",
                             Name = "User",
                             NormalizedName = "USER"
                         },
                         new
                         {
-                            Id = "ee14d503-9e12-4a28-b533-dd041df259a9",
+                            Id = "265202dd-9c1d-4284-a24d-c5d590a6a933",
                             Name = "Doctor",
                             NormalizedName = "DOCTOR"
                         });
@@ -362,22 +354,22 @@ namespace HealthcareSystem.Infrastructure.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("HealthcareSystem.Core.Appointments.Appointment", b =>
+            modelBuilder.Entity("HealthcareSystem.Core.Entities.Appointment", b =>
                 {
-                    b.HasOne("HealthcareSystem.Core.Doctors.Doctor", "Doctor")
-                        .WithMany()
+                    b.HasOne("HealthcareSystem.Core.Entities.Doctor", "Doctor")
+                        .WithMany("Appointments")
                         .HasForeignKey("DoctorId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("HealthcareSystem.Core.Schedules.Schedule", "Schedule")
+                    b.HasOne("HealthcareSystem.Core.Entities.Schedule", "Schedule")
                         .WithMany()
                         .HasForeignKey("ScheduleId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("HealthcareSystem.Core.Auth.User", "User")
-                        .WithMany()
+                    b.HasOne("HealthcareSystem.Core.Entities.User", "User")
+                        .WithMany("Appointments")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -389,9 +381,9 @@ namespace HealthcareSystem.Infrastructure.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("HealthcareSystem.Core.Schedules.Schedule", b =>
+            modelBuilder.Entity("HealthcareSystem.Core.Entities.Schedule", b =>
                 {
-                    b.HasOne("HealthcareSystem.Core.Doctors.Doctor", "Doctor")
+                    b.HasOne("HealthcareSystem.Core.Entities.Doctor", "Doctor")
                         .WithMany("Schedules")
                         .HasForeignKey("DoctorId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -411,7 +403,7 @@ namespace HealthcareSystem.Infrastructure.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
                 {
-                    b.HasOne("HealthcareSystem.Core.Auth.User", null)
+                    b.HasOne("HealthcareSystem.Core.Entities.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -420,7 +412,7 @@ namespace HealthcareSystem.Infrastructure.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
-                    b.HasOne("HealthcareSystem.Core.Auth.User", null)
+                    b.HasOne("HealthcareSystem.Core.Entities.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -435,7 +427,7 @@ namespace HealthcareSystem.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("HealthcareSystem.Core.Auth.User", null)
+                    b.HasOne("HealthcareSystem.Core.Entities.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -444,16 +436,23 @@ namespace HealthcareSystem.Infrastructure.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
                 {
-                    b.HasOne("HealthcareSystem.Core.Auth.User", null)
+                    b.HasOne("HealthcareSystem.Core.Entities.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("HealthcareSystem.Core.Doctors.Doctor", b =>
+            modelBuilder.Entity("HealthcareSystem.Core.Entities.Doctor", b =>
                 {
+                    b.Navigation("Appointments");
+
                     b.Navigation("Schedules");
+                });
+
+            modelBuilder.Entity("HealthcareSystem.Core.Entities.User", b =>
+                {
+                    b.Navigation("Appointments");
                 });
 #pragma warning restore 612, 618
         }

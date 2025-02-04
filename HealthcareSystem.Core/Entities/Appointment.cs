@@ -3,34 +3,37 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace HealthcareSystem.Core.Entities;
 
-public class Appointment(
-    Guid doctorId,
-    string doctorName,
-    Guid scheduleId,
-    DateTime scheduleStartTime,
-    DateTime scheduleEndTime,
-    string userId,
-    string userName
-) {
+public class Appointment {
     [Key]
-    public Guid AppointmentId { get; init; }
+    public Guid Id { get; init; } = Guid.CreateVersion7();
 
     [ForeignKey(nameof(Doctor))]
-    public Guid DoctorId { get; init; } = doctorId;
+    public Guid DoctorId { get; init; }
 
     public Doctor? Doctor { get; init; }
-    public string DoctorName { get; init; } = doctorName;
+
+    [Required(ErrorMessage = "The name is required")]
+    [StringLength(64, ErrorMessage = "The name is too long")]
+    public required string DoctorName { get; init; }
 
     [ForeignKey(nameof(Schedule))]
-    public Guid ScheduleId { get; init; } = scheduleId;
+    public Guid ScheduleId { get; init; }
 
-    public DateTime ScheduleStartTime { get; init; } = scheduleStartTime;
-    public DateTime ScheduleEndTime { get; init; } = scheduleEndTime;
+    [DataType(DataType.DateTime)]
+    [Required(ErrorMessage = "The start time is required")]
+    public required DateTimeOffset StartTime { get; init; }
+
+    [DataType(DataType.DateTime)]
+    [Required(ErrorMessage = "The end time is required")]
+    public required DateTimeOffset EndTime { get; init; }
+
     public Schedule? Schedule { get; init; }
 
     [ForeignKey(nameof(User))]
-    public string UserId { get; init; } = userId;
+    public string UserId { get; init; }
 
     public User? User { get; init; }
-    public string UserName { get; init; } = userName;
+
+    [Required(ErrorMessage = "The user name is required")]
+    public required string UserName { get; init; }
 }

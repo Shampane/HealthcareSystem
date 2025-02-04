@@ -31,6 +31,16 @@ public class AppDbContext : IdentityDbContext<User> {
             .WithOne(e => e.Doctor)
             .HasForeignKey(e => e.DoctorId)
             .IsRequired();
+        modelBuilder.Entity<Doctor>()
+            .HasMany(e => e.Appointments)
+            .WithOne(e => e.Doctor)
+            .HasForeignKey(e => e.DoctorId)
+            .IsRequired();
+        modelBuilder.Entity<User>()
+            .HasMany(e => e.Appointments)
+            .WithOne(e => e.User)
+            .HasForeignKey(e => e.UserId)
+            .IsRequired();
         modelBuilder.Entity<IdentityRole>().HasData(_roles);
     }
 

@@ -9,7 +9,7 @@ public static class ScheduleExtensions {
         this IServiceCollection services
     ) {
         services.AddScoped<IScheduleRepository, ScheduleRepository>();
-        services.AddScoped<ScheduleService>();
+        //services.AddScoped<ScheduleService>();
         return services;
     }
 }

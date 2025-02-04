@@ -3,22 +3,18 @@ using HealthcareSystem.Core.Entities;
 namespace HealthcareSystem.Core.Interfaces;
 
 public interface IAppointmentRepository {
-    public Task<ICollection<Appointment>?> GetAppointmentsByDoctorAsync(
+    public Task<ICollection<Appointment>?> GetAppointmentsByDoctor(
         Guid doctorId, int? pageIndex, int? pageSize,
-        DateTime? searchStartTime, DateTime? searchEndTime
+        DateTimeOffset? searchStartTime, DateTimeOffset? searchEndTime
     );
 
-    public Task<ICollection<Appointment>?> GetAppointmentsByUserAsync(
+    public Task<ICollection<Appointment>?> GetAppointmentsByUser(
         string userId, int? pageIndex, int? pageSize,
-        DateTime? searchStartTime, DateTime? searchEndTime
+        DateTimeOffset? searchStartTime, DateTimeOffset? searchEndTime
     );
 
-    public Task<Appointment?> GetAppointmentByIdAsync(Guid id);
-    public Task CreateAppointmentAsync(Appointment appointment);
-    public Task RemoveAppointmentAsync(Appointment appointment);
-    public Task<Appointment?> FindAppointmentByIdAsync(Guid appointmentId);
-    public Task<Doctor?> FindDoctorByIdAsync(Guid doctorId);
-    public Task<Schedule?> FindScheduleByIdAsync(Guid scheduleId);
-    public Task<User?> FindUserByIdAsync(string userId);
-    public Task SaveAsync();
+    public Task<Appointment?> GetAppointmentById(Guid id);
+    public Task CreateAppointment(Appointment appointment);
+    public Task RemoveAppointment(Appointment appointment);
+    public Task SaveChanges();
 }

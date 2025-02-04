@@ -1,4 +1,3 @@
-using HealthcareSystem.Application.Services;
 using HealthcareSystem.Core.Interfaces;
 using HealthcareSystem.Infrastructure.Repositories;
 
@@ -9,7 +8,7 @@ public static class AppointmentExtensions {
         this IServiceCollection services
     ) {
         services.AddScoped<IAppointmentRepository, AppointmentRepository>();
-        services.AddScoped<AppointmentService>();
+        //services.AddScoped<AppointmentService>();
         return services;
     }
 }

@@ -9,30 +9,30 @@ public class ScheduleCleanupService : BackgroundService {
     private readonly ILogger<ScheduleCleanupService> _logger;
     private readonly IServiceProvider _serviceProvider;
 
-    public ScheduleCleanupService(ILogger<ScheduleCleanupService> logger,
-        IServiceProvider serviceProvider) {
+    public ScheduleCleanupService(
+        ILogger<ScheduleCleanupService> logger, IServiceProvider serviceProvider
+    ) {
         _logger = logger;
         _serviceProvider = serviceProvider;
     }
 
     protected override async Task ExecuteAsync(CancellationToken ct) {
-        _logger.LogInformation("Schedule cleanup service is starting.");
+        _logger.LogInformation("Schedule cleanup service is starting");
         while (!ct.IsCancellationRequested) {
             try {
                 await using (
-                    AsyncServiceScope scope =
-                    _serviceProvider.CreateAsyncScope()
+                    AsyncServiceScope scope = _serviceProvider.CreateAsyncScope()
                 ) {
                     var repository = scope.ServiceProvider
                         .GetRequiredService<IScheduleRepository>();
 
                     int oldCount = await repository.GetSchedulesCount();
-                    await repository.ClearOldSchedulesAsync();
+                    await repository.RemoveOldSchedules();
                     int newCount = await repository.GetSchedulesCount();
-                    int cleanedCount = oldCount - newCount;
 
                     _logger.LogInformation(
-                        $"Cleaned {cleanedCount} old schedules.");
+                        $"Removed {oldCount - newCount} old schedules"
+                    );
                 }
 
                 int hourSpan = 24 - DateTime.UtcNow.Hour;
@@ -44,15 +44,10 @@ public class ScheduleCleanupService : BackgroundService {
                 await Task.Delay(TimeSpan.FromHours(numberOfHours), ct);
             }
             catch (TaskCanceledException) {
-                _logger.LogInformation(
-                    "Schedule cleanup service is canceled."
-                );
-            }
-            catch (Exception ex) {
-                _logger.LogInformation($"Error: {ex.Message}");
+                _logger.LogInformation("Schedule cleanup service is canceled");
             }
         }
 
-        _logger.LogInformation("Schedule cleanup service is stopping.");
+        _logger.LogInformation("Schedule cleanup service is stopping");
     }
 }

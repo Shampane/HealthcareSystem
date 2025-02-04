@@ -2,18 +2,21 @@ using System.Linq.Expressions;
 using HealthcareSystem.Core.Entities;
 using HealthcareSystem.Core.Interfaces;
 using HealthcareSystem.Infrastructure.DataAccess;
+using HealthcareSystem.Infrastructure.Helpers;
 using Microsoft.EntityFrameworkCore;
 
 namespace HealthcareSystem.Infrastructure.Repositories;
 
 public class DoctorRepository : IDoctorRepository {
     private readonly AppDbContext _dbContext;
+    private readonly GetHelper _getHelper;
 
     public DoctorRepository(AppDbContext dbContext) {
         _dbContext = dbContext;
+        _getHelper = new GetHelper();
     }
 
-    public async Task<ICollection<Doctor>?> GetDoctorsAsync(
+    public async Task<ICollection<Doctor>?> GetDoctors(
         int? pageIndex, int? pageSize, string? sortField,
         string? sortOrder, string? searchField, string? searchValue
     ) {
@@ -21,85 +24,68 @@ public class DoctorRepository : IDoctorRepository {
 
         query = AddGetSearch(query, searchField, searchValue);
         query = AddGetSort(query, sortField, sortOrder);
-        query = AddGetPagination(query, pageSize, pageIndex);
+        query = _getHelper.AddPagination(query, pageSize, pageIndex);
 
         return await query.ToListAsync();
     }
 
-    public async Task CreateDoctorAsync(Doctor doctor) {
+    public async Task<Doctor?> GetDoctorById(Guid id) {
+        return await _dbContext.Doctors.FirstOrDefaultAsync(d => d.Id == id);
+    }
+
+    public async Task CreateDoctor(Doctor doctor) {
         await _dbContext.Doctors.AddAsync(doctor);
-        await SaveAsync();
+        await SaveChanges();
     }
 
+    public async Task UpdateDoctor(Doctor doctor) {
+        _dbContext.Entry(doctor).State = EntityState.Modified;
+        await SaveChanges();
+    }
 
-    public async Task RemoveDoctorAsync(Doctor doctor) {
+    public async Task RemoveDoctor(Doctor doctor) {
         _dbContext.Doctors.Remove(doctor);
-        await SaveAsync();
+        await SaveChanges();
     }
 
-    public async Task SaveAsync() {
+    public async Task SaveChanges() {
         await _dbContext.SaveChangesAsync();
-    }
-
-    public async Task<Doctor?> FindDoctorByIdAsync(Guid doctorId) {
-        return await _dbContext.Doctors
-            .FirstOrDefaultAsync(d => d.DoctorId == doctorId);
-    }
-
-    public async Task<Doctor?> GetDoctorByIdAsync(Guid doctorId) {
-        return await _dbContext.Doctors
-            .AsNoTracking()
-            .FirstOrDefaultAsync(d => d.DoctorId == doctorId);
     }
 
     private static IQueryable<Doctor> AddGetSearch(
         IQueryable<Doctor> query, string? searchField, string? searchValue
     ) {
-        Expression<Func<Doctor, bool>> key =
-            searchField?.ToLower() switch {
-                "name" => d =>
-                    d.Name.ToLower().StartsWith(searchValue!),
-                "specialization" => d =>
-                    d.Specialization.ToLower().StartsWith(searchValue!),
-                "phonenumber" => d =>
-                    d.PhoneNumber.ToLower().StartsWith(searchValue!),
-                _ => d => false
-            };
-        IQueryable<Doctor>? newQuery = searchValue != null
-            ? query.Where(key)
-            : query;
-
-        return newQuery;
+        if (searchValue is null) {
+            return query;
+        }
+        Expression<Func<Doctor, bool>> key = searchField?.ToLower() switch {
+            "name" => d => d.Name.StartsWith(
+                searchValue, StringComparison.CurrentCultureIgnoreCase
+            ),
+            "specialization" => d => d.Specialization.StartsWith(
+                searchValue, StringComparison.CurrentCultureIgnoreCase
+            ),
+            "phonenumber" => d => d.PhoneNumber.StartsWith(
+                searchValue, StringComparison.CurrentCultureIgnoreCase
+            ),
+            _ => d => false
+        };
+        return query.Where(key);
     }
 
     private static IQueryable<Doctor> AddGetSort(
         IQueryable<Doctor> query, string? sortField, string? sortOrder
     ) {
-        Expression<Func<Doctor, object>> key =
-            sortField?.ToLower() switch {
-                "name" => d => d.Name,
-                "experienceage" => d => d.ExperienceAge,
-                "feeindollars" => d => d.FeeInDollars,
-                "specialization" => d => d.Specialization,
-                _ => d => d.DoctorId
-            };
+        Expression<Func<Doctor, object>> key = sortField?.ToLower() switch {
+            "name" => d => d.Name,
+            "experienceage" => d => d.ExperienceAge,
+            "feeindollars" => d => d.FeeInDollars,
+            "specialization" => d => d.Specialization,
+            _ => d => d.Id
+        };
 
-        bool isDescending = sortOrder?.ToLower().Equals("desc") ?? false;
-        IOrderedQueryable<Doctor>? newQuery = isDescending
-            ? query.OrderByDescending(key)
-            : query.OrderBy(key);
-        return newQuery;
-    }
-
-    private static IQueryable<Doctor> AddGetPagination(
-        IQueryable<Doctor> query, int? pageSize, int? pageIndex
-    ) {
-        IQueryable<Doctor>? newQuery = pageSize.HasValue && pageIndex.HasValue
-            ? query.Skip((pageIndex.Value - 1) * pageSize.Value)
-            : query;
-        newQuery = pageSize.HasValue
-            ? newQuery.Take(pageSize.Value)
-            : newQuery;
-        return newQuery;
+        bool isDescending = sortOrder is not null
+            && sortOrder.Equals("desc", StringComparison.CurrentCultureIgnoreCase);
+        return isDescending ? query.OrderByDescending(key) : query.OrderBy(key);
     }
 }

@@ -1,13 +1,6 @@
-using System.Text;
-using HealthcareSystem.Application.Dtos;
-using HealthcareSystem.Application.Mappings;
-using HealthcareSystem.Application.Requests;
-using HealthcareSystem.Application.Responses;
-using HealthcareSystem.Core.Entities;
-using HealthcareSystem.Core.Interfaces;
-
 namespace HealthcareSystem.Application.Services;
 
+/*
 public class ScheduleService {
     private const string ErrorStatus = nameof(ResponseStatus.Error);
     private const string SuccessStatus = nameof(ResponseStatus.Success);
@@ -22,7 +15,7 @@ public class ScheduleService {
         DateTime? searchStartTime, DateTime? searchEndTime
     ) {
         try {
-            ICollection<Schedule>? schedules = await _repository
+            ICollection<ScheduleDto>? schedules = await _repository
                 .GetSchedulesByDoctorAsync(
                     doctorId, pageIndex, pageSize,
                     searchStartTime, searchEndTime
@@ -51,7 +44,7 @@ public class ScheduleService {
 
     public async Task<GetEntityResponse<ScheduleDto>> GetByIdAsync(Guid id) {
         try {
-            Schedule? schedule = await _repository.GetScheduleByIdAsync(id);
+            ScheduleDto? schedule = await _repository.GetScheduleByIdAsync(id);
             if (schedule == null) {
                 return new GetEntityResponse<ScheduleDto>(
                     ErrorStatus, "The Schedule wasn't found", null
@@ -80,7 +73,7 @@ public class ScheduleService {
                     ErrorStatus, errorMessage, null
                 );
             }
-            var schedule = new Schedule(
+            var schedule = new ScheduleDto(
                 request.DoctorId, request.StartTime,
                 request.DurationInMinutes
             );
@@ -109,7 +102,7 @@ public class ScheduleService {
         Guid id
     ) {
         try {
-            Schedule? schedule = await _repository.FindScheduleByIdAsync(id);
+            ScheduleDto? schedule = await _repository.FindScheduleByIdAsync(id);
             if (schedule == null) {
                 return new UpdateResponse<ScheduleDto>(
                     ErrorStatus,
@@ -142,7 +135,7 @@ public class ScheduleService {
 
     public async Task<RemoveResponse<ScheduleDto>> RemoveAsync(Guid id) {
         try {
-            Schedule? schedule = await _repository.FindScheduleByIdAsync(id);
+            ScheduleDto? schedule = await _repository.FindScheduleByIdAsync(id);
             if (schedule == null) {
                 return new RemoveResponse<ScheduleDto>(
                     ErrorStatus,
@@ -216,3 +209,4 @@ public class ScheduleService {
         return errorMessage.ToString().TrimEnd();
     }
 }
+*/

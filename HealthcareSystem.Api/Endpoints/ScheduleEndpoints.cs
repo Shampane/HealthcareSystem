@@ -1,9 +1,6 @@
-using HealthcareSystem.Application.Requests;
-using HealthcareSystem.Application.Services;
-using Microsoft.AspNetCore.Mvc;
-
 namespace HealthcareSystem.Api.Endpoints;
 
+/*
 public static class ScheduleEndpoints {
     public static WebApplication MapScheduleEndpoints(
         this WebApplication app
@@ -46,3 +43,4 @@ public static class ScheduleEndpoints {
         return app;
     }
 }
+*/

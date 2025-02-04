@@ -1,13 +1,6 @@
-using System.Text;
-using HealthcareSystem.Application.Dtos;
-using HealthcareSystem.Application.Mappings;
-using HealthcareSystem.Application.Requests;
-using HealthcareSystem.Application.Responses;
-using HealthcareSystem.Core.Entities;
-using HealthcareSystem.Core.Interfaces;
-
 namespace HealthcareSystem.Application.Services;
 
+/*
 public class DoctorService {
     private const string ErrorStatus = nameof(ResponseStatus.Error);
 
@@ -21,7 +14,7 @@ public class DoctorService {
 
     public async Task<GetEntityResponse<DoctorDto>> GetByIdAsync(Guid id) {
         try {
-            Doctor? doctor = await _repository.GetDoctorByIdAsync(id);
+            DoctorDto? doctor = await _repository.GetDoctorByIdAsync(id);
             if (doctor == null) {
                 return new GetEntityResponse<DoctorDto>(
                     ErrorStatus, "The Doctor wasn't found", null
@@ -46,7 +39,7 @@ public class DoctorService {
         string? sortOrder, string? searchField, string? searchValue
     ) {
         try {
-            ICollection<Doctor>? doctors = await _repository.GetDoctorsAsync(
+            ICollection<DoctorDto>? doctors = await _repository.GetDoctorsAsync(
                 pageIndex, pageSize, sortField,
                 sortOrder, searchField, searchValue
             );
@@ -80,7 +73,7 @@ public class DoctorService {
                     ErrorStatus, errorMessage, null
                 );
             }
-            var doctor = new Doctor(
+            var doctor = new DoctorDto(
                 request.Name, request.Description, request.ImageUrl,
                 request.ExperienceAge, request.FeeInDollars,
                 request.Specialization, request.PhoneNumber
@@ -113,7 +106,7 @@ public class DoctorService {
                     ErrorStatus, errorMessage, null
                 );
             }
-            Doctor? doctor = await _repository.FindDoctorByIdAsync(id);
+            DoctorDto? doctor = await _repository.FindDoctorByIdAsync(id);
             if (doctor == null) {
                 return new UpdateResponse<DoctorDto>(
                     ErrorStatus, "The Doctor doesn't exist", null
@@ -148,7 +141,7 @@ public class DoctorService {
 
     public async Task<RemoveResponse<DoctorDto>> RemoveAsync(Guid id) {
         try {
-            Doctor? doctor = await _repository.FindDoctorByIdAsync(id);
+            DoctorDto? doctor = await _repository.FindDoctorByIdAsync(id);
             if (doctor == null) {
                 return new RemoveResponse<DoctorDto>(
                     ErrorStatus,
@@ -209,3 +202,4 @@ public class DoctorService {
         return errorMessage.ToString().TrimEnd();
     }
 }
+*/

@@ -75,7 +75,7 @@ public static class AuthExtensions {
         this IServiceCollection services
     ) {
         services.AddScoped<IAuthRepository, AuthRepository>();
-        services.AddScoped<AuthService>();
+        //services.AddScoped<AuthService>();
         return services;
     }
 }

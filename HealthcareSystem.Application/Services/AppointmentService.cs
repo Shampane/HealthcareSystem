@@ -1,12 +1,6 @@
-using HealthcareSystem.Application.Dtos;
-using HealthcareSystem.Application.Mappings;
-using HealthcareSystem.Application.Requests;
-using HealthcareSystem.Application.Responses;
-using HealthcareSystem.Core.Entities;
-using HealthcareSystem.Core.Interfaces;
-
 namespace HealthcareSystem.Application.Services;
 
+/*
 public class AppointmentService {
     private const string ErrorStatus = nameof(ResponseStatus.Error);
     private const string SuccessStatus = nameof(ResponseStatus.Success);
@@ -21,7 +15,7 @@ public class AppointmentService {
         DateTime? searchStartTime, DateTime? searchEndTime
     ) {
         try {
-            ICollection<Appointment>? appointments = await _repository
+            ICollection<AppointmentDto>? appointments = await _repository
                 .GetAppointmentsByDoctorAsync(
                     doctorId, pageIndex, pageSize,
                     searchStartTime, searchEndTime
@@ -54,7 +48,7 @@ public class AppointmentService {
         DateTime? searchStartTime, DateTime? searchEndTime
     ) {
         try {
-            ICollection<Appointment>? appointments = await _repository
+            ICollection<AppointmentDto>? appointments = await _repository
                 .GetAppointmentsByUserAsync(
                     userId, pageIndex, pageSize,
                     searchStartTime, searchEndTime
@@ -82,9 +76,10 @@ public class AppointmentService {
     }
 
     public async Task<GetEntityResponse<AppointmentDto>> GetByIdAsync(
-        Guid id) {
+        Guid id
+    ) {
         try {
-            Appointment? appointment = await _repository
+            AppointmentDto? appointment = await _repository
                 .GetAppointmentByIdAsync(id);
             if (appointment == null) {
                 return new GetEntityResponse<AppointmentDto>(
@@ -108,21 +103,21 @@ public class AppointmentService {
         AppointmentRequest request
     ) {
         try {
-            Doctor? doctor = await _repository
+            DoctorDto? doctor = await _repository
                 .FindDoctorByIdAsync(request.DoctorId);
             if (doctor == null) {
                 return new CreateResponse<AppointmentDto>(
                     ErrorStatus, "The Doctor wasn't found", null
                 );
             }
-            User? user = await _repository
+            UserDto? user = await _repository
                 .FindUserByIdAsync(request.UserId);
             if (user == null) {
                 return new CreateResponse<AppointmentDto>(
                     ErrorStatus, "The User wasn't found", null
                 );
             }
-            Schedule? schedule = await _repository
+            ScheduleDto? schedule = await _repository
                 .FindScheduleByIdAsync(request.ScheduleId);
             if (schedule == null) {
                 return new CreateResponse<AppointmentDto>(
@@ -130,7 +125,7 @@ public class AppointmentService {
                 );
             }
 
-            var appointment = new Appointment(
+            var appointment = new AppointmentDto(
                 request.DoctorId, request.DoctorName, request.ScheduleId,
                 request.ScheduleStartTime, request.ScheduleEndTime,
                 request.UserId, request.UserName
@@ -154,7 +149,7 @@ public class AppointmentService {
 
     public async Task<RemoveResponse<AppointmentDto>> RemoveAsync(Guid id) {
         try {
-            Appointment? appointment = await _repository
+            AppointmentDto? appointment = await _repository
                 .FindAppointmentByIdAsync(id);
             if (appointment == null) {
                 return new RemoveResponse<AppointmentDto>(
@@ -179,3 +174,4 @@ public class AppointmentService {
         }
     }
 }
+*/

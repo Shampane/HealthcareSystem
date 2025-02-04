@@ -1,10 +1,6 @@
-using HealthcareSystem.Application.Requests;
-using HealthcareSystem.Application.Services;
-using HealthcareSystem.Core.Entities;
-using Microsoft.AspNetCore.Mvc;
-
 namespace HealthcareSystem.Api.Endpoints;
 
+/*
 public static class AuthEndpoints {
     public static WebApplication MapAuthEndpoints(this WebApplication app) {
         app.MapPost("/api/register", async (
@@ -39,3 +35,4 @@ public static class AuthEndpoints {
         return app;
     }
 }
+*/

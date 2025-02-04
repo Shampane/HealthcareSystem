@@ -1,4 +1,3 @@
-using HealthcareSystem.Application.Services;
 using HealthcareSystem.Core.Interfaces;
 using HealthcareSystem.Infrastructure.Repositories;
 
@@ -9,7 +8,7 @@ public static class DoctorExtensions {
         this IServiceCollection services
     ) {
         services.AddScoped<IDoctorRepository, DoctorRepository>();
-        services.AddScoped<DoctorService>();
+        //services.AddScoped<DoctorService>();
         return services;
     }
 }

@@ -4,6 +4,7 @@ using System.Security.Cryptography;
 using System.Text;
 using HealthcareSystem.Core.Entities;
 using HealthcareSystem.Core.Interfaces;
+using HealthcareSystem.Core.Records;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
@@ -17,69 +18,56 @@ public class AuthRepository : IAuthRepository {
     public AuthRepository(
         UserManager<User> userManager, IConfiguration configuration
     ) {
-        _configuration = configuration;
         _userManager = userManager;
+        _configuration = configuration;
     }
 
-    public async Task<IdentityResult> CreateUserWithPasswordAsync(
-        User user, string password
-    ) {
-        return await _userManager.CreateAsync(user, password);
+    public async Task<User?> GetUserByEmail(string userEmail) {
+        return await _userManager.FindByEmailAsync(userEmail);
     }
 
-    public async Task AddUserRoleAsync(User user) {
+    public async Task CreateUserWithPassword(User user, string password) {
+        await _userManager.CreateAsync(user, password);
+    }
+
+    public async Task AddRolesToUser(User user) {
         List<string> roles = ["User"];
         await _userManager.AddToRolesAsync(user, roles);
     }
 
-    public async Task<string> GenerateResetToken(User user) {
-        string token = await _userManager.GeneratePasswordResetTokenAsync(user);
-        return token;
-    }
-
-    public async Task<IdentityResult> ResetPassword(User user, string token,
-        string password) {
-        return await _userManager.ResetPasswordAsync(user, token, password);
-    }
-
-    public async Task<bool> IsUserValidAsync(User user, string password) {
-        return await _userManager.CheckPasswordAsync(user, password);
-    }
-
-    public async Task<User?> FindUserByNameAsync(string userName) {
-        User? user = await _userManager.FindByNameAsync(userName);
-        return user;
-    }
-
-    public async Task<User?> FindUserByEmail(string userEmail) {
-        User? user = await _userManager.FindByEmailAsync(userEmail);
-        return user;
-    }
-
-    public async Task<Token?> CreateTokenAsync(
-        User user, bool populateExp
-    ) {
+    public async Task<Token?> CreateToken(User user, bool populateExp) {
         SigningCredentials signingCredentials = GetSigningCredentials();
-        IList<Claim> claims = await GetClaimsAsync(user);
+        List<Claim> claims = await GetClaims(user);
         JwtSecurityToken tokenOptions =
             CreateTokenOptions(signingCredentials, claims);
+        string refreshToken = CreateRefreshToken();
 
-        string refreshToken = GenerateRefreshToken();
         user.RefreshToken = refreshToken;
         if (populateExp) {
-            user.RefreshTokenExpiry = DateTime.UtcNow.AddDays(3);
+            user.RefreshTokenExpiry = DateTimeOffset.UtcNow.AddDays(3);
         }
 
         await _userManager.UpdateAsync(user);
-        string? accessToken =
-            new JwtSecurityTokenHandler().WriteToken(tokenOptions);
+        string accessToken = new JwtSecurityTokenHandler().WriteToken(tokenOptions);
 
         return new Token(accessToken, refreshToken);
     }
 
+    public async Task<string> CreateResetToken(User user) {
+        return await _userManager.GeneratePasswordResetTokenAsync(user);
+    }
+
+    public async Task ResetUserPassword(User user, string token, string password) {
+        await _userManager.ResetPasswordAsync(user, token, password);
+    }
+
+    public async Task<bool> IsUserPasswordValid(User user, string password) {
+        return await _userManager.CheckPasswordAsync(user, password);
+    }
+
     public ClaimsPrincipal GetPrincipalFromExpiredToken(string token) {
         IConfigurationSection jwtSettings = _configuration.GetSection("Jwt");
-        var tokenValidationParameters = new TokenValidationParameters {
+        TokenValidationParameters tokenValidationParameters = new() {
             ValidateAudience = true,
             ValidateIssuer = true,
             ValidateIssuerSigningKey = true,
@@ -90,23 +78,30 @@ public class AuthRepository : IAuthRepository {
             ValidIssuer = jwtSettings["Issuer"],
             ValidAudience = jwtSettings["Audience"]
         };
+
         var tokenHandler = new JwtSecurityTokenHandler();
         SecurityToken securityToken;
         ClaimsPrincipal? principal = tokenHandler.ValidateToken(
             token, tokenValidationParameters, out securityToken
         );
         var jwtSecurityToken = securityToken as JwtSecurityToken;
-        if (jwtSecurityToken is null ||
-            !jwtSecurityToken.Header.Alg.Equals(
-                SecurityAlgorithms.HmacSha256,
-                StringComparison.InvariantCultureIgnoreCase
-            )) {
+        if (jwtSecurityToken is null || !jwtSecurityToken.Header.Alg.Equals(
+            SecurityAlgorithms.HmacSha256,
+            StringComparison.InvariantCultureIgnoreCase
+        )) {
             throw new SecurityTokenException("Invalid token");
         }
         return principal;
     }
 
-    private string GenerateRefreshToken() {
+
+    public async Task<User?> FindUserByNameAsync(string userName) {
+        User? user = await _userManager.FindByNameAsync(userName);
+        return user;
+    }
+
+
+    private string CreateRefreshToken() {
         byte[] randomNumber = new byte[32];
         using var rng = RandomNumberGenerator.Create();
         rng.GetBytes(randomNumber);
@@ -116,18 +111,15 @@ public class AuthRepository : IAuthRepository {
     private SigningCredentials GetSigningCredentials() {
         IConfigurationSection jwtSettings = _configuration.GetSection("Jwt");
         byte[] key = Encoding.UTF8.GetBytes(jwtSettings["Key"]!);
-        var secret = new SymmetricSecurityKey(key);
-        return new SigningCredentials(
-            secret, SecurityAlgorithms.HmacSha256
-        );
+        SymmetricSecurityKey secret = new(key);
+        return new SigningCredentials(secret, SecurityAlgorithms.HmacSha256);
     }
 
-    private async Task<IList<Claim>> GetClaimsAsync(User user) {
-        var claims = new List<Claim> { new(ClaimTypes.Name, user.UserName!) };
+    private async Task<List<Claim>> GetClaims(User user) {
+        List<Claim> claims = [new(ClaimTypes.Name, user.UserName!)];
         IList<string> roles = await _userManager.GetRolesAsync(user);
         claims.AddRange(
-            roles
-                .Select(r => new Claim(ClaimTypes.Role, r))
+            roles.Select(r => new Claim(ClaimTypes.Role, r))
         );
         return claims;
     }
@@ -135,17 +127,13 @@ public class AuthRepository : IAuthRepository {
     private JwtSecurityToken CreateTokenOptions(
         SigningCredentials signingCredentials, IList<Claim> claims
     ) {
-        IConfigurationSection jwtSettings =
-            _configuration.GetSection("Jwt");
-        var tokenOptions = new JwtSecurityToken(
-            jwtSettings["Issuer"],
-            jwtSettings["Audience"],
-            claims,
-            expires: DateTime.UtcNow.AddMinutes(
-                double.Parse(jwtSettings["ExpireInMinutes"]!)
-            ),
-            signingCredentials: signingCredentials
+        IConfigurationSection jwtSettings = _configuration.GetSection("Jwt");
+        DateTime expires = DateTime.UtcNow.AddMinutes(
+            double.Parse(jwtSettings["ExpireInMinutes"]!)
         );
-        return tokenOptions;
+        return new JwtSecurityToken(
+            jwtSettings["Issuer"], jwtSettings["Audience"],
+            claims, expires, signingCredentials: signingCredentials
+        );
     }
 }

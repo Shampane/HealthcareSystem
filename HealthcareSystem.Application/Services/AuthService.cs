@@ -1,15 +1,6 @@
-using System.Net;
-using System.Security.Claims;
-using HealthcareSystem.Application.Dtos;
-using HealthcareSystem.Application.Requests;
-using HealthcareSystem.Application.Responses;
-using HealthcareSystem.Core.Entities;
-using HealthcareSystem.Core.Interfaces;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.WebUtilities;
-
 namespace HealthcareSystem.Application.Services;
 
+/*
 public class AuthService {
     private const string ErrorStatus = nameof(ResponseStatus.Error);
     private const string SuccessStatus = nameof(ResponseStatus.Success);
@@ -37,7 +28,7 @@ public class AuthService {
                 );
             }
 
-            var user = new User {
+            var user = new UserDto {
                 UserName = request.UserName,
                 Email = request.Email,
                 FirstName = request.FirstName,
@@ -74,7 +65,7 @@ public class AuthService {
         UserAuthenticateRequest request
     ) {
         try {
-            User? user =
+            UserDto? user =
                 await _repository.FindUserByNameAsync(request.UserName);
             if (user is null) {
                 return new CreateResponse<Token>(
@@ -108,7 +99,7 @@ public class AuthService {
         try {
             ClaimsPrincipal principal =
                 _repository.GetPrincipalFromExpiredToken(token.AccessToken);
-            User? user = await _repository.FindUserByNameAsync(
+            UserDto? user = await _repository.FindUserByNameAsync(
                 principal.Identity.Name
             );
             if (user is null ||
@@ -138,7 +129,7 @@ public class AuthService {
         ForgetPasswordRequest request
     ) {
         try {
-            User? user = await _repository.FindUserByEmail(request.Email);
+            UserDto? user = await _repository.FindUserByEmail(request.Email);
             if (user is null) {
                 return new MessageResponse(ErrorStatus, "Invalid UserEmail");
             }
@@ -176,7 +167,7 @@ public class AuthService {
                     ErrorStatus, "Passwords aren't match"
                 );
             }
-            User? user = await _repository.FindUserByEmail(request.Email);
+            UserDto? user = await _repository.FindUserByEmail(request.Email);
             if (user is null) {
                 return new MessageResponse(ErrorStatus, "Invalid UserEmail");
             }
@@ -201,3 +192,4 @@ public class AuthService {
         }
     }
 }
+*/
