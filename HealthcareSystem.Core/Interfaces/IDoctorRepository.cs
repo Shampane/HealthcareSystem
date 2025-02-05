@@ -10,7 +10,12 @@ public interface IDoctorRepository {
 
     public Task<Doctor?> GetDoctorById(Guid id);
     public Task CreateDoctor(Doctor doctor);
-    public Task UpdateDoctor(Doctor doctor);
+
+    public Task UpdateDoctor(
+        Doctor doctor, string? name, string? description,
+        string? imageUrl, int? experienceAge, decimal? feeInDollars,
+        string? specialization, string? phoneNumber
+    );
+
     public Task RemoveDoctor(Doctor doctor);
-    public Task SaveChanges();
 }

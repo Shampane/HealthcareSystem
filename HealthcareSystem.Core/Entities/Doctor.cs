@@ -13,6 +13,7 @@ public class Doctor {
     [Required(ErrorMessage = "The description is required")]
     public required string Description { get; set; }
 
+    [Url]
     public string? ImageUrl { get; set; }
 
     [Required(ErrorMessage = "The experience age is required")]
@@ -27,7 +28,7 @@ public class Doctor {
     [StringLength(128, ErrorMessage = "The specialization is too long")]
     public required string Specialization { get; set; }
 
-    [DataType(DataType.PhoneNumber)]
+    [Phone]
     [Required(ErrorMessage = "The phone number is required")]
     [StringLength(12, ErrorMessage = "The phone number is too long")]
     public required string PhoneNumber { get; set; }

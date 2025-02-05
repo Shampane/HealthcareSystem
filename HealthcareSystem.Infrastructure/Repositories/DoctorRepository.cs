@@ -38,8 +38,18 @@ public class DoctorRepository : IDoctorRepository {
         await SaveChanges();
     }
 
-    public async Task UpdateDoctor(Doctor doctor) {
-        _dbContext.Entry(doctor).State = EntityState.Modified;
+    public async Task UpdateDoctor(
+        Doctor doctor, string? name, string? description,
+        string? imageUrl, int? experienceAge, decimal? feeInDollars,
+        string? specialization, string? phoneNumber
+    ) {
+        doctor.Name = name ?? doctor.Name;
+        doctor.Description = description ?? doctor.Description;
+        doctor.ImageUrl = imageUrl ?? doctor.ImageUrl;
+        doctor.ExperienceAge = experienceAge ?? doctor.ExperienceAge;
+        doctor.FeeInDollars = feeInDollars ?? doctor.FeeInDollars;
+        doctor.Specialization = specialization ?? doctor.Specialization;
+        doctor.PhoneNumber = phoneNumber ?? doctor.PhoneNumber;
         await SaveChanges();
     }
 
@@ -48,7 +58,7 @@ public class DoctorRepository : IDoctorRepository {
         await SaveChanges();
     }
 
-    public async Task SaveChanges() {
+    private async Task SaveChanges() {
         await _dbContext.SaveChangesAsync();
     }
 
