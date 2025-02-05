@@ -1,15 +1,12 @@
 namespace HealthcareSystem.Application.Requests;
 
-public record ScheduleRequest(
-    Guid DoctorId,
-    DateTime StartTime,
-    int DurationInMinutes
-);
+public static class ScheduleRequests {
+    public record GetSchedulesRequest(
+        Guid? DoctorId, int? PageIndex, int? PageSize,
+        DateTimeOffset? StartTime, DateTimeOffset? EndTime
+    );
 
-public record ScheduleGetRequest(
-    Guid DoctorId,
-    int? PageIndex,
-    int? PageSize,
-    DateTime? SearchStartTime,
-    DateTime? SearchEndTime
-);
+    public record CreateScheduleRequest(
+        Guid DoctorId, DateTimeOffset StartTime, DateTimeOffset EndTime
+    );
+}

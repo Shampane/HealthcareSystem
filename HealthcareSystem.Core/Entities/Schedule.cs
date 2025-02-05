@@ -8,7 +8,8 @@ public class Schedule {
     public Guid Id { get; init; } = Guid.CreateVersion7();
 
     [ForeignKey(nameof(Doctor))]
-    public Guid DoctorId { get; init; }
+    [Required(ErrorMessage = "The doctor id is required")]
+    public required Guid DoctorId { get; init; }
 
     public Doctor Doctor { get; init; }
 

@@ -15,15 +15,15 @@ public class ScheduleRepository : IScheduleRepository {
         _getHelper = new GetHelper();
     }
 
-    public async Task<ICollection<Schedule>?> GetSchedulesByDoctor(
-        Guid doctorId, int? pageIndex, int? pageSize,
+    public async Task<ICollection<Schedule>?> GetSchedules(
+        Guid? doctorId, int? pageIndex, int? pageSize,
         DateTimeOffset? searchStartTime, DateTimeOffset? searchEndTime
     ) {
         IQueryable<Schedule>? query = _dbContext.Schedules
             .AsNoTracking()
-            .OrderBy(s => s.StartTime)
-            .Where(s => s.DoctorId == doctorId);
+            .OrderBy(s => s.StartTime);
 
+        query = doctorId is null ? query : query.Where(s => s.DoctorId == doctorId);
         query = AddGetSearch(query, searchStartTime, searchEndTime);
         query = _getHelper.AddPagination(query, pageSize, pageIndex);
 
@@ -36,11 +36,8 @@ public class ScheduleRepository : IScheduleRepository {
     }
 
     public async Task CreateSchedule(Schedule schedule) {
-        if (!await IsTimeAvailable(schedule)) {
-            throw new Exception("The schedule time intersects current schedules");
-        }
-        await SaveChanges();
         await _dbContext.Schedules.AddAsync(schedule);
+        await SaveChanges();
     }
 
     public async Task RemoveSchedule(Schedule schedule) {
@@ -56,12 +53,12 @@ public class ScheduleRepository : IScheduleRepository {
         await SaveChanges();
     }
 
-    public async Task SaveChanges() {
-        await _dbContext.SaveChangesAsync();
-    }
-
     public async Task<int> GetSchedulesCount() {
         return await _dbContext.Schedules.CountAsync();
+    }
+
+    private async Task SaveChanges() {
+        await _dbContext.SaveChangesAsync();
     }
 
     private async Task<bool> IsTimeAvailable(Schedule schedule) {

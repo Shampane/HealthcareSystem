@@ -3,13 +3,11 @@ using HealthcareSystem.Application.Mappings;
 using HealthcareSystem.Application.Requests;
 using HealthcareSystem.Core.Entities;
 using HealthcareSystem.Core.Interfaces;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HealthcareSystem.Api.Controllers;
 
 [ApiController]
-//[Authorize]
 [Route("api/doctors")]
 public class DoctorsController : ControllerBase {
     private readonly IDoctorRepository _doctorRepository;
@@ -19,7 +17,6 @@ public class DoctorsController : ControllerBase {
     }
 
     [HttpGet]
-    [AllowAnonymous]
     public async Task<IActionResult> GetDoctors(
         [FromQuery] DoctorRequests.GetDoctorsRequest request,
         CancellationToken ct
@@ -29,7 +26,7 @@ public class DoctorsController : ControllerBase {
             request.SortOrder, request.SearchField, request.SearchValue
         );
         if (list is null) {
-            return NotFound();
+            return NotFound("Doctors not found");
         }
         IEnumerable<DoctorDto> listDto = list.Select(d => d.ToDto());
         return Ok(listDto);
@@ -41,7 +38,7 @@ public class DoctorsController : ControllerBase {
     ) {
         Doctor? doctor = await _doctorRepository.GetDoctorById(Id);
         if (doctor is null) {
-            return NotFound();
+            return NotFound("Doctor not found");
         }
         return Ok(doctor.ToDto());
     }
@@ -73,7 +70,7 @@ public class DoctorsController : ControllerBase {
     ) {
         Doctor? doctor = await _doctorRepository.GetDoctorById(Id);
         if (doctor is null) {
-            return NotFound();
+            return NotFound("Doctor not found");
         }
         await _doctorRepository.UpdateDoctor(
             doctor, request.Name, request.Description, request.ImageUrl,
@@ -96,7 +93,7 @@ public class DoctorsController : ControllerBase {
     ) {
         Doctor? doctor = await _doctorRepository.GetDoctorById(Id);
         if (doctor is null) {
-            return NotFound();
+            return NotFound("Doctor not found");
         }
         await _doctorRepository.RemoveDoctor(doctor);
 

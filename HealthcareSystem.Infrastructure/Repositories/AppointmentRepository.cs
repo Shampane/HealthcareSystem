@@ -15,31 +15,18 @@ public class AppointmentRepository : IAppointmentRepository {
         _getHelper = new GetHelper();
     }
 
-    public async Task<ICollection<Appointment>?> GetAppointmentsByDoctor(
-        Guid doctorId, int? pageIndex, int? pageSize,
+    public async Task<ICollection<Appointment>?> GetAppointments(
+        Guid? doctorId, string? userId, int? pageIndex, int? pageSize,
         DateTimeOffset? searchStartTime, DateTimeOffset? searchEndTime
     ) {
         IQueryable<Appointment>? query = _dbContext.Appointments
             .AsNoTracking()
-            .OrderBy(a => a.StartTime)
-            .Where(a => a.DoctorId == doctorId);
+            .OrderBy(a => a.StartTime);
 
+        query = doctorId is null ? query : query.Where(a => a.DoctorId == doctorId);
+        query = userId is null ? query : query.Where(a => a.UserId == userId);
         query = AddGetSearch(query, searchStartTime, searchEndTime);
         query = _getHelper.AddPagination(query, pageSize, pageIndex);
-        return await query.ToListAsync();
-    }
-
-    public async Task<ICollection<Appointment>?> GetAppointmentsByUser(
-        string userId, int? pageIndex, int? pageSize,
-        DateTimeOffset? searchStartTime, DateTimeOffset? searchEndTime
-    ) {
-        IQueryable<Appointment>? query = _dbContext.Appointments
-            .AsNoTracking()
-            .OrderBy(a => a.StartTime)
-            .Where(a => a.UserId == userId);
-
-        query = AddGetSearch(query, searchStartTime, searchEndTime);
-        query = _getHelper.AddPagination(query, pageIndex, pageSize);
 
         return await query.ToListAsync();
     }
@@ -59,7 +46,7 @@ public class AppointmentRepository : IAppointmentRepository {
         await SaveChanges();
     }
 
-    public async Task SaveChanges() {
+    private async Task SaveChanges() {
         await _dbContext.SaveChangesAsync();
     }
 

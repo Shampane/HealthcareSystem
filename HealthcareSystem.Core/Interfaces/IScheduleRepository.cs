@@ -3,8 +3,8 @@ using HealthcareSystem.Core.Entities;
 namespace HealthcareSystem.Core.Interfaces;
 
 public interface IScheduleRepository {
-    public Task<ICollection<Schedule>?> GetSchedulesByDoctor(
-        Guid doctorId, int? pageIndex, int? pageSize,
+    public Task<ICollection<Schedule>?> GetSchedules(
+        Guid? doctorId, int? pageIndex, int? pageSize,
         DateTimeOffset? searchStartTime, DateTimeOffset? searchEndTime
     );
 
@@ -12,6 +12,5 @@ public interface IScheduleRepository {
     public Task CreateSchedule(Schedule schedule);
     public Task RemoveSchedule(Schedule schedule);
     public Task RemoveOldSchedules();
-    public Task SaveChanges();
     public Task<int> GetSchedulesCount();
 }

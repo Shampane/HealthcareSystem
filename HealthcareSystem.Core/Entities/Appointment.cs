@@ -8,16 +8,18 @@ public class Appointment {
     public Guid Id { get; init; } = Guid.CreateVersion7();
 
     [ForeignKey(nameof(Doctor))]
-    public Guid DoctorId { get; init; }
+    [Required(ErrorMessage = "The doctor id is required")]
+    public required Guid DoctorId { get; init; }
 
     public Doctor? Doctor { get; init; }
 
-    [Required(ErrorMessage = "The name is required")]
-    [StringLength(64, ErrorMessage = "The name is too long")]
+    [Required(ErrorMessage = "The doctor name is required")]
+    [StringLength(64, ErrorMessage = "The doctor name is too long")]
     public required string DoctorName { get; init; }
 
     [ForeignKey(nameof(Schedule))]
-    public Guid ScheduleId { get; init; }
+    [Required(ErrorMessage = "The schedule id is required")]
+    public required Guid ScheduleId { get; init; }
 
     [DataType(DataType.DateTime)]
     [Required(ErrorMessage = "The start time is required")]
@@ -30,7 +32,8 @@ public class Appointment {
     public Schedule? Schedule { get; init; }
 
     [ForeignKey(nameof(User))]
-    public string UserId { get; init; }
+    [Required(ErrorMessage = "The user id is required")]
+    public required string UserId { get; init; }
 
     public User? User { get; init; }
 

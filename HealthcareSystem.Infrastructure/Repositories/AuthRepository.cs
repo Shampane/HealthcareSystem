@@ -26,8 +26,10 @@ public class AuthRepository : IAuthRepository {
         return await _userManager.FindByEmailAsync(userEmail);
     }
 
-    public async Task CreateUserWithPassword(User user, string password) {
-        await _userManager.CreateAsync(user, password);
+    public async Task<IdentityResult> CreateUserWithPassword(
+        User user, string password
+    ) {
+        return await _userManager.CreateAsync(user, password);
     }
 
     public async Task AddRolesToUser(User user) {
@@ -57,8 +59,10 @@ public class AuthRepository : IAuthRepository {
         return await _userManager.GeneratePasswordResetTokenAsync(user);
     }
 
-    public async Task ResetUserPassword(User user, string token, string password) {
-        await _userManager.ResetPasswordAsync(user, token, password);
+    public async Task<IdentityResult> ResetUserPassword(
+        User user, string token, string password
+    ) {
+        return await _userManager.ResetPasswordAsync(user, token, password);
     }
 
     public async Task<bool> IsUserPasswordValid(User user, string password) {
@@ -116,7 +120,10 @@ public class AuthRepository : IAuthRepository {
     }
 
     private async Task<List<Claim>> GetClaims(User user) {
-        List<Claim> claims = [new(ClaimTypes.Name, user.UserName!)];
+        List<Claim> claims = [
+            new(ClaimTypes.Name, user.UserName!),
+            new(ClaimTypes.Email, user.Email!)
+        ];
         IList<string> roles = await _userManager.GetRolesAsync(user);
         claims.AddRange(
             roles.Select(r => new Claim(ClaimTypes.Role, r))

@@ -1,10 +1,7 @@
 using System.Text;
 using HealthcareSystem.Core.Entities;
-using HealthcareSystem.Core.Interfaces;
 using HealthcareSystem.Infrastructure.DataAccess;
-using HealthcareSystem.Infrastructure.Repositories;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 
@@ -16,6 +13,16 @@ public static class AuthExtensions {
     ) {
         IConfigurationSection? jwtSettings = configuration.GetSection("Jwt");
 
+        services.ConfigureAuthentication(jwtSettings);
+        services.ConfigureIdentity();
+        services.ConfigureRoles(jwtSettings);
+
+        return services;
+    }
+
+    private static IServiceCollection ConfigureAuthentication(
+        this IServiceCollection services, IConfigurationSection jwtSettings
+    ) {
         services.AddAuthentication(options => {
                 options.DefaultAuthenticateScheme =
                     JwtBearerDefaults.AuthenticationScheme;
@@ -37,7 +44,12 @@ public static class AuthExtensions {
                     )
                 };
             });
+        return services;
+    }
 
+    private static IServiceCollection ConfigureIdentity(
+        this IServiceCollection services
+    ) {
         services.AddIdentity<User, IdentityRole>(options => {
                 options.Password.RequireDigit = true;
                 options.Password.RequiredLength = 8;
@@ -50,39 +62,35 @@ public static class AuthExtensions {
             .AddDefaultTokenProviders();
 
         services.Configure<DataProtectionTokenProviderOptions>(
-            opt => { opt.TokenLifespan = TimeSpan.FromHours(1); }
+            options => options.TokenLifespan = TimeSpan.FromHours(1)
         );
-
-        services.AddAuthorizationBuilder()
-            .SetDefaultPolicy(
-                new AuthorizationPolicyBuilder()
-                    .RequireAuthenticatedUser()
-                    .RequireRole("User", "Admin")
-                    .Build()
-            )
-            .AddPolicy(
-                "DoctorPolicy", policy => {
-                    policy.RequireAuthenticatedUser();
-                    policy.AddAuthenticationSchemes("Bearer");
-                    policy.RequireRole("Doctor", "Admin");
-                }
-            )
-            .AddPolicy(
-                "AdminPolicy", policy => {
-                    policy.RequireAuthenticatedUser();
-                    policy.AddAuthenticationSchemes("Bearer");
-                    policy.RequireRole("Admin");
-                }
-            );
-
         return services;
     }
 
-    public static IServiceCollection AddAuthServices(
-        this IServiceCollection services
+    private static IServiceCollection ConfigureRoles(
+        this IServiceCollection services, IConfigurationSection jwtSettings
     ) {
-        services.AddScoped<IAuthRepository, AuthRepository>();
-        //services.AddScoped<AuthService>();
+        services.AddAuthentication(options => {
+                options.DefaultAuthenticateScheme =
+                    JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme =
+                    JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+            .AddJwtBearer(options => {
+                options.TokenValidationParameters = new TokenValidationParameters {
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true,
+
+                    ValidIssuer = jwtSettings["Issuer"],
+                    ValidAudience = jwtSettings["Audience"],
+                    IssuerSigningKey = new SymmetricSecurityKey(
+                        Encoding.UTF8.GetBytes(jwtSettings["Key"]!)
+                    )
+                };
+            });
         return services;
     }
 }

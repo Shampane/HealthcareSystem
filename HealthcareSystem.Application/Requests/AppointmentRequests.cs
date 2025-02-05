@@ -1,11 +1,10 @@
 namespace HealthcareSystem.Application.Requests;
 
-public record AppointmentRequest(
-    Guid DoctorId,
-    string DoctorName,
-    Guid ScheduleId,
-    DateTime ScheduleStartTime,
-    DateTime ScheduleEndTime,
-    string UserId,
-    string UserName
-);
+public static class AppointmentRequests {
+    public record GetAppointmentsRequest(
+        Guid? DoctorId, string? UserId, int? PageIndex, int? PageSize,
+        DateTimeOffset? StartTime, DateTimeOffset? EndTime
+    );
+
+    public record CreateAppointmentRequest(Guid ScheduleId, string UserEmail);
+}
