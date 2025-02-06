@@ -18,6 +18,13 @@ public interface IAuthRepository {
         User user, string token, string password
     );
 
+    public Task<string> CreateTwoFactorToken(User user);
+    public Task<IList<string>> GetTwoFactorProviders(User user);
+    public Task SetEmailTwoFactor(User user, bool enabled);
+    public Task<bool> IsUserHasTwoFactor(User user);
+    public Task<bool> IsTwoFactorValid(User user, string provider, string token);
+
+    public Task<IList<string>> GetUserRoles(User user);
     public Task<bool> IsUserPasswordValid(User user, string password);
     public ClaimsPrincipal GetPrincipalFromExpiredToken(string token);
 }

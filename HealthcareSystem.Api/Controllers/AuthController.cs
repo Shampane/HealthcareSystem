@@ -24,6 +24,9 @@ public class AuthController : ControllerBase {
 
     private readonly ILogger<AuthController> _logger;
 
+    private readonly string _twoFactorTemplate =
+        $"{Directory.GetCurrentDirectory()}/Templates/TwoFactorTemplate.cshtml";
+
     public AuthController(
         IAuthRepository authRepository,
         ILogger<AuthController> logger,
@@ -50,6 +53,7 @@ public class AuthController : ControllerBase {
             user, request.Password
         );
         if (result.Succeeded) {
+            await _authRepository.SetEmailTwoFactor(user, request.EnableTwoFactor);
             await _authRepository.AddRolesToUser(user);
             return Created($"auth/register/{user.Id}", user.ToDto());
         }
@@ -62,14 +66,55 @@ public class AuthController : ControllerBase {
         AuthRequests.LoginRequest request, CancellationToken ct
     ) {
         User? user = await _authRepository.GetUserByEmail(request.Email);
+        if (
+            user is null
+            || !await _authRepository.IsUserPasswordValid(user, request.Password)
+        ) {
+            return NotFound("Invalid username or password");
+        }
+        bool isUserHasTwoFactor = await _authRepository.IsUserHasTwoFactor(user);
+        if (isUserHasTwoFactor) {
+            IList<string>? providers =
+                await _authRepository.GetTwoFactorProviders(user);
+            foreach (string provider in providers) {
+                _logger.LogInformation($"Provider: {provider}");
+            }
+            if (!providers.Contains("Email")) {
+                return Unauthorized("Invalid 2-factor provider");
+            }
+            EmailMetadata emailMetadata = new() {
+                ToAddress = user.Email!,
+                Subject = "HealthcareSystem: Two-factor provider"
+            };
+            TwoFactorModel model = new() {
+                CallbackUrl = "https://localhost:4200",
+                Email = user.Email!,
+                OTP = await _authRepository.CreateTwoFactorToken(user)
+            };
+            await _emailRepository.SendEmailWithTemplate(
+                emailMetadata, _twoFactorTemplate, model
+            );
+            return Ok("Two factor provider has been sent by email");
+        }
+        Token? token = await _authRepository.CreateToken(user, true);
+        return Ok(token);
+    }
+
+    [HttpPost("twoFactor")]
+    public async Task<IActionResult> TwoFactor(
+        AuthRequests.TwoFactorRequest request, CancellationToken ct
+    ) {
+        User? user = await _authRepository.GetUserByEmail(request.Email);
         if (user is null) {
             return NotFound("User not found");
         }
-        bool isValid =
-            await _authRepository.IsUserPasswordValid(user, request.Password);
+        bool isValid = await _authRepository.IsTwoFactorValid(
+            user, request.Provider, request.Token
+        );
         if (!isValid) {
-            return BadRequest("Invalid password");
+            return BadRequest("Invalid provider");
         }
+        IList<string> roles = await _authRepository.GetUserRoles(user);
         Token? token = await _authRepository.CreateToken(user, true);
         return Ok(token);
     }
@@ -114,7 +159,7 @@ public class AuthController : ControllerBase {
             CallbackUrl = callbackUrl,
             Email = request.Email
         };
-        await _emailRepository.SendForgetPassword(
+        await _emailRepository.SendEmailWithTemplate(
             emailMetadata, _forgetPasswordTemplate, model
         );
         return NoContent();

@@ -11,8 +11,8 @@ public class EmailRepository : IEmailRepository {
         _email = email;
     }
 
-    public async Task SendForgetPassword<T>(
-        EmailMetadata emailMetadata, string templateFile, T templateModel
+    public async Task SendEmailWithTemplate<TModel>(
+        EmailMetadata emailMetadata, string templateFile, TModel templateModel
     ) {
         await _email.To(emailMetadata.ToAddress)
             .Subject(emailMetadata.Subject)

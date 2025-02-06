@@ -69,6 +69,30 @@ public class AuthRepository : IAuthRepository {
         return await _userManager.ResetPasswordAsync(user, token, password);
     }
 
+    public async Task<IList<string>> GetTwoFactorProviders(User user) {
+        return await _userManager.GetValidTwoFactorProvidersAsync(user);
+    }
+
+    public async Task<string> CreateTwoFactorToken(User user) {
+        return await _userManager.GenerateTwoFactorTokenAsync(user, "Email");
+    }
+
+    public async Task SetEmailTwoFactor(User user, bool enabled) {
+        await _userManager.SetTwoFactorEnabledAsync(user, enabled);
+        if (enabled) {
+            user.EmailConfirmed = true;
+            await _userManager.UpdateAsync(user);
+        }
+    }
+
+    public async Task<bool> IsUserHasTwoFactor(User user) {
+        return await _userManager.GetTwoFactorEnabledAsync(user);
+    }
+
+    public async Task<IList<string>> GetUserRoles(User user) {
+        return await _userManager.GetRolesAsync(user);
+    }
+
     public async Task<bool> IsUserPasswordValid(User user, string password) {
         return await _userManager.CheckPasswordAsync(user, password);
     }
@@ -102,12 +126,11 @@ public class AuthRepository : IAuthRepository {
         return principal;
     }
 
-
-    public async Task<User?> FindUserByNameAsync(string userName) {
-        User? user = await _userManager.FindByNameAsync(userName);
-        return user;
+    public async Task<bool> IsTwoFactorValid(
+        User user, string provider, string token
+    ) {
+        return await _userManager.VerifyTwoFactorTokenAsync(user, provider, token);
     }
-
 
     private string CreateRefreshToken() {
         byte[] randomNumber = new byte[32];
@@ -128,7 +151,7 @@ public class AuthRepository : IAuthRepository {
             new(ClaimTypes.Name, user.UserName!),
             new(ClaimTypes.Email, user.Email!)
         ];
-        IList<string> roles = await _userManager.GetRolesAsync(user);
+        IList<string> roles = await GetUserRoles(user);
         claims.AddRange(
             roles.Select(r => new Claim(ClaimTypes.Role, r))
         );
