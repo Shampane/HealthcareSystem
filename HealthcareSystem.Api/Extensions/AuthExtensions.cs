@@ -15,7 +15,7 @@ public static class AuthExtensions {
 
         services.ConfigureAuthentication(jwtSettings);
         services.ConfigureIdentity();
-        services.ConfigureRoles(jwtSettings);
+        services.ConfigureRoles();
 
         return services;
     }
@@ -68,28 +68,23 @@ public static class AuthExtensions {
     }
 
     private static IServiceCollection ConfigureRoles(
-        this IServiceCollection services, IConfigurationSection jwtSettings
+        this IServiceCollection services
     ) {
-        services.AddAuthentication(options => {
-                options.DefaultAuthenticateScheme =
-                    JwtBearerDefaults.AuthenticationScheme;
-                options.DefaultChallengeScheme =
-                    JwtBearerDefaults.AuthenticationScheme;
-                options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+        services.AddAuthorizationBuilder()
+            .AddPolicy("UserPolicy", policy => {
+                policy.RequireAuthenticatedUser();
+                policy.AddAuthenticationSchemes("Bearer");
+                policy.RequireRole("User", "Admin");
             })
-            .AddJwtBearer(options => {
-                options.TokenValidationParameters = new TokenValidationParameters {
-                    ValidateIssuer = true,
-                    ValidateAudience = true,
-                    ValidateLifetime = true,
-                    ValidateIssuerSigningKey = true,
-
-                    ValidIssuer = jwtSettings["Issuer"],
-                    ValidAudience = jwtSettings["Audience"],
-                    IssuerSigningKey = new SymmetricSecurityKey(
-                        Encoding.UTF8.GetBytes(jwtSettings["Key"]!)
-                    )
-                };
+            .AddPolicy("DoctorPolicy", policy => {
+                policy.RequireAuthenticatedUser();
+                policy.AddAuthenticationSchemes("Bearer");
+                policy.RequireRole("Doctor", "Admin");
+            })
+            .AddPolicy("AdminPolicy", policy => {
+                policy.RequireAuthenticatedUser();
+                policy.AddAuthenticationSchemes("Bearer");
+                policy.RequireRole("Admin");
             });
         return services;
     }

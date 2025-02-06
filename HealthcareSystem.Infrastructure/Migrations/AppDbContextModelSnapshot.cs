@@ -181,7 +181,7 @@ namespace HealthcareSystem.Infrastructure.Migrations
                     b.Property<string>("RefreshToken")
                         .HasColumnType("text");
 
-                    b.Property<DateTimeOffset?>("RefreshTokenExpiry")
+                    b.Property<DateTime?>("RefreshTokenExpiry")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("SecurityStamp")
@@ -234,19 +234,19 @@ namespace HealthcareSystem.Infrastructure.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "4f524bb9-09bb-4138-95ed-8ee451c671f4",
+                            Id = "660d21c6-9ef8-4cf4-94f9-ca5540ba9734",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
-                            Id = "38304a93-e2aa-4e74-8380-283e119ebc9d",
+                            Id = "b05e3265-d141-4ec8-a9e9-2837b2ad0f47",
                             Name = "User",
                             NormalizedName = "USER"
                         },
                         new
                         {
-                            Id = "b38b2fbb-736e-4483-af7b-0db3e5c6139e",
+                            Id = "1aa65155-2945-4d7c-ad97-cd311395c424",
                             Name = "Doctor",
                             NormalizedName = "DOCTOR"
                         });

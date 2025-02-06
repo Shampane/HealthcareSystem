@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Identity;
 namespace HealthcareSystem.Core.Interfaces;
 
 public interface IAuthRepository {
+    public Task<User?> GetUserByName(string name);
     public Task<User?> GetUserByEmail(string email);
     public Task<IdentityResult> CreateUserWithPassword(User user, string password);
     public Task AddRolesToUser(User user);

@@ -80,14 +80,10 @@ public class AuthController : ControllerBase {
     ) {
         ClaimsPrincipal principal =
             _authRepository.GetPrincipalFromExpiredToken(request.AccessToken);
-        string? email = principal.FindFirstValue(ClaimTypes.Email);
-        if (email is null) {
-            return BadRequest("Invalid token");
-        }
-        User? user = await _authRepository.GetUserByEmail(email);
+        User? user = await _authRepository.GetUserByName(principal.Identity.Name);
         if (user is null
             || user.RefreshToken != request.RefreshToken
-            || user.RefreshTokenExpiry <= DateTimeOffset.UtcNow) {
+            || user.RefreshTokenExpiry <= DateTime.UtcNow) {
             return BadRequest("Invalid refresh token");
         }
         Token? refreshedToken = await _authRepository.CreateToken(user, false);

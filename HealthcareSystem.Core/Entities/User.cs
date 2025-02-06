@@ -9,6 +9,6 @@ public sealed class User : IdentityUser {
 
     public required string Gender { get; init; }
     public string? RefreshToken { get; set; }
-    public DateTimeOffset? RefreshTokenExpiry { get; set; }
+    public DateTime? RefreshTokenExpiry { get; set; }
     public ICollection<Appointment>? Appointments { get; set; }
 }

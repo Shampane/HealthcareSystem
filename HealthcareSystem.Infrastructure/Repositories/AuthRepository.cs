@@ -22,6 +22,10 @@ public class AuthRepository : IAuthRepository {
         _configuration = configuration;
     }
 
+    public async Task<User?> GetUserByName(string name) {
+        return await _userManager.FindByNameAsync(name);
+    }
+
     public async Task<User?> GetUserByEmail(string userEmail) {
         return await _userManager.FindByEmailAsync(userEmail);
     }
@@ -46,7 +50,7 @@ public class AuthRepository : IAuthRepository {
 
         user.RefreshToken = refreshToken;
         if (populateExp) {
-            user.RefreshTokenExpiry = DateTimeOffset.UtcNow.AddDays(3);
+            user.RefreshTokenExpiry = DateTime.UtcNow.AddDays(7);
         }
 
         await _userManager.UpdateAsync(user);
@@ -140,7 +144,7 @@ public class AuthRepository : IAuthRepository {
         );
         return new JwtSecurityToken(
             jwtSettings["Issuer"], jwtSettings["Audience"],
-            claims, expires, signingCredentials: signingCredentials
+            claims, expires: expires, signingCredentials: signingCredentials
         );
     }
 }
