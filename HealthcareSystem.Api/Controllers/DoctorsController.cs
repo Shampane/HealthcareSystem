@@ -1,3 +1,5 @@
+using FluentValidation;
+using FluentValidation.Results;
 using HealthcareSystem.Application.Dtos;
 using HealthcareSystem.Application.Mappings;
 using HealthcareSystem.Application.Requests;
@@ -12,9 +14,13 @@ namespace HealthcareSystem.Api.Controllers;
 [Route("api/doctors")]
 public class DoctorsController : ControllerBase {
     private readonly IDoctorRepository _doctorRepository;
+    private readonly IValidator<Doctor> _validator;
 
-    public DoctorsController(IDoctorRepository doctorRepository) {
+    public DoctorsController(
+        IDoctorRepository doctorRepository, IValidator<Doctor> validator
+    ) {
         _doctorRepository = doctorRepository;
+        _validator = validator;
     }
 
     [HttpGet]
@@ -58,6 +64,11 @@ public class DoctorsController : ControllerBase {
             Specialization = request.Specialization,
             PhoneNumber = request.PhoneNumber
         };
+        ValidationResult? result = await _validator.ValidateAsync(doctor, ct);
+        if (!result.IsValid) {
+            IEnumerable<string> errors = result.Errors.Select(e => e.ErrorMessage);
+            return BadRequest(errors);
+        }
 
         await _doctorRepository.CreateDoctor(doctor, ct);
         return Created($"api/doctors/{doctor.Id}", doctor.ToDto());

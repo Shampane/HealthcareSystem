@@ -41,9 +41,6 @@ public class ScheduleRepository : IScheduleRepository {
     public async Task CreateSchedule(
         Schedule schedule, CancellationToken cancellationToken
     ) {
-        if (!await IsTimeAvailable(schedule)) {
-            throw new Exception("The schedule time is not available");
-        }
         await _dbContext.Schedules.AddAsync(schedule, cancellationToken);
         await SaveChanges(cancellationToken);
     }
@@ -74,16 +71,19 @@ public class ScheduleRepository : IScheduleRepository {
         return await _dbContext.Schedules.CountAsync(cancellationToken);
     }
 
-    private async Task SaveChanges(CancellationToken cancellationToken) {
-        await _dbContext.SaveChangesAsync(cancellationToken);
-    }
-
-    private async Task<bool> IsTimeAvailable(Schedule schedule) {
+    public async Task<bool> IsTimeAvailable(
+        Schedule schedule, CancellationToken cancellationToken
+    ) {
         DateTimeOffset sTime = schedule.StartTime;
         DateTimeOffset eTime = schedule.EndTime;
         return !await _dbContext.Schedules.AsNoTracking()
             .Where(s => s.DoctorId == schedule.DoctorId)
-            .AnyAsync(s => sTime <= s.EndTime && eTime >= s.StartTime);
+            .AnyAsync(s => sTime <= s.EndTime && eTime >= s.StartTime,
+                cancellationToken);
+    }
+
+    private async Task SaveChanges(CancellationToken cancellationToken) {
+        await _dbContext.SaveChangesAsync(cancellationToken);
     }
 
     private static IQueryable<Schedule> AddGetSearch(

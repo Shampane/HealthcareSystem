@@ -1,3 +1,5 @@
+using FluentValidation;
+using FluentValidation.Results;
 using HealthcareSystem.Application.Dtos;
 using HealthcareSystem.Application.Mappings;
 using HealthcareSystem.Application.Requests;
@@ -14,15 +16,18 @@ public class AppointmentsController : ControllerBase {
     private readonly IAppointmentRepository _appointmentRepository;
     private readonly IAuthRepository _authRepository;
     private readonly IScheduleRepository _scheduleRepository;
+    private readonly IValidator<Appointment> _validator;
 
     public AppointmentsController(
         IAppointmentRepository appointmentRepository,
         IScheduleRepository scheduleRepository,
-        IAuthRepository authRepository
+        IAuthRepository authRepository,
+        IValidator<Appointment> validator
     ) {
         _appointmentRepository = appointmentRepository;
         _scheduleRepository = scheduleRepository;
         _authRepository = authRepository;
+        _validator = validator;
     }
 
     [HttpGet]
@@ -78,6 +83,11 @@ public class AppointmentsController : ControllerBase {
             UserId = user.Id,
             UserName = user.UserName!
         };
+        ValidationResult? result = await _validator.ValidateAsync(appointment, ct);
+        if (!result.IsValid) {
+            IEnumerable<string> errors = result.Errors.Select(e => e.ErrorMessage);
+            return BadRequest(errors);
+        }
         await _appointmentRepository.CreateAppointment(appointment, ct);
         return Created($"api/appointments/{appointment.Id}", appointment.ToDto());
     }

@@ -27,4 +27,8 @@ public interface IScheduleRepository {
 
     public Task RemoveOldSchedules(CancellationToken cancellationToken);
     public Task<int> GetSchedulesCount(CancellationToken cancellationToken);
+
+    public Task<bool> IsTimeAvailable(
+        Schedule schedule, CancellationToken cancellationToken
+    );
 }

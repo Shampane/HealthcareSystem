@@ -1,3 +1,5 @@
+using FluentValidation;
+using FluentValidation.Results;
 using HealthcareSystem.Application.Dtos;
 using HealthcareSystem.Application.Mappings;
 using HealthcareSystem.Application.Requests;
@@ -14,12 +16,16 @@ namespace HealthcareSystem.Api.Controllers;
 public class SchedulesController : ControllerBase {
     private readonly IDoctorRepository _doctorRepository;
     private readonly IScheduleRepository _scheduleRepository;
+    private readonly IValidator<Schedule> _validator;
 
     public SchedulesController(
-        IDoctorRepository doctorRepository, IScheduleRepository scheduleRepository
+        IDoctorRepository doctorRepository,
+        IScheduleRepository scheduleRepository,
+        IValidator<Schedule> validator
     ) {
         _doctorRepository = doctorRepository;
         _scheduleRepository = scheduleRepository;
+        _validator = validator;
     }
 
     [HttpGet]
@@ -64,6 +70,14 @@ public class SchedulesController : ControllerBase {
             StartTime = request.StartTime,
             EndTime = request.EndTime
         };
+        ValidationResult? result = await _validator.ValidateAsync(schedule, ct);
+        if (!result.IsValid) {
+            IEnumerable<string> errors = result.Errors.Select(e => e.ErrorMessage);
+            return BadRequest(errors);
+        }
+        if (!await _scheduleRepository.IsTimeAvailable(schedule, ct)) {
+            return BadRequest("Schedule time is not available");
+        }
         await _scheduleRepository.CreateSchedule(schedule, ct);
         return Created($"api/schedules/{schedule.Id}", schedule.ToDto());
     }
@@ -83,9 +97,13 @@ public class SchedulesController : ControllerBase {
             return BadRequest(ModelState);
         }
         await _scheduleRepository.UpdateScheduleAvailable(schedule, ct);
-        return Ok(ResponsesMessages.UpdatedIdTime(
-            "schedule", schedule.Id.ToString(), schedule.StartTime, schedule.EndTime
-        ));
+        if (schedule.IsAvailable == false) {
+            return Ok(ResponsesMessages.UpdatedIdTime(
+                "schedule", schedule.Id.ToString(), schedule.StartTime,
+                schedule.EndTime
+            ));
+        }
+        return BadRequest("Update available was not successful");
     }
 
 
