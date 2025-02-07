@@ -3,6 +3,7 @@ using System.Security.Claims;
 using HealthcareSystem.Api.Templates;
 using HealthcareSystem.Application.Mappings;
 using HealthcareSystem.Application.Requests;
+using HealthcareSystem.Application.Responses;
 using HealthcareSystem.Core.Entities;
 using HealthcareSystem.Core.Interfaces;
 using HealthcareSystem.Core.Records;
@@ -70,15 +71,14 @@ public class AuthController : ControllerBase {
             user is null
             || !await _authRepository.IsUserPasswordValid(user, request.Password)
         ) {
-            return NotFound("Invalid username or password");
+            return NotFound(ResponsesMessages.NotFound(
+                "Invalid username or password"
+            ));
         }
         bool isUserHasTwoFactor = await _authRepository.IsUserHasTwoFactor(user);
         if (isUserHasTwoFactor) {
             IList<string>? providers =
                 await _authRepository.GetTwoFactorProviders(user);
-            foreach (string provider in providers) {
-                _logger.LogInformation($"Provider: {provider}");
-            }
             if (!providers.Contains("Email")) {
                 return Unauthorized("Invalid 2-factor provider");
             }
@@ -92,7 +92,7 @@ public class AuthController : ControllerBase {
                 OTP = await _authRepository.CreateTwoFactorToken(user)
             };
             await _emailRepository.SendEmailWithTemplate(
-                emailMetadata, _twoFactorTemplate, model
+                emailMetadata, _twoFactorTemplate, model, ct
             );
             return Ok("Two factor provider has been sent by email");
         }
@@ -106,7 +106,7 @@ public class AuthController : ControllerBase {
     ) {
         User? user = await _authRepository.GetUserByEmail(request.Email);
         if (user is null) {
-            return NotFound("User not found");
+            return NotFound(ResponsesMessages.NotFound("User not found"));
         }
         bool isValid = await _authRepository.IsTwoFactorValid(
             user, request.Provider, request.Token
@@ -141,7 +141,7 @@ public class AuthController : ControllerBase {
     ) {
         User? user = await _authRepository.GetUserByEmail(request.Email);
         if (user is null) {
-            return NotFound("User not found");
+            return NotFound(ResponsesMessages.NotFound("User not found"));
         }
         string token = await _authRepository.CreateResetToken(user);
         var parameters = new Dictionary<string, string> {
@@ -160,7 +160,7 @@ public class AuthController : ControllerBase {
             Email = request.Email
         };
         await _emailRepository.SendEmailWithTemplate(
-            emailMetadata, _forgetPasswordTemplate, model
+            emailMetadata, _forgetPasswordTemplate, model, ct
         );
         return NoContent();
     }
@@ -174,7 +174,7 @@ public class AuthController : ControllerBase {
         }
         User? user = await _authRepository.GetUserByEmail(request.Email);
         if (user is null) {
-            return NotFound("User not found");
+            return NotFound(ResponsesMessages.NotFound("User not found"));
         }
         IdentityResult result = await _authRepository.ResetUserPassword(
             user, request.Token, request.Password

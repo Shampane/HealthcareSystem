@@ -6,6 +6,8 @@ public static class ScheduleRequests {
         DateTimeOffset? StartTime, DateTimeOffset? EndTime
     );
 
+    public record UpdateScheduleRequest(bool IsAvailable);
+
     public record CreateScheduleRequest(
         Guid DoctorId, DateTimeOffset StartTime, DateTimeOffset EndTime
     );

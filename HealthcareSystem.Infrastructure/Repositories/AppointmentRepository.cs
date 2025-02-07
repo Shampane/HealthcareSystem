@@ -17,7 +17,8 @@ public class AppointmentRepository : IAppointmentRepository {
 
     public async Task<ICollection<Appointment>?> GetAppointments(
         Guid? doctorId, string? userId, int? pageIndex, int? pageSize,
-        DateTimeOffset? searchStartTime, DateTimeOffset? searchEndTime
+        DateTimeOffset? searchStartTime, DateTimeOffset? searchEndTime,
+        CancellationToken cancellationToken
     ) {
         IQueryable<Appointment>? query = _dbContext.Appointments
             .AsNoTracking()
@@ -28,26 +29,32 @@ public class AppointmentRepository : IAppointmentRepository {
         query = AddGetSearch(query, searchStartTime, searchEndTime);
         query = _getHelper.AddPagination(query, pageSize, pageIndex);
 
-        return await query.ToListAsync();
+        return await query.ToListAsync(cancellationToken);
     }
 
-    public async Task<Appointment?> GetAppointmentById(Guid id) {
+    public async Task<Appointment?> GetAppointmentById(
+        Guid id, CancellationToken cancellationToken
+    ) {
         return await _dbContext.Appointments
-            .FirstOrDefaultAsync(a => a.Id == id);
+            .FirstOrDefaultAsync(a => a.Id == id, cancellationToken);
     }
 
-    public async Task CreateAppointment(Appointment appointment) {
-        await _dbContext.Appointments.AddAsync(appointment);
-        await SaveChanges();
+    public async Task CreateAppointment(
+        Appointment appointment, CancellationToken cancellationToken
+    ) {
+        await _dbContext.Appointments.AddAsync(appointment, cancellationToken);
+        await SaveChanges(cancellationToken);
     }
 
-    public async Task RemoveAppointment(Appointment appointment) {
+    public async Task RemoveAppointment(
+        Appointment appointment, CancellationToken cancellationToken
+    ) {
         _dbContext.Appointments.Remove(appointment);
-        await SaveChanges();
+        await SaveChanges(cancellationToken);
     }
 
-    private async Task SaveChanges() {
-        await _dbContext.SaveChangesAsync();
+    private async Task SaveChanges(CancellationToken cancellationToken) {
+        await _dbContext.SaveChangesAsync(cancellationToken);
     }
 
     private static IQueryable<Appointment> AddGetSearch(

@@ -18,7 +18,8 @@ public class DoctorRepository : IDoctorRepository {
 
     public async Task<ICollection<Doctor>?> GetDoctors(
         int? pageIndex, int? pageSize, string? sortField,
-        string? sortOrder, string? searchField, string? searchValue
+        string? sortOrder, string? searchField, string? searchValue,
+        CancellationToken cancellationToken
     ) {
         IQueryable<Doctor>? query = _dbContext.Doctors.AsNoTracking();
 
@@ -26,22 +27,28 @@ public class DoctorRepository : IDoctorRepository {
         query = AddGetSort(query, sortField, sortOrder);
         query = _getHelper.AddPagination(query, pageSize, pageIndex);
 
-        return await query.ToListAsync();
+        return await query.ToListAsync(cancellationToken);
     }
 
-    public async Task<Doctor?> GetDoctorById(Guid id) {
-        return await _dbContext.Doctors.FirstOrDefaultAsync(d => d.Id == id);
+    public async Task<Doctor?> GetDoctorById(
+        Guid id, CancellationToken cancellationToken
+    ) {
+        return await _dbContext.Doctors
+            .FirstOrDefaultAsync(d => d.Id == id, cancellationToken);
     }
 
-    public async Task CreateDoctor(Doctor doctor) {
-        await _dbContext.Doctors.AddAsync(doctor);
-        await SaveChanges();
+    public async Task CreateDoctor(
+        Doctor doctor, CancellationToken cancellationToken
+    ) {
+        await _dbContext.Doctors.AddAsync(doctor, cancellationToken);
+        await SaveChanges(cancellationToken);
     }
 
     public async Task UpdateDoctor(
         Doctor doctor, string? name, string? description,
         string? imageUrl, int? experienceAge, decimal? feeInDollars,
-        string? specialization, string? phoneNumber
+        string? specialization, string? phoneNumber,
+        CancellationToken cancellationToken
     ) {
         doctor.Name = name ?? doctor.Name;
         doctor.Description = description ?? doctor.Description;
@@ -50,16 +57,18 @@ public class DoctorRepository : IDoctorRepository {
         doctor.FeeInDollars = feeInDollars ?? doctor.FeeInDollars;
         doctor.Specialization = specialization ?? doctor.Specialization;
         doctor.PhoneNumber = phoneNumber ?? doctor.PhoneNumber;
-        await SaveChanges();
+        await SaveChanges(cancellationToken);
     }
 
-    public async Task RemoveDoctor(Doctor doctor) {
+    public async Task RemoveDoctor(
+        Doctor doctor, CancellationToken cancellationToken
+    ) {
         _dbContext.Doctors.Remove(doctor);
-        await SaveChanges();
+        await SaveChanges(cancellationToken);
     }
 
-    private async Task SaveChanges() {
-        await _dbContext.SaveChangesAsync();
+    private async Task SaveChanges(CancellationToken cancellationToken) {
+        await _dbContext.SaveChangesAsync(cancellationToken);
     }
 
     private static IQueryable<Doctor> AddGetSearch(

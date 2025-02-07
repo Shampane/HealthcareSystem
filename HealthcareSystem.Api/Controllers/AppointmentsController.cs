@@ -1,6 +1,7 @@
 using HealthcareSystem.Application.Dtos;
 using HealthcareSystem.Application.Mappings;
 using HealthcareSystem.Application.Requests;
+using HealthcareSystem.Application.Responses;
 using HealthcareSystem.Core.Entities;
 using HealthcareSystem.Core.Interfaces;
 using Microsoft.AspNetCore.Mvc;
@@ -32,10 +33,10 @@ public class AppointmentsController : ControllerBase {
         ICollection<Appointment>? list =
             await _appointmentRepository.GetAppointments(
                 request.DoctorId, request.UserId, request.PageIndex,
-                request.PageSize, request.StartTime, request.EndTime
+                request.PageSize, request.StartTime, request.EndTime, ct
             );
         if (list is null) {
-            return NotFound("Appointments not found");
+            return NotFound(ResponsesMessages.NotFound("Appointments not found"));
         }
         IEnumerable<AppointmentDto> listDto = list.Select(a => a.ToDto());
         return Ok(listDto);
@@ -46,9 +47,9 @@ public class AppointmentsController : ControllerBase {
         Guid Id, CancellationToken ct
     ) {
         Appointment? appointment =
-            await _appointmentRepository.GetAppointmentById(Id);
+            await _appointmentRepository.GetAppointmentById(Id, ct);
         if (appointment is null) {
-            return NotFound("Appointment not found");
+            return NotFound(ResponsesMessages.NotFound("Appointment not found"));
         }
         return Ok(appointment.ToDto());
     }
@@ -59,13 +60,13 @@ public class AppointmentsController : ControllerBase {
         CancellationToken ct
     ) {
         Schedule? schedule =
-            await _scheduleRepository.GetScheduleById(request.ScheduleId);
+            await _scheduleRepository.GetScheduleById(request.ScheduleId, ct);
         if (schedule is null) {
-            return NotFound("Schedule not found");
+            return NotFound(ResponsesMessages.NotFound("Schedule not found"));
         }
         User? user = await _authRepository.GetUserByEmail(request.UserEmail);
         if (user is null) {
-            return NotFound("User not found");
+            return NotFound(ResponsesMessages.NotFound("User not found"));
         }
 
         Appointment appointment = new() {
@@ -77,7 +78,7 @@ public class AppointmentsController : ControllerBase {
             UserId = user.Id,
             UserName = user.UserName!
         };
-        await _appointmentRepository.CreateAppointment(appointment);
+        await _appointmentRepository.CreateAppointment(appointment, ct);
         return Created($"api/appointments/{appointment.Id}", appointment.ToDto());
     }
 
@@ -86,11 +87,11 @@ public class AppointmentsController : ControllerBase {
         Guid Id, CancellationToken ct
     ) {
         Appointment? appointment =
-            await _appointmentRepository.GetAppointmentById(Id);
+            await _appointmentRepository.GetAppointmentById(Id, ct);
         if (appointment is null) {
-            return NotFound("Appointment not found");
+            return NotFound(ResponsesMessages.NotFound("Appointment not found"));
         }
-        await _appointmentRepository.RemoveAppointment(appointment);
+        await _appointmentRepository.RemoveAppointment(appointment, ct);
         return NoContent();
     }
 }

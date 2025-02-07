@@ -5,12 +5,26 @@ namespace HealthcareSystem.Core.Interfaces;
 public interface IScheduleRepository {
     public Task<ICollection<Schedule>?> GetSchedules(
         Guid? doctorId, int? pageIndex, int? pageSize,
-        DateTimeOffset? searchStartTime, DateTimeOffset? searchEndTime
+        DateTimeOffset? searchStartTime, DateTimeOffset? searchEndTime,
+        CancellationToken cancellationToken
     );
 
-    public Task<Schedule?> GetScheduleById(Guid id);
-    public Task CreateSchedule(Schedule schedule);
-    public Task RemoveSchedule(Schedule schedule);
-    public Task RemoveOldSchedules();
-    public Task<int> GetSchedulesCount();
+    public Task<Schedule?> GetScheduleById(
+        Guid id, CancellationToken cancellationToken
+    );
+
+    public Task CreateSchedule(
+        Schedule schedule, CancellationToken cancellationToken
+    );
+
+    public Task UpdateScheduleAvailable(
+        Schedule schedule, CancellationToken cancellationToken
+    );
+
+    public Task RemoveSchedule(
+        Schedule schedule, CancellationToken cancellationToken
+    );
+
+    public Task RemoveOldSchedules(CancellationToken cancellationToken);
+    public Task<int> GetSchedulesCount(CancellationToken cancellationToken);
 }

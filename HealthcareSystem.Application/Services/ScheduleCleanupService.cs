@@ -26,9 +26,9 @@ public class ScheduleCleanupService : BackgroundService {
                     var repository = scope.ServiceProvider
                         .GetRequiredService<IScheduleRepository>();
 
-                    int oldCount = await repository.GetSchedulesCount();
-                    await repository.RemoveOldSchedules();
-                    int newCount = await repository.GetSchedulesCount();
+                    int oldCount = await repository.GetSchedulesCount(ct);
+                    await repository.RemoveOldSchedules(ct);
+                    int newCount = await repository.GetSchedulesCount(ct);
 
                     _logger.LogInformation(
                         $"Removed {oldCount - newCount} old schedules"

@@ -11,7 +11,7 @@ public class Schedule {
     [Required(ErrorMessage = "The doctor id is required")]
     public required Guid DoctorId { get; init; }
 
-    public Doctor Doctor { get; init; }
+    public Doctor? Doctor { get; init; }
 
     [Required(ErrorMessage = "The doctor name is required")]
     public required string DoctorName { get; init; }

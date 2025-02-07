@@ -12,11 +12,12 @@ public class EmailRepository : IEmailRepository {
     }
 
     public async Task SendEmailWithTemplate<TModel>(
-        EmailMetadata emailMetadata, string templateFile, TModel templateModel
+        EmailMetadata emailMetadata, string templateFile,
+        TModel templateModel, CancellationToken cancellationToken
     ) {
         await _email.To(emailMetadata.ToAddress)
             .Subject(emailMetadata.Subject)
             .UsingTemplateFromFile(templateFile, templateModel)
-            .SendAsync();
+            .SendAsync(cancellationToken);
     }
 }

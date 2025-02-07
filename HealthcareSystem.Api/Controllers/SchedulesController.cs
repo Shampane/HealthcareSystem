@@ -1,8 +1,10 @@
 using HealthcareSystem.Application.Dtos;
 using HealthcareSystem.Application.Mappings;
 using HealthcareSystem.Application.Requests;
+using HealthcareSystem.Application.Responses;
 using HealthcareSystem.Core.Entities;
 using HealthcareSystem.Core.Interfaces;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HealthcareSystem.Api.Controllers;
@@ -27,10 +29,10 @@ public class SchedulesController : ControllerBase {
     ) {
         ICollection<Schedule>? list = await _scheduleRepository.GetSchedules(
             request.DoctorId, request.PageIndex, request.PageSize,
-            request.StartTime, request.EndTime
+            request.StartTime, request.EndTime, ct
         );
         if (list is null) {
-            return NotFound();
+            return NotFound(ResponsesMessages.NotFound("Schedules not found"));
         }
         IEnumerable<ScheduleDto> listDto = list.Select(s => s.ToDto());
         return Ok(listDto);
@@ -40,9 +42,9 @@ public class SchedulesController : ControllerBase {
     public async Task<IActionResult> GetScheduleById(
         Guid Id, CancellationToken ct
     ) {
-        Schedule? schedule = await _scheduleRepository.GetScheduleById(Id);
+        Schedule? schedule = await _scheduleRepository.GetScheduleById(Id, ct);
         if (schedule is null) {
-            return NotFound();
+            return NotFound(ResponsesMessages.NotFound("Schedule not found"));
         }
         return Ok(schedule.ToDto());
     }
@@ -52,9 +54,9 @@ public class SchedulesController : ControllerBase {
         [FromBody] ScheduleRequests.CreateScheduleRequest request,
         CancellationToken ct
     ) {
-        Doctor? doctor = await _doctorRepository.GetDoctorById(request.DoctorId);
+        Doctor? doctor = await _doctorRepository.GetDoctorById(request.DoctorId, ct);
         if (doctor is null) {
-            return NotFound();
+            return NotFound(ResponsesMessages.NotFound("Doctor not found"));
         }
         Schedule schedule = new() {
             DoctorId = request.DoctorId,
@@ -62,19 +64,40 @@ public class SchedulesController : ControllerBase {
             StartTime = request.StartTime,
             EndTime = request.EndTime
         };
-        await _scheduleRepository.CreateSchedule(schedule);
+        await _scheduleRepository.CreateSchedule(schedule, ct);
         return Created($"api/schedules/{schedule.Id}", schedule.ToDto());
     }
+
+    [HttpPatch("{Id:guid}/toggle")]
+    public async Task<IActionResult> UpdateScheduleAvailable(
+        Guid Id,
+        [FromBody] JsonPatchDocument<Schedule> patchDoc,
+        CancellationToken ct
+    ) {
+        Schedule? schedule = await _scheduleRepository.GetScheduleById(Id, ct);
+        if (schedule is null) {
+            return NotFound(ResponsesMessages.NotFound("Schedule not found"));
+        }
+        patchDoc.ApplyTo(schedule, ModelState);
+        if (!TryValidateModel(schedule)) {
+            return BadRequest(ModelState);
+        }
+        await _scheduleRepository.UpdateScheduleAvailable(schedule, ct);
+        return Ok(ResponsesMessages.UpdatedIdTime(
+            "schedule", schedule.Id.ToString(), schedule.StartTime, schedule.EndTime
+        ));
+    }
+
 
     [HttpDelete("{Id:guid}")]
     public async Task<IActionResult> RemoveSchedule(
         Guid Id, CancellationToken ct
     ) {
-        Schedule? schedule = await _scheduleRepository.GetScheduleById(Id);
+        Schedule? schedule = await _scheduleRepository.GetScheduleById(Id, ct);
         if (schedule is null) {
-            return NotFound();
+            return NotFound(ResponsesMessages.NotFound("Schedule not found"));
         }
-        await _scheduleRepository.RemoveSchedule(schedule);
+        await _scheduleRepository.RemoveSchedule(schedule, ct);
         return NoContent();
     }
 }

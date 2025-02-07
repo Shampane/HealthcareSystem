@@ -12,10 +12,9 @@ builder.Services.AddMyRepositories();
 builder.Services.AddHostedService<ScheduleCleanupService>();
 
 builder.Services.AddOpenApi();
-builder.Services.AddControllers();
+builder.Services.AddControllers().AddNewtonsoftJson();
 
 WebApplication app = builder.Build();
-
 app.MapControllers();
 app.AddScalarApi();
 

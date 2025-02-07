@@ -17,7 +17,8 @@ public class ScheduleRepository : IScheduleRepository {
 
     public async Task<ICollection<Schedule>?> GetSchedules(
         Guid? doctorId, int? pageIndex, int? pageSize,
-        DateTimeOffset? searchStartTime, DateTimeOffset? searchEndTime
+        DateTimeOffset? searchStartTime, DateTimeOffset? searchEndTime,
+        CancellationToken cancellationToken
     ) {
         IQueryable<Schedule>? query = _dbContext.Schedules
             .AsNoTracking()
@@ -30,35 +31,51 @@ public class ScheduleRepository : IScheduleRepository {
         return await query.ToListAsync();
     }
 
-    public async Task<Schedule?> GetScheduleById(Guid id) {
+    public async Task<Schedule?> GetScheduleById(
+        Guid id, CancellationToken cancellationToken
+    ) {
         return await _dbContext.Schedules.AsNoTracking()
-            .FirstOrDefaultAsync(s => s.Id == id);
+            .FirstOrDefaultAsync(s => s.Id == id, cancellationToken);
     }
 
-    public async Task CreateSchedule(Schedule schedule) {
-        await _dbContext.Schedules.AddAsync(schedule);
-        await SaveChanges();
+    public async Task CreateSchedule(
+        Schedule schedule, CancellationToken cancellationToken
+    ) {
+        if (!await IsTimeAvailable(schedule)) {
+            throw new Exception("The schedule time is not available");
+        }
+        await _dbContext.Schedules.AddAsync(schedule, cancellationToken);
+        await SaveChanges(cancellationToken);
     }
 
-    public async Task RemoveSchedule(Schedule schedule) {
+    public async Task UpdateScheduleAvailable(
+        Schedule schedule, CancellationToken cancellationToken
+    ) {
+        _dbContext.Schedules.Update(schedule);
+        await SaveChanges(cancellationToken);
+    }
+
+    public async Task RemoveSchedule(
+        Schedule schedule, CancellationToken cancellationToken
+    ) {
         _dbContext.Schedules.Remove(schedule);
-        await SaveChanges();
+        await SaveChanges(cancellationToken);
     }
 
-    public async Task RemoveOldSchedules() {
+    public async Task RemoveOldSchedules(CancellationToken cancellationToken) {
         List<Schedule>? oldSchedules = await _dbContext.Schedules.AsNoTracking()
             .Where(s => s.StartTime < DateTimeOffset.UtcNow)
-            .ToListAsync();
+            .ToListAsync(cancellationToken);
         _dbContext.Schedules.RemoveRange(oldSchedules);
-        await SaveChanges();
+        await SaveChanges(cancellationToken);
     }
 
-    public async Task<int> GetSchedulesCount() {
-        return await _dbContext.Schedules.CountAsync();
+    public async Task<int> GetSchedulesCount(CancellationToken cancellationToken) {
+        return await _dbContext.Schedules.CountAsync(cancellationToken);
     }
 
-    private async Task SaveChanges() {
-        await _dbContext.SaveChangesAsync();
+    private async Task SaveChanges(CancellationToken cancellationToken) {
+        await _dbContext.SaveChangesAsync(cancellationToken);
     }
 
     private async Task<bool> IsTimeAvailable(Schedule schedule) {
