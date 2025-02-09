@@ -1,11 +1,16 @@
-<header>
-  <div class="flex justify-between gap-4">
-    <p class="font-bold text-2xl text-accent-40">HealthcareSystem</p>
-    <mat-tab-group>
-      <mat-tab label="First"> Content 1</mat-tab>
-      <mat-tab label="Second"> Content 2</mat-tab>
-      <mat-tab label="Third"> Content 3</mat-tab>
-    </mat-tab-group>
-    <p>3</p>
+<header class="py-4 border-b-2 border-b-accent-90">
+  <div class="grid grid-cols-4 justify-between items-center">
+    <p class="font-bold text-3xl text-accent-40">HealthcareSystem</p>
+    <nav class="col-span-2 uppercase">
+      <ul class="flex gap-12 justify-center">
+        <li><a>Home</a></li>
+        <li><a>Doctors</a></li>
+        <li><a>Contact</a></li>
+        <li><a>About</a></li>
+      </ul>
+    </nav>
+    <div class="flex justify-end text-lg">
+      <button mat-flat-button class="!font-semibold !py-6 !px-10">Login</button>
+    </div>
   </div>
 </header>

@@ -1,10 +1,9 @@
 import { Component } from '@angular/core';
-import { MatGridList, MatGridTile } from '@angular/material/grid-list';
-import { MatTab, MatTabGroup } from '@angular/material/tabs';
+import { MatButton } from '@angular/material/button';
 
 @Component({
   selector: 'app-header',
-  imports: [MatTab, MatTabGroup],
+  imports: [MatButton],
   templateUrl: './header.component.html',
   styles: ``,
 })
