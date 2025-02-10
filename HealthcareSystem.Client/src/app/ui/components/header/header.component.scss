@@ -1,0 +1,42 @@
+@import "variables";
+
+.header {
+  padding: 24px 0;
+  border-bottom: 2px solid $color-accent-90;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  justify-content: space-between;
+  align-items: center;
+}
+
+.logo {
+  font-weight: 600;
+  font-size: 2em;
+  font-family: 'Montserrat', sans-serif;
+  color: $color-accent-40;
+}
+
+.nav {
+  text-transform: uppercase;
+  grid-column: span 2;
+
+  &-list {
+    list-style: none;
+    display: flex;
+    column-gap: 24px;
+    justify-content: center;
+  }
+}
+
+.login {
+  display: flex;
+  justify-content: end;
+  font-size: calc(1em + 2px);
+
+  &-button {
+    font-weight: 500;
+  }
+}

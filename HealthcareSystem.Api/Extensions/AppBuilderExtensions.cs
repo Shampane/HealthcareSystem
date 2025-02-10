@@ -1,8 +1,8 @@
 using FluentValidation;
 using HealthcareSystem.Api.Middlewares;
+using HealthcareSystem.Application.Validators;
 using HealthcareSystem.Core.Entities;
 using HealthcareSystem.Core.Interfaces;
-using HealthcareSystem.Core.Validators;
 using HealthcareSystem.Infrastructure.Repositories;
 
 namespace HealthcareSystem.Api.Extensions;

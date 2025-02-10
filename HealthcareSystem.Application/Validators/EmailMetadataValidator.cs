@@ -1,7 +1,7 @@
 using FluentValidation;
 using HealthcareSystem.Core.Entities;
 
-namespace HealthcareSystem.Core.Validators;
+namespace HealthcareSystem.Application.Validators;
 
 public class EmailMetadataValidator : AbstractValidator<EmailMetadata> {
     public EmailMetadataValidator() {
