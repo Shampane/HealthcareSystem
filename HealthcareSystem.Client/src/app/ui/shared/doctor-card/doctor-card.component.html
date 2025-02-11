@@ -1,0 +1,13 @@
+<div appearance="outlined" class="card">
+  <img class="image" alt="doctor-image" [src]="doctorImage()" />
+  <div class="main">
+    <div class="content">
+      <p class="content-name">{{ name() }}</p>
+    </div>
+    <div class="actions">
+      <div class="content-chip">{{ specialization() }}</div>
+      <a mat-flat-button [href]="doctorUrl()" class="actions-button">Get Info</a>
+    </div>
+  </div>
+</div>
+

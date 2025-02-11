@@ -45,7 +45,7 @@
           "builder": "@angular-devkit/build-angular:application",
           "options": {
             "stylePreprocessorOptions": {
-              "includePaths": ["src/my-styles"]
+              "includePaths": ["src"]
             },
             "outputPath": "dist/healthcare-system.client",
             "index": "src/index.html",
@@ -55,12 +55,14 @@
             "assets": [
               {
                 "glob": "**/*",
-                "input": "src/assets/",
-                "output": "/output/"
+                "input": "public"
               }
             ],
-            "styles": ["src/custom-theme.scss", "src/styles.scss"],
-            "scripts": []
+            "styles": [
+              "node_modules/bootstrap/dist/css/bootstrap.min.css",
+              "src/styles.scss"
+            ],
+            "scripts": ["node_modules/bootstrap/dist/js/bootstrap.min.js"]
           },
           "configurations": {
             "production": {
@@ -88,6 +90,12 @@
         },
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
+          "options": {
+            "hmr": true,
+            "forceEsbuild": true,
+            "liveReload": true,
+            "watch": true
+          },
           "configurations": {
             "production": {
               "buildTarget": "HealthcareSystem.Client:build:production"
@@ -106,7 +114,12 @@
           "options": {
             "polyfills": ["zone.js", "zone.js/testing"],
             "tsConfig": "tsconfig.spec.json",
-            "assets": ["src/favicon.ico", "src/assets"],
+            "assets": [
+              {
+                "glob": "**/*",
+                "input": "public"
+              }
+            ],
             "styles": ["src/styles.scss"],
             "scripts": []
           }

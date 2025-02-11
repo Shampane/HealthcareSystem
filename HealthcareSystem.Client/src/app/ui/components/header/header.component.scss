@@ -1,42 +1,24 @@
-@import "variables";
+@import "styles";
 
-.header {
+.Header {
   padding: 24px 0;
-  border-bottom: 2px solid $color-accent-90;
+  border-bottom: 1px solid $color-accent-border;
 }
 
-.grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  justify-content: space-between;
-  align-items: center;
-}
-
-.logo {
-  font-weight: 600;
-  font-size: 2em;
+.Logo {
   font-family: 'Montserrat', sans-serif;
-  color: $color-accent-40;
 }
 
-.nav {
-  text-transform: uppercase;
-  grid-column: span 2;
+.Link {
+  transition: 0.3s ease-in-out;
 
-  &-list {
-    list-style: none;
-    display: flex;
-    column-gap: 24px;
-    justify-content: center;
+  &:hover {
+    color: $color-accent;
   }
 }
 
-.login {
-  display: flex;
-  justify-content: end;
+.Button {
+  padding: 8px 32px;
+  border-radius: 100px;
   font-size: calc(1em + 2px);
-
-  &-button {
-    font-weight: 500;
-  }
 }

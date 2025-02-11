@@ -1,16 +1,17 @@
-<header class="header">
-  <div class="grid">
-    <p class="logo">HealthcareSystem</p>
-    <nav class="nav">
-      <ul class="nav-list">
-        <li><a>Home</a></li>
-        <li><a>Doctors</a></li>
-        <li><a>Contact</a></li>
-        <li><a>About</a></li>
-      </ul>
+<header class="Header">
+  <div class="row align-items-center">
+    <div class="col">
+      <span class="Logo fs-2 fw-bold text-primary">HealthcareSystem</span>
+    </div>
+    <nav class="col col-6 d-flex flex-row justify-content-center gap-5">
+      @for (link of links; track link.title) {
+        <a [href]="link.url" class="Link text-uppercase">
+          {{ link.title }}
+        </a>
+      }
     </nav>
-    <div class="login">
-      <button mat-flat-button class="login-button">Login</button>
+    <div class="col">
+      <a href="" class="Button float-end btn btn-primary" role="button">Login</a>
     </div>
   </div>
 </header>

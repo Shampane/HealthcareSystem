@@ -1,0 +1,29 @@
+.section {
+  margin-top: 64px;
+  text-align: center;
+}
+
+.header {
+  font-size: calc(2em - 4px);
+  font-weight: 600;
+}
+
+.text {
+  margin-top: 20px;
+}
+
+.list {
+  margin-top: 32px;
+  display: flex;
+  gap: 24px;
+  justify-content: center;
+
+  &-image {
+    width: 100px;
+    aspect-ratio: 1 / 1;
+  }
+
+  &-title {
+    font-size: calc(1em - 2px);
+  }
+}

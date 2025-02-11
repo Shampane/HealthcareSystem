@@ -1,29 +1,23 @@
 @import url("https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,300..800;1,300..800&display=swap");
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,600..800;1,600..800&display=swap');
 
+$color-accent: var(--bs-primary);
+$color-accent-border: var(--bs-primary-border-subtle);
+
 *,
 *:before,
 *:after {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
-  background: none;
-  outline: none;
-  border: none;
   font-family: inherit;
+  text-decoration: none;
 }
 
-button,
-input[type="button"],
-input[type="reset"],
-input[type="submit"],
-a {
-  cursor: pointer;
+:not(a[role="button"]) {
+  color: inherit;
 }
 
 body {
   font-family: "Rubik", "Open Sans", serif;
-  margin: auto;
-  max-width: calc(1200px + 10vw);
-  padding: 0 4px;
 }

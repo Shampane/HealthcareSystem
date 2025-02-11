@@ -1,5 +1,3 @@
-using System.Net;
-using System.Security.Claims;
 using HealthcareSystem.Api.Templates;
 using HealthcareSystem.Application.Mappings;
 using HealthcareSystem.Application.Requests;
@@ -11,12 +9,15 @@ using InterpolatedParsing;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;
+using System.Net;
+using System.Security.Claims;
 
 namespace HealthcareSystem.Api.Controllers;
 
 [ApiController]
 [Route("auth")]
-public class AuthController : ControllerBase {
+public class AuthController : ControllerBase
+{
     private readonly IAuthRepository _authRepository;
     private readonly IEmailRepository _emailRepository;
 
@@ -32,7 +33,8 @@ public class AuthController : ControllerBase {
         IAuthRepository authRepository,
         ILogger<AuthController> logger,
         IEmailRepository emailRepository
-    ) {
+    )
+    {
         _authRepository = authRepository;
         _emailRepository = emailRepository;
         _logger = logger;
@@ -41,11 +43,14 @@ public class AuthController : ControllerBase {
     [HttpPost("register")]
     public async Task<IActionResult> Register(
         AuthRequests.RegisterRequest request, CancellationToken ct
-    ) {
-        if (request.Password != request.ConfirmPassword) {
+    )
+    {
+        if (request.Password != request.ConfirmPassword)
+        {
             return BadRequest("Passwords do not match");
         }
-        User user = new() {
+        User user = new()
+        {
             UserName = request.Username,
             Email = request.Email,
             Gender = request.Gender
@@ -53,7 +58,8 @@ public class AuthController : ControllerBase {
         IdentityResult result = await _authRepository.CreateUserWithPassword(
             user, request.Password
         );
-        if (result.Succeeded) {
+        if (result.Succeeded)
+        {
             await _authRepository.SetEmailTwoFactor(user, request.EnableTwoFactor);
             await _authRepository.AddRolesToUser(user);
             return Created($"auth/register/{user.Id}", user.ToDto());
@@ -65,28 +71,34 @@ public class AuthController : ControllerBase {
     [HttpPost("login")]
     public async Task<IActionResult> Login(
         AuthRequests.LoginRequest request, CancellationToken ct
-    ) {
+    )
+    {
         User? user = await _authRepository.GetUserByEmail(request.Email);
         if (
             user is null
             || !await _authRepository.IsUserPasswordValid(user, request.Password)
-        ) {
+        )
+        {
             return NotFound(ResponsesMessages.NotFound(
                 "Invalid username or password"
             ));
         }
         bool isUserHasTwoFactor = await _authRepository.IsUserHasTwoFactor(user);
-        if (isUserHasTwoFactor) {
+        if (isUserHasTwoFactor)
+        {
             IList<string>? providers =
                 await _authRepository.GetTwoFactorProviders(user);
-            if (!providers.Contains("Email")) {
+            if (!providers.Contains("Email"))
+            {
                 return Unauthorized("Invalid 2-factor provider");
             }
-            EmailMetadata emailMetadata = new() {
+            EmailMetadata emailMetadata = new()
+            {
                 ToAddress = user.Email!,
                 Subject = "HealthcareSystem: Two-factor provider"
             };
-            TwoFactorModel model = new() {
+            TwoFactorModel model = new()
+            {
                 CallbackUrl = "https://localhost:4200",
                 Email = user.Email!,
                 OTP = await _authRepository.CreateTwoFactorToken(user)
@@ -103,15 +115,18 @@ public class AuthController : ControllerBase {
     [HttpPost("twoFactor")]
     public async Task<IActionResult> TwoFactor(
         AuthRequests.TwoFactorRequest request, CancellationToken ct
-    ) {
+    )
+    {
         User? user = await _authRepository.GetUserByEmail(request.Email);
-        if (user is null) {
+        if (user is null)
+        {
             return NotFound(ResponsesMessages.NotFound("User not found"));
         }
         bool isValid = await _authRepository.IsTwoFactorValid(
             user, request.Provider, request.Token
         );
-        if (!isValid) {
+        if (!isValid)
+        {
             return BadRequest("Invalid provider");
         }
         IList<string> roles = await _authRepository.GetUserRoles(user);
@@ -122,13 +137,15 @@ public class AuthController : ControllerBase {
     [HttpPost("refreshToken")]
     public async Task<IActionResult> RefreshToken(
         AuthRequests.RefreshTokenRequest request, CancellationToken ct
-    ) {
+    )
+    {
         ClaimsPrincipal principal =
             _authRepository.GetPrincipalFromExpiredToken(request.AccessToken);
         User? user = await _authRepository.GetUserByName(principal.Identity.Name);
         if (user is null
             || user.RefreshToken != request.RefreshToken
-            || user.RefreshTokenExpiry <= DateTime.UtcNow) {
+            || user.RefreshTokenExpiry <= DateTime.UtcNow)
+        {
             return BadRequest("Invalid refresh token");
         }
         Token? refreshedToken = await _authRepository.CreateToken(user, false);
@@ -138,9 +155,11 @@ public class AuthController : ControllerBase {
     [HttpPost("forgetPassword")]
     public async Task<IActionResult> ForgetPassword(
         AuthRequests.ForgetPasswordRequest request, CancellationToken ct
-    ) {
+    )
+    {
         User? user = await _authRepository.GetUserByEmail(request.Email);
-        if (user is null) {
+        if (user is null)
+        {
             return NotFound(ResponsesMessages.NotFound("User not found"));
         }
         string token = await _authRepository.CreateResetToken(user);
@@ -151,11 +170,13 @@ public class AuthController : ControllerBase {
         string callbackUrl =
             QueryHelpers.AddQueryString(request.ClientUri, parameters!);
         LogResetToken(callbackUrl);
-        EmailMetadata emailMetadata = new() {
+        EmailMetadata emailMetadata = new()
+        {
             ToAddress = user.Email!,
             Subject = "HealthcareSystem: Reset Password"
         };
-        ForgetPasswordModel model = new() {
+        ForgetPasswordModel model = new()
+        {
             CallbackUrl = callbackUrl,
             Email = request.Email
         };
@@ -168,25 +189,30 @@ public class AuthController : ControllerBase {
     [HttpPost("resetPassword")]
     public async Task<IActionResult> ResetPassword(
         AuthRequests.ResetPasswordRequest request, CancellationToken ct
-    ) {
-        if (request.Password != request.ConfirmPassword) {
+    )
+    {
+        if (request.Password != request.ConfirmPassword)
+        {
             return BadRequest("Passwords do not match");
         }
         User? user = await _authRepository.GetUserByEmail(request.Email);
-        if (user is null) {
+        if (user is null)
+        {
             return NotFound(ResponsesMessages.NotFound("User not found"));
         }
         IdentityResult result = await _authRepository.ResetUserPassword(
             user, request.Token, request.Password
         );
-        if (result.Succeeded) {
+        if (result.Succeeded)
+        {
             return Ok("Password reset successful");
         }
         IEnumerable<string> errors = result.Errors.Select(e => e.Description);
         return BadRequest(errors);
     }
 
-    private void LogResetToken(string callbackUrl) {
+    private void LogResetToken(string callbackUrl)
+    {
         string decode = WebUtility.UrlDecode(callbackUrl);
         int tokenIndex = decode.IndexOf("token", StringComparison.Ordinal);
         int emailIndex = decode.IndexOf("&email", StringComparison.Ordinal);

@@ -1,0 +1,21 @@
+<section class="section">
+  <h1 class="header">Find by Specialization</h1>
+  <p class="text">
+    Simply browse through our extensive list of trusted doctors, schedule your
+    appointment hassle-free.
+  </p>
+  <div class="list">
+    @for (specialization of specializations; track specialization.title) {
+      <a [href]="specialization.pageUrl">
+        <img
+          class="list-image"
+          [ngSrc]="specialization.imageUrl"
+          width="100"
+          height="100"
+          [alt]="specialization.title + '-icon'"
+        />
+        <p class="list-title">{{ specialization.title }}</p>
+      </a>
+    }
+  </div>
+</section>
