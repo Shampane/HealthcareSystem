@@ -1,24 +1,27 @@
-@import "styles";
+@use "styles";
 
-.Header {
-  padding: 24px 0;
-  border-bottom: 1px solid $color-accent-border;
-}
+.my {
+  &-header {
+    padding: 24px 0;
+    border-bottom: 1px solid styles.$color-accent-border;
+  }
 
-.Logo {
-  font-family: 'Montserrat', sans-serif;
-}
+  &-logo {
+    font-family: 'Montserrat', sans-serif;
+  }
 
-.Link {
-  transition: 0.3s ease-in-out;
+  &-link {
+    transition: 0.3s ease-in-out;
 
-  &:hover {
-    color: $color-accent;
+    &:hover {
+      color: styles.$color-accent;
+    }
+  }
+
+  &-button {
+    padding: 8px 32px;
+    font-size: calc(1em + 2px);
   }
 }
 
-.Button {
-  padding: 8px 32px;
-  border-radius: 100px;
-  font-size: calc(1em + 2px);
-}
+

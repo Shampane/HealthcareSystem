@@ -1,5 +1,5 @@
 @import url("https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,300..800;1,300..800&display=swap");
-@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,600..800;1,600..800&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,600..800;1,600..800&display=swap");
 
 $color-accent: var(--bs-primary);
 $color-accent-border: var(--bs-primary-border-subtle);
@@ -8,14 +8,35 @@ $color-accent-border: var(--bs-primary-border-subtle);
 *:before,
 *:after {
   box-sizing: border-box;
-  margin: 0;
-  padding: 0;
   font-family: inherit;
   text-decoration: none;
 }
 
+body,
+div,
+h1,
+h2,
+h3,
+h4,
+h5,
+p,
+nav,
+section,
+article,
+aside,
+ul,
+li {
+  margin: 0;
+  padding: 0;
+}
+
+p {
+  margin: 4px 0;
+}
+
 :not(a[role="button"]) {
   color: inherit;
+  text-decoration: none;
 }
 
 body {

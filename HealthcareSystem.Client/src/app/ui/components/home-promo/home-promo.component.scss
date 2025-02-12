@@ -1,42 +1,30 @@
-@import "styles";
+@use "styles";
 
-.card {
-  margin: 24px 0;
-  padding: 180px 5%;
-  color: hsl(0, 0%, 100%);
-  //background-image: url('/assets/promo-background.png');
-  background-size: 700px;
-  background-position: 90% bottom;
-  background-repeat: no-repeat;
-  //background-color: $color-accent-40;
-}
-
-.header, .content, .actions {
-  padding: 0;
-}
-
-.header, .content {
-  max-width: 40%;
-}
-
-.header {
-  &-title {
-    font-size: 3em;
-    font-weight: 600;
+.my {
+  &-card {
+    margin: calc(1vmin + 16px) 0;
+    padding: calc(16vmin + 20px) calc(8vmin + 10px);
   }
-}
 
-.content {
-  margin: 1em 0;
-}
+  &-background {
+    right: 5%;
+    bottom: 0;
+    width: calc(120px + 30% + 5vw);
+    height: auto;
+    position: relative;
+  }
 
-.actions {
+  &-body {
+    max-width: calc(120px + 10% + 15vw);
+  }
+
+  &-text {
+    margin: 12px 0;
+  }
+
   &-button {
-    padding: 24px;
-    border: none;
-    background: hsl(0, 0%, 100%);
-    color: hsl(0, 0%, 30%);
+    margin-top: 8px;
+    padding: 10px 28px;
+    font-size: calc(1em + 2px);
   }
 }
-
-

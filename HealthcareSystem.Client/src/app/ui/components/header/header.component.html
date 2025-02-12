@@ -1,17 +1,22 @@
-<header class="Header">
+<header class="my-header">
   <div class="row align-items-center">
     <div class="col">
-      <span class="Logo fs-2 fw-bold text-primary">HealthcareSystem</span>
+      <span class="my-logo fs-2 fw-bold text-primary">HealthcareSystem</span>
     </div>
     <nav class="col col-6 d-flex flex-row justify-content-center gap-5">
       @for (link of links; track link.title) {
-        <a [href]="link.url" class="Link text-uppercase">
+        <a [href]="link.url" class="my-link text-uppercase">
           {{ link.title }}
         </a>
       }
     </nav>
     <div class="col">
-      <a href="" class="Button float-end btn btn-primary" role="button">Login</a>
+      <a
+        href=""
+        class="my-button float-end btn btn-primary rounded-pill"
+        role="button"
+        >Login</a
+      >
     </div>
   </div>
 </header>

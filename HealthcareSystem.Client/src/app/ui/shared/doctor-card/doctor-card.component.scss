@@ -1,5 +1,20 @@
-@import "styles";
+@use "styles";
 
+.my {
+  &-card {
+    border-radius: 500px;
+  }
+
+  &-body {
+    padding: calc(1vmin + 8px);
+  }
+
+  &-text {
+
+  }
+}
+
+/*
 .card {
   // background-color: $color-accent-95;
 }
@@ -43,5 +58,5 @@
     font-weight: 500;
   }
 }
-
+ */
 

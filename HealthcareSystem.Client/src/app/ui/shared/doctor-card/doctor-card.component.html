@@ -1,13 +1,12 @@
-<div appearance="outlined" class="card">
-  <img class="image" alt="doctor-image" [src]="doctorImage()" />
-  <div class="main">
-    <div class="content">
-      <p class="content-name">{{ name() }}</p>
-    </div>
-    <div class="actions">
-      <div class="content-chip">{{ specialization() }}</div>
-      <a mat-flat-button [href]="doctorUrl()" class="actions-button">Get Info</a>
-    </div>
+<div class="card rounded-4">
+  <div class="bg-primary-subtle rounded-top-4">
+    <img [src]="doctorImage()" />
+  </div>
+  <div class="my-body text-start">
+    <h5>Dr. {{ name() }}</h5>
+    <p class="my-text text-secondary">{{ specialization() }}</p>
+    <a role="button" [href]="doctorUrl()" class="btn btn-outline-primary">
+      Get Info
+    </a>
   </div>
 </div>
-
