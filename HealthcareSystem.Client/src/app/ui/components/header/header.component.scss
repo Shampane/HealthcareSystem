@@ -2,12 +2,12 @@
 
 .my {
   &-header {
-    padding: 24px 0;
+    padding: calc(1vmin + 8px) 0;
     border-bottom: 1px solid styles.$color-accent-border;
   }
 
   &-logo {
-    font-family: 'Montserrat', sans-serif;
+    font-family: "Montserrat", sans-serif;
   }
 
   &-link {
@@ -23,5 +23,3 @@
     font-size: calc(1em + 2px);
   }
 }
-
-

@@ -1,6 +1,12 @@
 <div class="card rounded-4">
   <div class="bg-primary-subtle rounded-top-4">
-    <img [src]="doctorImage()" />
+    <img
+      [ngSrc]="doctorImage()"
+      [alt]="name() + '-icon'"
+      width="1"
+      height="1"
+      class="my-image"
+    />
   </div>
   <div class="my-body text-start">
     <h5>Dr. {{ name() }}</h5>

@@ -1,0 +1,38 @@
+@use "styles";
+
+.my {
+  &-footer {
+    margin-top: calc(4vmin + 16px);
+  }
+
+  &-main {
+    padding: calc(2vmin + 16px) 0;
+  }
+
+  &-logo {
+    font-family: "Montserrat", sans-serif;
+  }
+
+  &-content {
+    margin-top: 1vmin;
+    font-size: calc(1em - 1px);
+  }
+
+  &-text {
+    max-width: 85%;
+  }
+
+  &-link {
+    transition: 0.3s ease-in-out;
+
+    &:hover {
+      color: styles.$color-accent !important;
+    }
+  }
+
+  &-copyright {
+    border-top: 1px solid styles.$color-secondary-border;
+    padding: calc(1vmin + 8px) 0;
+    font-size: calc(1em - 1px);
+  }
+}

@@ -1,0 +1,41 @@
+<footer class="my-footer">
+  <div class="my-main">
+    <div class="row gap-5 align-items-center">
+      <div class="col col-6 text-secondary">
+        <span class="my-logo fs-4 fw-bold">&#64;HealthcareSystem</span>
+      </div>
+      <div class="col">
+        <h5>Company</h5>
+      </div>
+      <div class="col">
+        <h5>Get in Touch</h5>
+      </div>
+    </div>
+    <div class="my-content row gap-5">
+      <div class="col col-6 text-secondary">
+        <p class="my-text">
+          Lorem Ipsum is simply dummy text of the printing and typesetting industry.
+          Lorem Ipsum has been the industry's standard dummy text ever since the
+          1500s, when an unknown printer took a galley of type and scrambled it to
+          make a type specimen book.
+        </p>
+      </div>
+      <div class="col d-flex flex-column gap-2">
+        @for (link of links; track link.title) {
+          <a [href]="link.url" class="my-link text-secondary">
+            {{ link.title }}
+          </a>
+        }
+      </div>
+      <div class="col d-flex flex-column gap-2">
+        <a href="tel:+7123456789" class="my-link text-secondary">+7-123-456-789</a>
+        <a href="mailto:healthcaresystem@gmail.com" class="my-link text-secondary">
+          healthcaresystem&#64;gmail.com
+        </a>
+      </div>
+    </div>
+  </div>
+  <div class="my-copyright text-center">
+    <span>Copyright 2025 &#64;HealthcareSystem - All Right Reserved</span>
+  </div>
+</footer>

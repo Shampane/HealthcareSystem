@@ -5,6 +5,11 @@
     border-radius: 500px;
   }
 
+  &-image {
+    width: 100% !important;
+    height: auto;
+  }
+
   &-body {
     padding: calc(1vmin + 8px);
   }
