@@ -17,6 +17,14 @@ services:
       dockerfile: HealthcareSystem.Api/Dockerfile
     volumes:
       - ~/.aspnet/https:/https:ro
+  healthcaresystem.client:
+    container_name: healthcaresystem.client
+    image: healthcaresystem.client
+    ports:
+      - "4400:80"
+    build:
+      context: ./HealthcareSystem.Client
+      dockerfile: Dockerfile
   healthcaresystem.database:
     container_name: healthcaresystem.database
     image: postgres

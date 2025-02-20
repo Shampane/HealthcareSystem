@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { DoctorCardComponent } from '../../shared/doctor-card/doctor-card.component';
+import { DoctorCardComponent } from '../../shared/doctor-card.component';
 
 @Component({
   selector: 'app-home-doctor-list',

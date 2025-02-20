@@ -1,15 +1,15 @@
-@use "styles";
+@use "../../../styles";
 
 .my {
   &-card {
-    margin: calc(1vmin + 16px) 0;
-    padding: calc(16vmin + 20px) calc(8vmin + 10px);
+    margin: calc(4vmin + 16px) 0;
+    padding: calc(8vmin + 20px) calc(6vmin + 10px);
   }
 
   &-background {
     right: 5%;
-    bottom: 0;
-    width: calc(120px + 30% + 5vw);
+    bottom: -2px;
+    width: calc(80px + 18% + 3vw);
     height: auto;
     position: relative;
   }
@@ -23,7 +23,7 @@
   }
 
   &-button {
-    margin-top: 8px;
+    margin-top: calc(1vmin + 8px);
     padding: 10px 28px;
     font-size: calc(1em + 2px);
   }

@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { IPagesLinks } from '../../interfaces/IPagesLinks';
+import { PagesLinks } from '../interfaces/view/pagesLinks.interface';
 
 @Component({
   selector: 'app-header',
@@ -7,7 +7,7 @@ import { IPagesLinks } from '../../interfaces/IPagesLinks';
   styleUrl: 'header.component.scss',
 })
 export class HeaderComponent {
-  links: IPagesLinks[] = [
+  links: PagesLinks[] = [
     { url: '', title: 'Home' },
     { url: '', title: 'Doctors' },
     { url: '', title: 'Contact' },

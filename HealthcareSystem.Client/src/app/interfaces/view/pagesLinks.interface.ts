@@ -1,4 +1,4 @@
-export interface IPagesLinks {
+export interface PagesLinks {
   url: string;
   title: string;
 }

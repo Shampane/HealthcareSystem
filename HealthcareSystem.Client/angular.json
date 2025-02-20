@@ -47,7 +47,7 @@
             "stylePreprocessorOptions": {
               "includePaths": ["src"]
             },
-            "outputPath": "dist/healthcare-system.client",
+            "outputPath": "dist/client",
             "index": "src/index.html",
             "browser": "src/main.ts",
             "polyfills": ["zone.js"],
@@ -58,12 +58,7 @@
                 "input": "public"
               }
             ],
-            "styles": [
-              "node_modules/bootstrap-icons/font/bootstrap-icons.min.css",
-              "node_modules/bootstrap/dist/css/bootstrap.min.css",
-              "src/styles.scss"
-            ],
-            "scripts": ["node_modules/bootstrap/dist/js/bootstrap.min.js"]
+            "styles": ["src/styles.scss"]
           },
           "configurations": {
             "production": {

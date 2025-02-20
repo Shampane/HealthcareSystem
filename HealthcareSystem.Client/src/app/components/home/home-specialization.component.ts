@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { AngularSvgIconModule } from 'angular-svg-icon';
 import { NgOptimizedImage } from '@angular/common';
-import { ISpecializationList } from '../../interfaces/ISpecializationList';
+import { SpecializationsList } from '../../interfaces/view/specializationsList.interface';
 
 @Component({
   selector: 'app-home-specialization',
@@ -10,7 +10,7 @@ import { ISpecializationList } from '../../interfaces/ISpecializationList';
   styleUrl: './home-specialization.component.scss',
 })
 export class HomeSpecializationComponent {
-  specializations: ISpecializationList[] = [
+  specializations: SpecializationsList[] = [
     {
       pageUrl: '',
       imageUrl: '/assets/specialization-general-physician-icon.svg',

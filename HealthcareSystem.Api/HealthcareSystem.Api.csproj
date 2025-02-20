@@ -6,26 +6,27 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
         <PreserveCompilationContext>true</PreserveCompilationContext>
+        <UserSecretsId>15fb2595-974d-415b-9a1f-a6e6aa8b5e60</UserSecretsId>
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="InterpolatedParser" Version="1.1.3"/>
-        <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="9.0.1"/>
-        <PackageReference Include="Microsoft.AspNetCore.JsonPatch" Version="9.0.1"/>
-        <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="9.0.1"/>
-        <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.1"/>
+        <PackageReference Include="InterpolatedParser" Version="1.1.3" />
+        <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="9.0.1" />
+        <PackageReference Include="Microsoft.AspNetCore.JsonPatch" Version="9.0.1" />
+        <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="9.0.1" />
+        <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.1" />
         <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.0">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="Scalar.AspNetCore" Version="2.0.9"/>
-        <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2"/>
+        <PackageReference Include="Scalar.AspNetCore" Version="2.0.9" />
+        <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\HealthcareSystem.Application\HealthcareSystem.Application.csproj"/>
-        <ProjectReference Include="..\HealthcareSystem.Core\HealthcareSystem.Core.csproj"/>
-        <ProjectReference Include="..\HealthcareSystem.Infrastructure\HealthcareSystem.Infrastructure.csproj"/>
+        <ProjectReference Include="..\HealthcareSystem.Application\HealthcareSystem.Application.csproj" />
+        <ProjectReference Include="..\HealthcareSystem.Core\HealthcareSystem.Core.csproj" />
+        <ProjectReference Include="..\HealthcareSystem.Infrastructure\HealthcareSystem.Infrastructure.csproj" />
     </ItemGroup>
 
     <ItemGroup>

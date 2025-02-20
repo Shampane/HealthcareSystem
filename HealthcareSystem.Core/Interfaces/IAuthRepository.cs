@@ -1,11 +1,12 @@
-using System.Security.Claims;
 using HealthcareSystem.Core.Entities;
 using HealthcareSystem.Core.Records;
 using Microsoft.AspNetCore.Identity;
+using System.Security.Claims;
 
 namespace HealthcareSystem.Core.Interfaces;
 
-public interface IAuthRepository {
+public interface IAuthRepository
+{
     public Task<User?> GetUserByName(string name);
     public Task<User?> GetUserByEmail(string email);
     public Task<IdentityResult> CreateUserWithPassword(User user, string password);

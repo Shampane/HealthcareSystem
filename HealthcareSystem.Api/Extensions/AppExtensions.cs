@@ -9,6 +9,7 @@ public static class AppExtensions {
         if (!app.Environment.IsDevelopment()) {
             return app;
         }
+
         app.MapOpenApi();
         app.MapScalarApiReference(options => {
             options.Servers = [
