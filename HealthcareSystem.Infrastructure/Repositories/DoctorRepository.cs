@@ -18,12 +18,12 @@ public class DoctorRepository : IDoctorRepository {
 
     public async Task<ICollection<Doctor>?> GetDoctors(
         int? pageIndex, int? pageSize, string? sortField,
-        string? sortOrder, string? searchField, string? searchValue,
+        string? sortOrder, string? searchName, string? searchSpecialization,
         CancellationToken cancellationToken
     ) {
         IQueryable<Doctor>? query = _dbContext.Doctors.AsNoTracking();
 
-        query = AddGetSearch(query, searchField, searchValue);
+        query = AddGetSearch(query, searchName, searchSpecialization);
         query = AddGetSort(query, sortField, sortOrder);
         query = _getHelper.AddPagination(query, pageSize, pageIndex);
 
@@ -72,24 +72,21 @@ public class DoctorRepository : IDoctorRepository {
     }
 
     private static IQueryable<Doctor> AddGetSearch(
-        IQueryable<Doctor> query, string? searchField, string? searchValue
+        IQueryable<Doctor> query, string? searchName, string? searchSpecialization
     ) {
-        if (searchValue is null) {
+        if (searchName is null && searchSpecialization is null) {
             return query;
         }
-        Expression<Func<Doctor, bool>> key = searchField?.ToLower() switch {
-            "name" => d => d.Name.StartsWith(
-                searchValue, StringComparison.CurrentCultureIgnoreCase
-            ),
-            "specialization" => d => d.Specialization.StartsWith(
-                searchValue, StringComparison.CurrentCultureIgnoreCase
-            ),
-            "phonenumber" => d => d.PhoneNumber.StartsWith(
-                searchValue, StringComparison.CurrentCultureIgnoreCase
-            ),
-            _ => d => false
-        };
-        return query.Where(key);
+
+        query = searchName is null
+            ? query
+            : query.Where(d => d.Name.ToLower().StartsWith(searchName.ToLower()));
+        query = searchSpecialization is null
+            ? query
+            : query.Where(d =>
+                d.Specialization.ToLower().StartsWith(searchSpecialization.ToLower())
+            );
+        return query;
     }
 
     private static IQueryable<Doctor> AddGetSort(
@@ -104,7 +101,8 @@ public class DoctorRepository : IDoctorRepository {
         };
 
         bool isDescending = sortOrder is not null
-            && sortOrder.Equals("desc", StringComparison.CurrentCultureIgnoreCase);
+                            && sortOrder.Equals("desc",
+                                StringComparison.CurrentCultureIgnoreCase);
         return isDescending ? query.OrderByDescending(key) : query.OrderBy(key);
     }
 }

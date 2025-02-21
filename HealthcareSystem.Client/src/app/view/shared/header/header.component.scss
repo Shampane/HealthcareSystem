@@ -1,0 +1,25 @@
+@use "../../../../styles";
+
+.my {
+  &-header {
+    padding: calc(1vmin + 8px) 0;
+    border-bottom: 1px solid styles.$color-accent-border;
+  }
+
+  &-logo {
+    font-family: "Montserrat", sans-serif;
+  }
+
+  &-link {
+    transition: 0.3s ease-in-out;
+
+    &:hover {
+      color: styles.$color-accent;
+    }
+  }
+
+  &-button {
+    padding: 8px 32px;
+    font-size: calc(1em + 2px);
+  }
+}

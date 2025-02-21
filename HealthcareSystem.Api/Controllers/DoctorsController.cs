@@ -30,11 +30,12 @@ public class DoctorsController : ControllerBase {
     ) {
         ICollection<Doctor>? list = await _doctorRepository.GetDoctors(
             request.PageIndex, request.PageSize, request.SortField,
-            request.SortOrder, request.SearchField, request.SearchValue, ct
+            request.SortOrder, request.SearchName, request.SearchSpecialization, ct
         );
         if (list is null) {
             return NotFound(ResponsesMessages.NotFound("Doctors not found"));
         }
+
         IEnumerable<DoctorDto> listDto = list.Select(d => d.ToDto());
         return Ok(listDto);
     }
@@ -47,6 +48,7 @@ public class DoctorsController : ControllerBase {
         if (doctor is null) {
             return NotFound(ResponsesMessages.NotFound("Doctor not found"));
         }
+
         return Ok(doctor.ToDto());
     }
 
@@ -84,6 +86,7 @@ public class DoctorsController : ControllerBase {
         if (doctor is null) {
             return NotFound(ResponsesMessages.NotFound("Doctor not found"));
         }
+
         await _doctorRepository.UpdateDoctor(
             doctor, request.Name, request.Description, request.ImageUrl,
             request.ExperienceAge, request.FeeInDollars,
@@ -103,6 +106,7 @@ public class DoctorsController : ControllerBase {
         if (doctor is null) {
             return NotFound(ResponsesMessages.NotFound("Doctor not found"));
         }
+
         await _doctorRepository.RemoveDoctor(doctor, ct);
 
         return NoContent();

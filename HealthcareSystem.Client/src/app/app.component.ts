@@ -1,21 +1,29 @@
 import { Component, inject } from '@angular/core';
-import { HomePageComponent } from './pages/home-page.component';
-import { FooterComponent } from './shared/footer.component';
-import { HeaderComponent } from './shared/header.component';
-import { DoctorService } from './services/doctor.service';
+import { DoctorService } from './data/services/doctor.service';
+import { FooterComponent } from './view/shared/footer/footer.component';
+import { HomePageComponent } from './view/pages/home/home-page.component';
+import { HeaderComponent } from './view/shared/header/header.component';
+import { Doctor } from './data/entities/doctor';
+import { DoctorsPageComponent } from './view/pages/doctors-page/doctors-page.component';
 
 @Component({
   selector: 'app-root',
-  imports: [HomePageComponent, FooterComponent, HeaderComponent],
   templateUrl: './app.component.html',
+  imports: [
+    FooterComponent,
+    HomePageComponent,
+    HeaderComponent,
+    DoctorsPageComponent,
+  ],
 })
 export class AppComponent {
   title = 'HealthcareSystem.Client';
   doctorService = inject(DoctorService);
-  doctors = [];
+  doctors: Doctor[] = [];
 
   constructor() {
-    this.doctorService.getTestDoctors().subscribe((data) => (this.doctors = data));
-    console.log(this.doctors);
+    this.doctorService.getTestDoctors().subscribe((obj) => {
+      this.doctors = obj;
+    });
   }
 }

@@ -1,0 +1,44 @@
+<section>
+  <form [formGroup]="searchFormGroup">
+    <div class="input-group mb-3">
+      <input
+        type="text"
+        class="form-control"
+        placeholder="Search by Name"
+        aria-label="Search by Name"
+        formControlName="searchName"
+      />
+    </div>
+    <div>
+      @for (name of specializations; track $index) {
+        <input
+          type="radio"
+          class="btn-check"
+          autocomplete="off"
+          [id]="name.toLowerCase().replaceAll(' ', '-')"
+          [value]="name"
+          formControlName="searchSpecialization"
+        />
+        <label
+          class="btn btn-outline-primary"
+          [for]="name.toLowerCase().replaceAll(' ', '-')"
+          >{{ name }}</label
+        >
+      }
+    </div>
+  </form>
+
+  <div class="my-list container gap-3">
+    <div class="row g-3">
+      @for (doctor of doctors; track doctor.id) {
+        <app-doctor-card
+          class="col-3"
+          [doctorImage]="'assets/' + doctor.imageUrl"
+          [name]="doctor.name"
+          [specialization]="doctor.specialization"
+          doctorUrl=""
+        ></app-doctor-card>
+      }
+    </div>
+  </div>
+</section>

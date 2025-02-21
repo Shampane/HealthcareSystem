@@ -5,7 +5,7 @@ namespace HealthcareSystem.Core.Interfaces;
 public interface IDoctorRepository {
     public Task<ICollection<Doctor>?> GetDoctors(
         int? pageIndex, int? pageSize, string? sortField,
-        string? sortOrder, string? searchField, string? searchValue,
+        string? sortOrder, string? searchName, string? searchSpecialization,
         CancellationToken cancellationToken
     );
 

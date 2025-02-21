@@ -18,6 +18,13 @@ builder.Services.AddControllers().AddNewtonsoftJson();
 
 WebApplication app = builder.Build();
 
+app.UseCors(policy => policy
+    .AllowAnyOrigin()
+    //.WithOrigins("http://localhost:4200")
+    .AllowAnyHeader()
+    .AllowAnyMethod()
+);
+
 app.UseExceptionHandler();
 
 app.MapControllers();
