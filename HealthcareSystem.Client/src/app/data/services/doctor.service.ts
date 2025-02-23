@@ -1,17 +1,17 @@
-import { HttpClient, HttpParams } from '@angular/common/http';
-import { inject, Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
-import { Doctor } from '../entities/doctor';
-import { GetDoctorsRequest } from '../requests/doctorRequests';
+import { HttpClient, HttpParams } from "@angular/common/http";
+import { inject, Injectable } from "@angular/core";
+import { Observable } from "rxjs";
+import { GetDoctorsRequest } from "../requests/doctorRequests";
+import { DoctorGetResponse } from "../responses/doctorResponses";
 
 @Injectable({
-  providedIn: 'root',
+  providedIn: "root",
 })
 export class DoctorService {
   httpClient: HttpClient = inject(HttpClient);
-  baseUrl = 'https://localhost:8081/api/';
+  baseUrl = "https://localhost:8081/api/";
 
-  getTestDoctors(request?: GetDoctorsRequest): Observable<Doctor[]> {
+  getDoctors(request?: GetDoctorsRequest): Observable<DoctorGetResponse> {
     let params = new HttpParams();
     if (request) {
       Object.keys(request).forEach((key) => {
@@ -21,7 +21,8 @@ export class DoctorService {
         }
       });
     }
-
-    return this.httpClient.get<Doctor[]>(this.baseUrl + 'doctors', { params });
+    return this.httpClient.get<DoctorGetResponse>(this.baseUrl + "doctors", {
+      params,
+    });
   }
 }

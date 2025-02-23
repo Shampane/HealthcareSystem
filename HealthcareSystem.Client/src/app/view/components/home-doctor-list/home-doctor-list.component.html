@@ -6,7 +6,7 @@
     </p>
     <div class="my-list container gap-3">
       <div class="row g-3">
-        @for (doctor of doctors; track doctor.id) {
+        @for (doctor of doctors(); track doctor.id) {
           <app-doctor-card
             class="col-3"
             [doctorImage]="'assets/' + doctor.imageUrl"

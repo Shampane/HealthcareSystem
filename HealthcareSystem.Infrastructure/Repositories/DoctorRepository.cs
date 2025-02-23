@@ -16,18 +16,18 @@ public class DoctorRepository : IDoctorRepository {
         _getHelper = new GetHelper();
     }
 
-    public async Task<ICollection<Doctor>?> GetDoctors(
-        int? pageIndex, int? pageSize, string? sortField,
-        string? sortOrder, string? searchName, string? searchSpecialization,
+    public async Task<(int?, ICollection<Doctor>?)> GetDoctors(
+        int? pageIndex, int? pageSize, string? sortField, string? sortOrder,
+        string? searchName, string? searchSpecialization,
         CancellationToken cancellationToken
     ) {
         IQueryable<Doctor>? query = _dbContext.Doctors.AsNoTracking();
 
         query = AddGetSearch(query, searchName, searchSpecialization);
         query = AddGetSort(query, sortField, sortOrder);
+        int? count = await query.CountAsync(cancellationToken);
         query = _getHelper.AddPagination(query, pageSize, pageIndex);
-
-        return await query.ToListAsync(cancellationToken);
+        return (count, await query.ToListAsync(cancellationToken));
     }
 
     public async Task<Doctor?> GetDoctorById(

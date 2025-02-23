@@ -1,44 +1,141 @@
-<section>
-  <form [formGroup]="searchFormGroup">
-    <div class="input-group mb-3">
-      <input
-        type="text"
-        class="form-control"
-        placeholder="Search by Name"
-        aria-label="Search by Name"
-        formControlName="searchName"
-      />
-    </div>
-    <div>
-      @for (name of specializations; track $index) {
-        <input
-          type="radio"
-          class="btn-check"
-          autocomplete="off"
-          [id]="name.toLowerCase().replaceAll(' ', '-')"
-          [value]="name"
-          formControlName="searchSpecialization"
-        />
-        <label
-          class="btn btn-outline-primary"
-          [for]="name.toLowerCase().replaceAll(' ', '-')"
-          >{{ name }}</label
-        >
-      }
-    </div>
-  </form>
+<section class="my-section">
+  <h1 class="my-4 text-center">All Doctors</h1>
+  <div class="my-content">
+    <h3 class="mt-3">Search by name and specialization</h3>
 
-  <div class="my-list container gap-3">
-    <div class="row g-3">
-      @for (doctor of doctors; track doctor.id) {
-        <app-doctor-card
-          class="col-3"
-          [doctorImage]="'assets/' + doctor.imageUrl"
-          [name]="doctor.name"
-          [specialization]="doctor.specialization"
-          doctorUrl=""
-        ></app-doctor-card>
-      }
+    <form [formGroup]="searchFormGroup" class="row gap-3 mt-3">
+      <div class="col-3">
+        <input
+          type="text"
+          class="form-control"
+          placeholder="Search by Name"
+          aria-label="Search by Name"
+          formControlName="name"
+        />
+      </div>
+      <div class="d-flex justify-content-between col">
+        @for (name of specializations; track $index) {
+          <input
+            type="radio"
+            class="btn-check"
+            autocomplete="off"
+            [id]="'specialization-' + name"
+            [value]="name"
+            formControlName="specialization"
+          />
+          <label
+            class="btn btn-outline-primary px-3"
+            [for]="'specialization-' + name"
+            >{{ name }}</label
+          >
+        }
+      </div>
+    </form>
+
+    <h3 class="mt-4">Sort doctors</h3>
+
+    <form [formGroup]="sortFormGroup" class="row gap-3 mt-3 align-items-center">
+      <div class="col-5">
+        <select
+          class="form-select"
+          aria-label="Default select example"
+          formControlName="field"
+        >
+          @for (name of sortFields; track $index) {
+            <option [value]="name.replaceAll(' ', '')">
+              {{ name }}
+            </option>
+          }
+        </select>
+      </div>
+
+      <div class="form-check form-switch col">
+        <input
+          class="form-check-input"
+          type="checkbox"
+          role="switch"
+          id="sort-order-switch"
+          formControlName="order"
+        />
+        <label class="form-check-label" for="sort-order-switch">
+          Sort by Descending (DESC)
+        </label>
+      </div>
+
+      <div class="col">
+        <div class="d-flex gap-2 align-items-center float-end">
+          <p>Show per page:</p>
+          <form>
+            <select
+              class="form-select"
+              aria-label="Default select example"
+              [formControl]="pageSizeForm"
+            >
+              @for (value of pageSizes; track $index) {
+                <option [value]="value">{{ value }}</option>
+              }
+            </select>
+          </form>
+        </div>
+      </div>
+    </form>
+
+    <div class="gap-3 mt-4">
+      <div class="row g-3">
+        @for (doctor of doctors(); track doctor.id) {
+          <app-doctor-card
+            class="col-3"
+            [doctorImage]="'assets/' + doctor.imageUrl"
+            [name]="doctor.name"
+            [specialization]="doctor.specialization"
+            doctorUrl=""
+          ></app-doctor-card>
+        }
+      </div>
     </div>
+
+    @if (pageIndex() !== 1 || pageIndex() !== lastPage()) {
+      <nav class="mt-4">
+        <ul class="pagination">
+          <li class="page-item">
+            <button class="page-link" (click)="goToPreviousPage()">Previous</button>
+          </li>
+          @if (pageIndex() > 2) {
+            <li class="page-item">
+              <button class="page-link" (click)="setPage(pageIndex() - 2)">
+                {{ pageIndex() - 2 }}
+              </button>
+            </li>
+          }
+          @if (pageIndex() > 1) {
+            <li class="page-item">
+              <button class="page-link" (click)="setPage(pageIndex() - 1)">
+                {{ pageIndex() - 1 }}
+              </button>
+            </li>
+          }
+          <li class="page-item active">
+            <button class="page-link">{{ pageIndex() }}</button>
+          </li>
+          @if (pageIndex() < lastPage()) {
+            <li class="page-item">
+              <button class="page-link" (click)="setPage(pageIndex() + 1)">
+                {{ pageIndex() + 1 }}
+              </button>
+            </li>
+          }
+          @if (pageIndex() + 1 < lastPage()) {
+            <li class="page-item">
+              <button class="page-link" (click)="setPage(pageIndex() + 2)">
+                {{ pageIndex() + 2 }}
+              </button>
+            </li>
+          }
+          <li class="page-item">
+            <button class="page-link" (click)="goToNextPage()">Next</button>
+          </li>
+        </ul>
+      </nav>
+    }
   </div>
 </section>

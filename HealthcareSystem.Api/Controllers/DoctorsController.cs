@@ -28,16 +28,17 @@ public class DoctorsController : ControllerBase {
         [FromQuery] DoctorRequests.GetDoctorsRequest request,
         CancellationToken ct
     ) {
-        ICollection<Doctor>? list = await _doctorRepository.GetDoctors(
+        (int?, ICollection<Doctor>?) response = await _doctorRepository.GetDoctors(
             request.PageIndex, request.PageSize, request.SortField,
             request.SortOrder, request.SearchName, request.SearchSpecialization, ct
         );
-        if (list is null) {
+        if (response is (null, null) || response.Item2 is null) {
             return NotFound(ResponsesMessages.NotFound("Doctors not found"));
         }
 
-        IEnumerable<DoctorDto> listDto = list.Select(d => d.ToDto());
-        return Ok(listDto);
+        IEnumerable<DoctorDto> listDto = response.Item2.Select(d => d.ToDto());
+        int? count = response.Item1;
+        return Ok(new ResponsesData.GetList<DoctorDto>(count, listDto));
     }
 
     [HttpGet("{Id:guid}")]

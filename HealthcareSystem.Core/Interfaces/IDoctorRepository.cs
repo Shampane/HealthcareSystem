@@ -3,9 +3,9 @@ using HealthcareSystem.Core.Entities;
 namespace HealthcareSystem.Core.Interfaces;
 
 public interface IDoctorRepository {
-    public Task<ICollection<Doctor>?> GetDoctors(
-        int? pageIndex, int? pageSize, string? sortField,
-        string? sortOrder, string? searchName, string? searchSpecialization,
+    public Task<(int?, ICollection<Doctor>?)> GetDoctors(
+        int? pageIndex, int? pageSize, string? sortField, string? sortOrder,
+        string? searchName, string? searchSpecialization,
         CancellationToken cancellationToken
     );
 
