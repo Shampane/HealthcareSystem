@@ -1,0 +1,162 @@
+<section class="d-flex justify-content-center" style="overflow: hidden">
+  <div class="card my-5 px-5 py-5 w-50">
+    <div>
+      <h2>Create account</h2>
+      <p class="my-text">Please sign up to book appointment</p>
+      <form [formGroup]="registerFormGroup" (ngSubmit)="onSubmit()">
+        <div>
+          <label for="username-register" class="my-label mt-1 text-secondary">
+            Username
+          </label>
+          <input
+            type="text"
+            class="form-control mt-1"
+            id="username-register"
+            formControlName="username"
+          />
+        </div>
+        <div>
+          <label for="email-register" class="my-label mt-3 text-secondary">
+            Email
+          </label>
+          <input
+            type="email"
+            class="form-control mt-1"
+            id="email-register"
+            formControlName="email"
+          />
+        </div>
+        <div>
+          <label for="gender-register" class="my-label mt-3 text-secondary">
+            Gender
+          </label>
+          <select class="form-select" formControlName="gender" id="gender-register">
+            <option value="male">Male</option>
+            <option value="female">Female</option>
+          </select>
+        </div>
+        <div>
+          <label for="password-register" class="my-label mt-3 text-secondary">
+            Password
+          </label>
+          <input
+            type="password"
+            class="form-control mt-1"
+            id="password-register"
+            formControlName="password"
+          />
+        </div>
+        <div>
+          <label
+            for="confirm-password-register"
+            class="my-label mt-3 text-secondary"
+          >
+            Confirm password
+          </label>
+          <input
+            type="password"
+            class="form-control mt-1"
+            id="confirm-password-register"
+            formControlName="confirmPassword"
+          />
+        </div>
+
+        <div class="form-check form-switch col mt-3">
+          <input
+            class="form-check-input"
+            type="checkbox"
+            role="switch"
+            id="sort-order-switch"
+            formControlName="enableTwoFactor"
+          />
+          <label class="form-check-label" for="sort-order-switch">
+            Enable two-factor authentication by email
+          </label>
+        </div>
+        @if (!this.registerFormGroup.value.enableTwoFactor) {
+          <div class="alert alert-danger mt-3" role="alert">
+            <h5>Be careful!</h5>
+            <p>Registration without two-factor authentication may be dangerous</p>
+          </div>
+        }
+
+        <button
+          class="my-button btn btn-primary mt-3 text-white w-100"
+          type="submit"
+        >
+          Create account
+        </button>
+      </form>
+      <p class="mt-2">
+        Already have an account?
+        <span routerLink="/login" class="text-primary cursor-pointer">
+          Click here
+        </span>
+      </p>
+    </div>
+  </div>
+</section>
+
+@if (isSuccessful() === false) {
+  <div
+    class="modal modal-lg my-modal"
+    style="display: block"
+    data-bs-keyboard="false"
+    tabindex="-1"
+    data-bs-backdrop="static"
+  >
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header bg-danger text-light">
+          <h5 class="modal-title">Registration errors</h5>
+        </div>
+        <div class="modal-body">
+          @for (error of responseMessages(); track $index) {
+            <p>{{ error }}</p>
+          }
+        </div>
+        <div class="modal-footer">
+          <button
+            type="button"
+            class="btn btn-danger"
+            data-bs-dismiss="modal"
+            (click)="clearSuccessful()"
+          >
+            Test again
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+} @else if (isSuccessful() === true) {
+  <div
+    class="modal modal-lg my-modal"
+    style="display: block"
+    data-bs-keyboard="false"
+    tabindex="-1"
+    data-bs-backdrop="static"
+  >
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header bg-success text-light">
+          <h5 class="modal-title">Registration is successful</h5>
+        </div>
+        <div class="modal-body">
+          @for (message of responseMessages(); track $index) {
+            <p>{{ message }}</p>
+          }
+        </div>
+        <div class="modal-footer">
+          <button
+            type="button"
+            class="btn btn-success"
+            data-bs-dismiss="modal"
+            (click)="clearSuccessful()"
+          >
+            Ok
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+}

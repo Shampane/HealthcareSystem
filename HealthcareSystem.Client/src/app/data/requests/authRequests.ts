@@ -1,10 +1,10 @@
 export interface RegisterRequest {
-  username: string;
-  email: string;
-  gender: string;
-  password: string;
-  confirmPassword: string;
-  enableTwoFactor: boolean;
+  username?: string;
+  email?: string;
+  gender?: string;
+  password?: string;
+  confirmPassword?: string;
+  enableTwoFactor?: boolean;
 }
 
 export interface LoginRequest {

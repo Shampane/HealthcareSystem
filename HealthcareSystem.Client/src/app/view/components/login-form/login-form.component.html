@@ -1,0 +1,110 @@
+<section class="d-flex justify-content-center">
+  <div class="card my-5 px-5 py-5 w-50">
+    @if (isLogin()) {
+      <div>
+        <h2>Login</h2>
+        <p class="my-text">Please log in to book appointment</p>
+        <form [formGroup]="loginFormGroup" (ngSubmit)="onSubmitLogin()">
+          <div>
+            <label for="email-login" class="my-label mt-1 text-secondary">
+              Email
+            </label>
+            <input
+              type="email"
+              class="form-control mt-1"
+              id="email-login"
+              formControlName="email"
+            />
+          </div>
+          <div>
+            <label for="password-login" class="my-label mt-3 text-secondary">
+              Password
+            </label>
+            <input
+              type="password"
+              class="form-control mt-1"
+              id="password-login"
+              formControlName="password"
+            />
+          </div>
+          <button
+            class="my-button btn btn-primary mt-3 text-white w-100"
+            type="submit"
+          >
+            Login
+          </button>
+        </form>
+        <p class="mt-2">
+          Create a new account?
+          <span class="text-primary cursor-pointer" (click)="isLogin.set(false)">
+            Click here
+          </span>
+        </p>
+      </div>
+    } @else {
+      <div>
+        <h2>Create account</h2>
+        <p class="my-text">Please sign up to book appointment</p>
+        <form [formGroup]="registerFormGroup" (ngSubmit)="onSubmitRegister()">
+          <div>
+            <label for="username-register" class="my-label mt-1 text-secondary">
+              Username
+            </label>
+            <input
+              type="text"
+              class="form-control mt-1"
+              id="username-register"
+              formControlName="username"
+            />
+          </div>
+          <div>
+            <label for="email-register" class="my-label mt-3 text-secondary">
+              Email
+            </label>
+            <input
+              type="email"
+              class="form-control mt-1"
+              id="email-register"
+              formControlName="email"
+            />
+          </div>
+          <div>
+            <label for="gender-register" class="my-label mt-3 text-secondary">
+              Gender
+            </label>
+            <select
+              class="form-select"
+              formControlName="gender"
+              id="gender-register"
+            >
+              <option value="male">Male</option>
+              <option value="female">Female</option>
+            </select>
+          </div>
+          <div>
+            <label for="password-register" class="my-label mt-3 text-secondary">
+              Password
+            </label>
+            <input
+              type="password"
+              class="form-control mt-1"
+              id="password-register"
+              formControlName="password"
+            />
+          </div>
+
+          <button
+            class="my-button btn btn-primary mt-3 text-white w-100"
+            type="submit"
+          >
+            Login
+          </button>
+        </form>
+        <p class="mt-2">
+          Already have an account?
+          <a class="text-primary" (click)="isLogin.set(true)"> Click here </a>
+        </p>
+      </div>
+    }
+  </div>
+</section>

@@ -35,11 +35,15 @@ p {
   margin: 4px 0;
 }
 
-:not(a[role="button"]) {
-  color: inherit;
+a {
   text-decoration: none;
+  cursor: pointer;
 }
 
 body {
   font-family: "Rubik", "Open Sans", serif;
+}
+
+.cursor-pointer {
+  cursor: pointer;
 }

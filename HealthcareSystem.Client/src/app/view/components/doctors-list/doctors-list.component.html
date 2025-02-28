@@ -1,7 +1,7 @@
-<section class="my-section">
-  <h1 class="my-4 text-center">All Doctors</h1>
-  <div class="my-content">
-    <h3 class="mt-3">Search by name and specialization</h3>
+<section>
+  <h1 class="text-center mt-5">All Doctors</h1>
+  <div class="mt-5">
+    <h3>Search by name and specialization</h3>
 
     <form [formGroup]="searchFormGroup" class="row gap-3 mt-3">
       <div class="col-3">
@@ -22,8 +22,7 @@
             [id]="'specialization-' + name"
             [value]="name"
             formControlName="specialization"
-          />
-          <label
+          /><label
             class="btn btn-outline-primary px-3"
             [for]="'specialization-' + name"
             >{{ name }}</label
@@ -95,7 +94,7 @@
     </div>
 
     @if (pageIndex() !== 1 || pageIndex() !== lastPage()) {
-      <nav class="mt-4">
+      <nav class="mt-5">
         <ul class="pagination">
           <li class="page-item">
             <button class="page-link" (click)="goToPreviousPage()">Previous</button>

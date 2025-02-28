@@ -1,0 +1,44 @@
+<section class="d-flex justify-content-center">
+  <div class="card my-5 px-5 py-5 w-50">
+    <div>
+      <h2>Login</h2>
+      <p class="my-text">Please log in to book appointment</p>
+      <form [formGroup]="loginFormGroup" (ngSubmit)="onSubmit()">
+        <div>
+          <label for="email-login" class="my-label mt-1 text-secondary">
+            Email
+          </label>
+          <input
+            type="email"
+            class="form-control mt-1"
+            id="email-login"
+            formControlName="email"
+          />
+        </div>
+        <div>
+          <label for="password-login" class="my-label mt-3 text-secondary">
+            Password
+          </label>
+          <input
+            type="password"
+            class="form-control mt-1"
+            id="password-login"
+            formControlName="password"
+          />
+        </div>
+        <button
+          class="my-button btn btn-primary mt-3 text-white w-100"
+          type="submit"
+        >
+          Login
+        </button>
+      </form>
+      <p class="mt-2">
+        Create a new account?
+        <span routerLink="/register" class="text-primary cursor-pointer">
+          Click here
+        </span>
+      </p>
+    </div>
+  </div>
+</section>

@@ -1,0 +1,13 @@
+.my {
+  &-text {
+    font-size: calc(1em + 2px);
+  }
+
+  &-button {
+    font-size: calc(1em + 2px);
+  }
+
+  &-modal {
+    backdrop-filter: brightness(0.5) blur(2px);
+  }
+}

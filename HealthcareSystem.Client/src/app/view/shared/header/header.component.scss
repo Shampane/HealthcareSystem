@@ -12,6 +12,7 @@
 
   &-link {
     transition: 0.3s ease-in-out;
+    color: black;
 
     &:hover {
       color: styles.$color-accent;

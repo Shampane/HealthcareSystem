@@ -43,7 +43,8 @@ public class AuthController : ControllerBase {
         AuthRequests.RegisterRequest request, CancellationToken ct
     ) {
         if (request.Password != request.ConfirmPassword) {
-            return BadRequest("Passwords do not match");
+            IEnumerable<string> passwordErrors = ["Passwords do not match"];
+            return BadRequest(passwordErrors);
         }
 
         User user = new() {
