@@ -1,6 +1,7 @@
 using HealthcareSystem.Api.Extensions;
 using HealthcareSystem.Application.Services;
 using HealthcareSystem.Infrastructure.DataAccess;
+using Microsoft.AspNetCore.Authentication.Cookies;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
@@ -19,18 +20,17 @@ builder.Services.AddControllers().AddNewtonsoftJson();
 WebApplication app = builder.Build();
 
 app.UseCors(policy => policy
-    .AllowAnyOrigin()
-    //.WithOrigins("http://localhost:4200")
+    .WithOrigins("http://localhost:4200")
     .AllowAnyHeader()
     .AllowAnyMethod()
+    .AllowCredentials()
 );
-
 app.UseExceptionHandler();
 
 app.MapControllers();
 app.AddScalarApi();
 
-app.UseHttpsRedirection();
+//app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
 

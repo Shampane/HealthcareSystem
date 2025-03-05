@@ -23,6 +23,7 @@ export class DoctorService {
     }
     return this.httpClient.get<DoctorGetResponse>(this.baseUrl + "doctors", {
       params,
+      withCredentials: true,
     });
   }
 }

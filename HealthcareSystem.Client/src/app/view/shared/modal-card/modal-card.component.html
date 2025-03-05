@@ -1,0 +1,36 @@
+<div
+  class="modal modal-lg my-modal"
+  style="display: block"
+  data-bs-keyboard="false"
+  tabindex="-1"
+  data-bs-backdrop="static"
+>
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div
+        [class]="
+          isSuccess()
+            ? 'modal-header bg-success text-light'
+            : 'modal-header bg-danger text-light'
+        "
+      >
+        <h5 class="modal-title">{{ title() }}</h5>
+      </div>
+      <div class="modal-body">
+        @for (message of messages(); track $index) {
+          <p>{{ message }}</p>
+        }
+      </div>
+      <div class="modal-footer">
+        <button
+          type="button"
+          [class]="isSuccess() ? 'btn btn-success' : 'btn btn-danger'"
+          data-bs-dismiss="modal"
+          (click)="onButtonClick()"
+        >
+          {{ buttonLabel() }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

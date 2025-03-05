@@ -6,10 +6,16 @@ using HealthcareSystem.Application.Requests;
 using HealthcareSystem.Application.Responses;
 using HealthcareSystem.Core.Entities;
 using HealthcareSystem.Core.Interfaces;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HealthcareSystem.Api.Controllers;
 
+[Authorize(
+    AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme,
+    Roles = "User"
+)]
 [ApiController]
 [Route("api/doctors")]
 public class DoctorsController : ControllerBase {

@@ -2,6 +2,7 @@ using System.Text;
 using HealthcareSystem.Core.Entities;
 using HealthcareSystem.Infrastructure.DataAccess;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 
@@ -43,6 +44,18 @@ public static class AuthExtensions {
                         Encoding.UTF8.GetBytes(jwtSettings["Key"]!)
                     )
                 };
+                options.Events = new JwtBearerEvents {
+                    OnMessageReceived = context => {
+                        context.Request.Cookies.TryGetValue(
+                            "accessToken", out string? accessToken
+                        );
+                        if (!string.IsNullOrEmpty(accessToken)) {
+                            context.Token = accessToken;
+                        }
+
+                        return Task.CompletedTask;
+                    }
+                };
             });
         return services;
     }
@@ -71,21 +84,14 @@ public static class AuthExtensions {
         this IServiceCollection services
     ) {
         services.AddAuthorizationBuilder()
-            .AddPolicy("UserPolicy", policy => {
-                policy.RequireAuthenticatedUser();
-                policy.AddAuthenticationSchemes("Bearer");
-                policy.RequireRole("User", "Admin");
-            })
-            .AddPolicy("DoctorPolicy", policy => {
-                policy.RequireAuthenticatedUser();
-                policy.AddAuthenticationSchemes("Bearer");
-                policy.RequireRole("Doctor", "Admin");
-            })
-            .AddPolicy("AdminPolicy", policy => {
-                policy.RequireAuthenticatedUser();
-                policy.AddAuthenticationSchemes("Bearer");
-                policy.RequireRole("Admin");
-            });
+            .SetDefaultPolicy(new AuthorizationPolicyBuilder()
+                .AddAuthenticationSchemes(JwtBearerDefaults.AuthenticationScheme)
+                .RequireAuthenticatedUser()
+                .Build())
+            .AddPolicy("UserPolicy", policy => policy.RequireRole("User", "Admin"))
+            .AddPolicy("DoctorPolicy", policy => policy.RequireRole("Doctor", "Admin"))
+            .AddPolicy("AdminPolicy", policy => policy.RequireRole("Admin"));
+
         return services;
     }
 }

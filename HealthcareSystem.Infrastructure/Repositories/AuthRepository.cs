@@ -5,6 +5,7 @@ using System.Text;
 using HealthcareSystem.Core.Entities;
 using HealthcareSystem.Core.Interfaces;
 using HealthcareSystem.Core.Records;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
@@ -56,6 +57,8 @@ public class AuthRepository : IAuthRepository {
         await _userManager.UpdateAsync(user);
         string accessToken = new JwtSecurityTokenHandler().WriteToken(tokenOptions);
 
+        IConfigurationSection jwtSettings = _configuration.GetSection("Jwt");
+        int expireInMinutes = int.Parse(jwtSettings["ExpireInMinutes"]!);
         return new Token(accessToken, refreshToken);
     }
 
@@ -118,12 +121,35 @@ public class AuthRepository : IAuthRepository {
         );
         var jwtSecurityToken = securityToken as JwtSecurityToken;
         if (jwtSecurityToken is null || !jwtSecurityToken.Header.Alg.Equals(
-            SecurityAlgorithms.HmacSha256,
-            StringComparison.InvariantCultureIgnoreCase
-        )) {
+                SecurityAlgorithms.HmacSha256,
+                StringComparison.InvariantCultureIgnoreCase
+            )) {
             throw new SecurityTokenException("Invalid token");
         }
+
         return principal;
+    }
+
+    public void SetTokensInsideCookie(HttpContext httpContext, Token token) {
+        IConfigurationSection jwtSettings = _configuration.GetSection("Jwt");
+        double expireInMinutes = double.Parse(jwtSettings["ExpireInMinutes"]!);
+
+        httpContext.Response.Cookies.Append("accessToken", token.AccessToken,
+            new CookieOptions() {
+                HttpOnly = true,
+                IsEssential = true,
+                Secure = true,
+                SameSite = SameSiteMode.None,
+                Expires = DateTimeOffset.UtcNow.AddMinutes(expireInMinutes)
+            });
+        httpContext.Response.Cookies.Append("refreshToken", token.RefreshToken,
+            new CookieOptions() {
+                HttpOnly = true,
+                IsEssential = true,
+                Secure = true,
+                SameSite = SameSiteMode.None,
+                Expires = DateTimeOffset.UtcNow.AddDays(7)
+            });
     }
 
     public async Task<bool> IsTwoFactorValid(

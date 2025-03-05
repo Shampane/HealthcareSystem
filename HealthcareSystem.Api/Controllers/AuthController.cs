@@ -19,6 +19,7 @@ namespace HealthcareSystem.Api.Controllers;
 public class AuthController : ControllerBase {
     private readonly IAuthRepository _authRepository;
     private readonly IEmailRepository _emailRepository;
+    private readonly IConfiguration _configuration;
 
     private readonly string _forgetPasswordTemplate =
         $"{Directory.GetCurrentDirectory()}/Templates/ForgetPasswordTemplate.cshtml";
@@ -31,11 +32,13 @@ public class AuthController : ControllerBase {
     public AuthController(
         IAuthRepository authRepository,
         ILogger<AuthController> logger,
-        IEmailRepository emailRepository
+        IEmailRepository emailRepository,
+        IConfiguration configuration
     ) {
         _authRepository = authRepository;
         _emailRepository = emailRepository;
         _logger = logger;
+        _configuration = configuration;
     }
 
     [HttpPost("register")]
@@ -74,9 +77,7 @@ public class AuthController : ControllerBase {
             user is null
             || !await _authRepository.IsUserPasswordValid(user, request.Password)
         ) {
-            return NotFound(ResponsesMessages.NotFound(
-                "Invalid username or password"
-            ));
+            return NotFound(ResponsesMessages.NotFound("Invalid username or password"));
         }
 
         bool isUserHasTwoFactor = await _authRepository.IsUserHasTwoFactor(user);
@@ -102,7 +103,13 @@ public class AuthController : ControllerBase {
         }
 
         Token? token = await _authRepository.CreateToken(user, true);
-        return Ok(token);
+        if (token is null) {
+            return Unauthorized("Invalid token");
+        }
+
+        _authRepository.SetTokensInsideCookie(HttpContext, token);
+
+        return Ok();
     }
 
     [HttpPost("twoFactor")]
@@ -127,20 +134,30 @@ public class AuthController : ControllerBase {
     }
 
     [HttpPost("refreshToken")]
-    public async Task<IActionResult> RefreshToken(
-        AuthRequests.RefreshTokenRequest request, CancellationToken ct
-    ) {
+    public async Task<IActionResult> RefreshToken(CancellationToken ct) {
+        HttpContext.Request.Cookies.TryGetValue("accessToken", out string? accessToken);
+        HttpContext.Request.Cookies.TryGetValue("refreshToken", out string? refreshToken);
+
+        if (accessToken is null || refreshToken is null) {
+            return NotFound(ResponsesMessages.NotFound("Invalid cookie"));
+        }
+
         ClaimsPrincipal principal =
-            _authRepository.GetPrincipalFromExpiredToken(request.AccessToken);
+            _authRepository.GetPrincipalFromExpiredToken(accessToken);
         User? user = await _authRepository.GetUserByName(principal.Identity.Name);
         if (user is null
-            || user.RefreshToken != request.RefreshToken
+            || user.RefreshToken != refreshToken
             || user.RefreshTokenExpiry <= DateTime.UtcNow) {
             return BadRequest("Invalid refresh token");
         }
 
-        Token? refreshedToken = await _authRepository.CreateToken(user, false);
-        return Ok(refreshedToken);
+        Token? token = await _authRepository.CreateToken(user, false);
+        if (token is null) {
+            return Unauthorized("Invalid token");
+        }
+
+        _authRepository.SetTokensInsideCookie(HttpContext, token);
+        return Ok();
     }
 
     [HttpPost("forgetPassword")]

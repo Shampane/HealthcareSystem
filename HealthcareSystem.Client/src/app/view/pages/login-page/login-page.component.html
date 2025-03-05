@@ -42,3 +42,21 @@
     </div>
   </div>
 </section>
+
+@if (isSuccessful() === false) {
+  <app-modal-card
+    [title]="'Login errors'"
+    [isSuccess]="false"
+    [messages]="responseMessages()"
+    [buttonLabel]="'Try again'"
+    [buttonFunction]="clearSuccessful"
+  ></app-modal-card>
+} @else if (isSuccessful() === true) {
+  <app-modal-card
+    [title]="'Login is successful'"
+    [isSuccess]="true"
+    [messages]="responseMessages()"
+    [buttonLabel]="'Ok'"
+    [buttonFunction]="clearSuccessful"
+  ></app-modal-card>
+}

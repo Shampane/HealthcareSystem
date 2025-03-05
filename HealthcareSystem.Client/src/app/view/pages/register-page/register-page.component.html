@@ -98,65 +98,19 @@
 </section>
 
 @if (isSuccessful() === false) {
-  <div
-    class="modal modal-lg my-modal"
-    style="display: block"
-    data-bs-keyboard="false"
-    tabindex="-1"
-    data-bs-backdrop="static"
-  >
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header bg-danger text-light">
-          <h5 class="modal-title">Registration errors</h5>
-        </div>
-        <div class="modal-body">
-          @for (error of responseMessages(); track $index) {
-            <p>{{ error }}</p>
-          }
-        </div>
-        <div class="modal-footer">
-          <button
-            type="button"
-            class="btn btn-danger"
-            data-bs-dismiss="modal"
-            (click)="clearSuccessful()"
-          >
-            Test again
-          </button>
-        </div>
-      </div>
-    </div>
-  </div>
+  <app-modal-card
+    [title]="'Registration errors'"
+    [isSuccess]="false"
+    [messages]="responseMessages()"
+    [buttonLabel]="'Try again'"
+    [buttonFunction]="clearSuccessful"
+  ></app-modal-card>
 } @else if (isSuccessful() === true) {
-  <div
-    class="modal modal-lg my-modal"
-    style="display: block"
-    data-bs-keyboard="false"
-    tabindex="-1"
-    data-bs-backdrop="static"
-  >
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header bg-success text-light">
-          <h5 class="modal-title">Registration is successful</h5>
-        </div>
-        <div class="modal-body">
-          @for (message of responseMessages(); track $index) {
-            <p>{{ message }}</p>
-          }
-        </div>
-        <div class="modal-footer">
-          <button
-            type="button"
-            class="btn btn-success"
-            data-bs-dismiss="modal"
-            (click)="clearSuccessful()"
-          >
-            Ok
-          </button>
-        </div>
-      </div>
-    </div>
-  </div>
+  <app-modal-card
+    [title]="'Registration is successful'"
+    [isSuccess]="true"
+    [messages]="responseMessages()"
+    [buttonLabel]="'Ok'"
+    [buttonFunction]="clearSuccessful"
+  ></app-modal-card>
 }

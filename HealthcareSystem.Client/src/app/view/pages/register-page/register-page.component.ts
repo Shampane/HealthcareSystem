@@ -3,10 +3,11 @@ import { FormControl, FormGroup, ReactiveFormsModule } from "@angular/forms";
 import { RouterLink } from "@angular/router";
 import { AuthService } from "../../../data/services/auth.service";
 import { RegisterRequest } from "../../../data/requests/authRequests";
+import { ModalCardComponent } from "../../shared/modal-card/modal-card.component";
 
 @Component({
   selector: "app-register-page",
-  imports: [ReactiveFormsModule, RouterLink],
+  imports: [ReactiveFormsModule, RouterLink, ModalCardComponent],
   templateUrl: "./register-page.component.html",
   styleUrl: "./register-page.component.scss",
 })
@@ -25,12 +26,12 @@ export class RegisterPageComponent {
     enableTwoFactor: new FormControl(true),
   });
 
-  clearSuccessful() {
+  clearSuccessful = (): void => {
     this.responseMessages.set([]);
     this.isSuccessful.set(null);
-  }
+  };
 
-  onSubmit() {
+  onSubmit = (): void => {
     const formGroup = this.registerFormGroup.value;
     const request: RegisterRequest = {
       username: formGroup.username!,
@@ -51,5 +52,5 @@ export class RegisterPageComponent {
         this.isSuccessful.set(false);
       },
     });
-  }
+  };
 }

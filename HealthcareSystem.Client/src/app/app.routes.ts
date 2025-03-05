@@ -4,6 +4,8 @@ import { DoctorsPageComponent } from "./view/pages/doctors-page/doctors-page.com
 import { NotFoundPageComponent } from "./view/pages/not-found-page/not-found-page.component";
 import { LoginPageComponent } from "./view/pages/login-page/login-page.component";
 import { RegisterPageComponent } from "./view/pages/register-page/register-page.component";
+import { authGuard } from "./auth.guard";
+import { UserPageComponent } from "./view/pages/user-page/user-page.component";
 
 export const routes: Routes = [
   { path: "", component: HomePageComponent },
@@ -11,5 +13,6 @@ export const routes: Routes = [
   { path: "home", redirectTo: "", pathMatch: "full" },
   { path: "login", component: LoginPageComponent },
   { path: "register", component: RegisterPageComponent },
+  { path: "user", component: UserPageComponent, canActivate: [authGuard] },
   { path: "**", component: NotFoundPageComponent },
 ];

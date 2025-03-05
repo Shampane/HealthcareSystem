@@ -2,11 +2,11 @@ using HealthcareSystem.Core.Entities;
 using HealthcareSystem.Core.Records;
 using Microsoft.AspNetCore.Identity;
 using System.Security.Claims;
+using Microsoft.AspNetCore.Http;
 
 namespace HealthcareSystem.Core.Interfaces;
 
-public interface IAuthRepository
-{
+public interface IAuthRepository {
     public Task<User?> GetUserByName(string name);
     public Task<User?> GetUserByEmail(string email);
     public Task<IdentityResult> CreateUserWithPassword(User user, string password);
@@ -28,4 +28,5 @@ public interface IAuthRepository
     public Task<IList<string>> GetUserRoles(User user);
     public Task<bool> IsUserPasswordValid(User user, string password);
     public ClaimsPrincipal GetPrincipalFromExpiredToken(string token);
+    public void SetTokensInsideCookie(HttpContext httpContext, Token token);
 }
