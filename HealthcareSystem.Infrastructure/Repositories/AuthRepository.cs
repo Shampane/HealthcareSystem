@@ -136,6 +136,7 @@ public class AuthRepository : IAuthRepository {
 
         httpContext.Response.Cookies.Append("accessToken", token.AccessToken,
             new CookieOptions() {
+                Path = "/",
                 HttpOnly = true,
                 IsEssential = true,
                 Secure = true,
@@ -144,11 +145,29 @@ public class AuthRepository : IAuthRepository {
             });
         httpContext.Response.Cookies.Append("refreshToken", token.RefreshToken,
             new CookieOptions() {
+                Path = "/",
                 HttpOnly = true,
                 IsEssential = true,
                 Secure = true,
                 SameSite = SameSiteMode.None,
                 Expires = DateTimeOffset.UtcNow.AddDays(7)
+            });
+    }
+
+    public void RemoveTokensCookie(HttpContext httpContext) {
+        httpContext.Response.Cookies.Delete("accessToken",
+            new CookieOptions() {
+                Path = "/",
+                HttpOnly = true,
+                Secure = true,
+                SameSite = SameSiteMode.None
+            });
+        httpContext.Response.Cookies.Delete("refreshToken",
+            new CookieOptions() {
+                Path = "/",
+                HttpOnly = true,
+                Secure = true,
+                SameSite = SameSiteMode.None
             });
     }
 

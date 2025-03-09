@@ -1,0 +1,21 @@
+<section>
+  <h1 class="text-center mt-5">User profile</h1>
+  <nav class="d-flex gap-2 mt-3">
+    <button class="btn btn-light btn-lg">Main Page</button>
+    <button class="btn btn-light btn-lg">My Appointments</button>
+  </nav>
+  <div class="mt-4">
+    <h3>Information</h3>
+    <div class="fs-5">
+      <p><i class="bi bi-person"></i> {{ userName() }}</p>
+      <p><i class="bi bi-envelope-at"></i> {{ userEmail() }}</p>
+    </div>
+    <button
+      class="btn btn-danger btn-lg mt-2"
+      (click)="handleLogout()"
+      role="button"
+    >
+      <span>Logout <i class="bi bi-box-arrow-right"></i></span>
+    </button>
+  </div>
+</section>

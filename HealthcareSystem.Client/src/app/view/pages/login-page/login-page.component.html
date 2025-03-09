@@ -54,6 +54,7 @@
 } @else if (isSuccessful() === true) {
   <app-modal-card
     [title]="'Login is successful'"
+    (click)="handleSuccess()"
     [isSuccess]="true"
     [messages]="responseMessages()"
     [buttonLabel]="'Ok'"

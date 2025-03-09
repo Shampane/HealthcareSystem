@@ -7,9 +7,8 @@ import {
 } from "@angular/forms";
 import { RouterLink } from "@angular/router";
 import { AuthService } from "../../../data/services/auth.service";
-import { LoginRequest, RegisterRequest } from "../../../data/requests/authRequests";
+import { LoginRequest } from "../../../data/requests/authRequests";
 import { ModalCardComponent } from "../../shared/modal-card/modal-card.component";
-import { TokenResponse } from "../../../data/responses/tokenResponse";
 
 @Component({
   selector: "app-login-page",
@@ -33,6 +32,10 @@ export class LoginPageComponent {
     this.isSuccessful.set(null);
   };
 
+  handleSuccess = () => {
+    window.location.href = "/user";
+  };
+
   onSubmit = (): void => {
     const formGroup = this.loginFormGroup.value;
     const request: LoginRequest = {
@@ -40,7 +43,7 @@ export class LoginPageComponent {
       password: formGroup.password!,
     };
     this.authService.login(request).subscribe({
-      next: (response: TokenResponse) => {
+      next: () => {
         this.responseMessages.set(["User was successfully login"]);
         this.loginFormGroup.reset();
         this.isSuccessful.set(true);
@@ -51,4 +54,5 @@ export class LoginPageComponent {
       },
     });
   };
+  protected readonly window = window;
 }

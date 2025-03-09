@@ -8,6 +8,8 @@ using HealthcareSystem.Core.Entities;
 using HealthcareSystem.Core.Interfaces;
 using HealthcareSystem.Core.Records;
 using InterpolatedParsing;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;
@@ -110,6 +112,41 @@ public class AuthController : ControllerBase {
         _authRepository.SetTokensInsideCookie(HttpContext, token);
 
         return Ok();
+    }
+
+    [HttpPost("logout")]
+    public IActionResult Logout() {
+        _authRepository.RemoveTokensCookie(HttpContext);
+        return Ok();
+    }
+
+    [Authorize]
+    [HttpGet("isAuthenticated")]
+    public IActionResult IsAuthenticated() {
+        ClaimsPrincipal user = HttpContext.User;
+        if (user.Identity?.IsAuthenticated != true) {
+            return Unauthorized();
+        }
+
+        return Ok();
+    }
+
+    [Authorize]
+    [HttpGet("getUserInfo")]
+    public IActionResult GetUserInfo() {
+        ClaimsPrincipal user = HttpContext.User;
+        string? email = user.FindFirst(ClaimTypes.Email)?.Value;
+        string? name = user.FindFirst(ClaimTypes.Name)?.Value;
+
+        if (email is null || name is null) {
+            return Unauthorized();
+        }
+
+        object response = new {
+            Email = email,
+            Name = name
+        };
+        return Ok(response);
     }
 
     [HttpPost("twoFactor")]

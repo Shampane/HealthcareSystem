@@ -30,7 +30,7 @@ app.UseExceptionHandler();
 app.MapControllers();
 app.AddScalarApi();
 
-//app.UseHttpsRedirection();
+app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
 

@@ -13,22 +13,25 @@
       }
     </nav>
     <div class="col">
-      <button
-        type="button"
-        routerLink="/login"
-        class="my-button float-end btn btn-primary rounded-pill text-white"
-        role="button"
-      >
-        Login
-      </button>
-      <button
-        type="button"
-        routerLink="/user"
-        class="my-button float-end btn btn-primary rounded-pill text-white"
-        role="button"
-      >
-        User
-      </button>
+      @if (!isAuthenticated()) {
+        <button
+          type="button"
+          routerLink="/login"
+          class="my-button float-end btn btn-primary rounded-pill text-white"
+          role="button"
+        >
+          Login
+        </button>
+      } @else {
+        <button
+          type="button"
+          routerLink="/user"
+          class="my-button float-end btn btn-primary rounded-pill text-white"
+          role="button"
+        >
+          User Profile
+        </button>
+      }
     </div>
   </div>
 </header>

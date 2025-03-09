@@ -1,8 +1,12 @@
 import { inject, Injectable } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
 import { LoginRequest, RegisterRequest } from "../requests/authRequests";
-import { Observable } from "rxjs";
-import { TokenResponse } from "../responses/tokenResponse";
+import { catchError, map, Observable, of } from "rxjs";
+import {
+  IsAuthenticatedResponse,
+  TokenResponse,
+  UserInfoResponse,
+} from "../responses/authResponses";
 
 @Injectable({
   providedIn: "root",
@@ -21,8 +25,27 @@ export class AuthService {
     });
   }
 
-  checkToken(): Observable<any> {
-    return this.httpClient.get<any>(this.baseUrl + "checkToken", {
+  logout(): Observable<object> {
+    return this.httpClient.post(
+      this.baseUrl + "logout",
+      {},
+      {
+        withCredentials: true,
+      },
+    );
+  }
+
+  checkAuthentication(): Observable<IsAuthenticatedResponse> {
+    return this.httpClient.get<IsAuthenticatedResponse>(
+      this.baseUrl + "isAuthenticated",
+      {
+        withCredentials: true,
+      },
+    );
+  }
+
+  getUserInfo(): Observable<UserInfoResponse> {
+    return this.httpClient.get<UserInfoResponse>(this.baseUrl + "getUserInfo", {
       withCredentials: true,
     });
   }

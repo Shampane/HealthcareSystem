@@ -29,4 +29,5 @@ public interface IAuthRepository {
     public Task<bool> IsUserPasswordValid(User user, string password);
     public ClaimsPrincipal GetPrincipalFromExpiredToken(string token);
     public void SetTokensInsideCookie(HttpContext httpContext, Token token);
+    public void RemoveTokensCookie(HttpContext httpContext);
 }
