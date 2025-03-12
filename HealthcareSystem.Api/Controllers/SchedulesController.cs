@@ -40,19 +40,23 @@ public class SchedulesController : ControllerBase {
         if (list is null) {
             return NotFound(ResponsesMessages.NotFound("Schedules not found"));
         }
+
         IEnumerable<ScheduleDto> listDto = list.Select(s => s.ToDto());
         return Ok(listDto);
     }
 
-    [HttpGet("{Id:guid}")]
-    public async Task<IActionResult> GetScheduleById(
-        Guid Id, CancellationToken ct
+    [HttpGet("{DoctorId:guid}")]
+    public async Task<IActionResult> GetSchedulesByDoctorId(
+        Guid DoctorId, CancellationToken ct
     ) {
-        Schedule? schedule = await _scheduleRepository.GetScheduleById(Id, ct);
-        if (schedule is null) {
-            return NotFound(ResponsesMessages.NotFound("Schedule not found"));
+        ICollection<Schedule>? list =
+            await _scheduleRepository.GetSchedulesByDoctorId(DoctorId, ct);
+        if (list is null) {
+            return NotFound(ResponsesMessages.NotFound("Schedules not found"));
         }
-        return Ok(schedule.ToDto());
+
+        IEnumerable<ScheduleDto> listDto = list.Select(s => s.ToDto());
+        return Ok(listDto);
     }
 
     [HttpPost]
@@ -64,6 +68,7 @@ public class SchedulesController : ControllerBase {
         if (doctor is null) {
             return NotFound(ResponsesMessages.NotFound("Doctor not found"));
         }
+
         Schedule schedule = new() {
             DoctorId = request.DoctorId,
             DoctorName = doctor.Name,
@@ -75,9 +80,11 @@ public class SchedulesController : ControllerBase {
             IEnumerable<string> errors = result.Errors.Select(e => e.ErrorMessage);
             return BadRequest(errors);
         }
+
         if (!await _scheduleRepository.IsTimeAvailable(schedule, ct)) {
             return BadRequest("Schedule time is not available");
         }
+
         await _scheduleRepository.CreateSchedule(schedule, ct);
         return Created($"api/schedules/{schedule.Id}", schedule.ToDto());
     }
@@ -92,10 +99,12 @@ public class SchedulesController : ControllerBase {
         if (schedule is null) {
             return NotFound(ResponsesMessages.NotFound("Schedule not found"));
         }
+
         patchDoc.ApplyTo(schedule, ModelState);
         if (!TryValidateModel(schedule)) {
             return BadRequest(ModelState);
         }
+
         await _scheduleRepository.UpdateScheduleAvailable(schedule, ct);
         if (schedule.IsAvailable == false) {
             return Ok(ResponsesMessages.UpdatedIdTime(
@@ -103,6 +112,7 @@ public class SchedulesController : ControllerBase {
                 schedule.EndTime
             ));
         }
+
         return BadRequest("Update available was not successful");
     }
 
@@ -115,6 +125,7 @@ public class SchedulesController : ControllerBase {
         if (schedule is null) {
             return NotFound(ResponsesMessages.NotFound("Schedule not found"));
         }
+
         await _scheduleRepository.RemoveSchedule(schedule, ct);
         return NoContent();
     }

@@ -11,7 +11,7 @@
   <div class="my-body text-start">
     <h5>Dr. {{ name() }}</h5>
     <p class="my-text text-secondary">{{ specialization() }}</p>
-    <a role="button" [href]="doctorUrl()" class="btn btn-outline-primary">
+    <a role="button" [routerLink]="id()" class="btn btn-outline-primary">
       Get Info
     </a>
   </div>

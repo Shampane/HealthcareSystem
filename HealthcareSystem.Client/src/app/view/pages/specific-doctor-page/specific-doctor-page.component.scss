@@ -1,0 +1,12 @@
+@use "../../../../styles";
+
+.my {
+  &-image {
+    width: 100% !important;
+    height: auto;
+  }
+
+  &-about {
+    font-size: calc(1em - 1px);
+  }
+}

@@ -3,13 +3,14 @@ import { inject, Injectable } from "@angular/core";
 import { Observable } from "rxjs";
 import { GetDoctorsRequest } from "../requests/doctorRequests";
 import { DoctorGetResponse } from "../responses/doctorResponses";
+import { Doctor } from "../entities/doctor";
 
 @Injectable({
   providedIn: "root",
 })
 export class DoctorService {
   httpClient: HttpClient = inject(HttpClient);
-  baseUrl = "https://localhost:8081/api/";
+  baseUrl = "https://localhost:8081/api/doctors";
 
   getDoctors(request?: GetDoctorsRequest): Observable<DoctorGetResponse> {
     let params = new HttpParams();
@@ -21,9 +22,13 @@ export class DoctorService {
         }
       });
     }
-    return this.httpClient.get<DoctorGetResponse>(this.baseUrl + "doctors", {
+    return this.httpClient.get<DoctorGetResponse>(this.baseUrl, {
       params,
       withCredentials: true,
     });
+  }
+
+  getDoctorById(request: string): Observable<Doctor> {
+    return this.httpClient.get<Doctor>(this.baseUrl + "/" + request);
   }
 }

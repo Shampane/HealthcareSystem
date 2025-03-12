@@ -38,6 +38,15 @@ public class ScheduleRepository : IScheduleRepository {
             .FirstOrDefaultAsync(s => s.Id == id, cancellationToken);
     }
 
+    public async Task<ICollection<Schedule>?> GetSchedulesByDoctorId(
+        Guid doctorId, CancellationToken cancellationToken
+    ) {
+        return await _dbContext.Schedules.AsNoTracking()
+            .Where(s => s.DoctorId == doctorId)
+            .OrderBy(s => s.StartTime)
+            .ToListAsync(cancellationToken);
+    }
+
     public async Task CreateSchedule(
         Schedule schedule, CancellationToken cancellationToken
     ) {

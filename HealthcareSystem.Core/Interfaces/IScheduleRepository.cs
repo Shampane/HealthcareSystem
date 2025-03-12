@@ -13,6 +13,10 @@ public interface IScheduleRepository {
         Guid id, CancellationToken cancellationToken
     );
 
+    public Task<ICollection<Schedule>?> GetSchedulesByDoctorId(
+        Guid doctorId, CancellationToken cancellationToken
+    );
+
     public Task CreateSchedule(
         Schedule schedule, CancellationToken cancellationToken
     );
